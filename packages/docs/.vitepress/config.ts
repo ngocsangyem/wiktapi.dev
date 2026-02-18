@@ -10,7 +10,7 @@ export default defineConfig({
       }),
     ],
   },
-  title: "Wiktapi",
+  title: "WiktApi",
   description: "Multilingual dictionary API built on Wiktionary",
   themeConfig: {
     logo: "/favicon.svg",
