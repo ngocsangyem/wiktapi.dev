@@ -20,7 +20,7 @@ import { createInterface } from "node:readline";
 const DATA_DIR = resolve("./data");
 const JSONL_DIR = resolve(DATA_DIR, "jsonl");
 const DEFAULT_DB_PATH = resolve(DATA_DIR, "wiktionary.db");
-const BATCH_SIZE = 5000;
+const BATCH_SIZE = 50_000;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

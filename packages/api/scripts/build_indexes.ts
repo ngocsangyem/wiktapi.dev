@@ -27,6 +27,10 @@ const main: Effect.Effect<void, Error> = Effect.gen(function* () {
 
   const db = new Database(dbPath);
   db.pragma("journal_mode = WAL");
+  db.pragma("synchronous = OFF");
+  db.pragma("cache_size = -65536"); // 64 MB
+  db.pragma("temp_store = MEMORY");
+  db.pragma("mmap_size = 268435456"); // 256 MB
 
   yield* Console.log(`Building indexes on ${dbPath} …`);
   db.exec(ENTRIES_INDEXES_DDL);

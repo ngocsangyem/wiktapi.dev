@@ -145,7 +145,7 @@ const main: Effect.Effect<void, Error> = Effect.gen(function* () {
   });
 
   yield* Effect.forEach(editions, (edition) => downloadEdition(edition, force), {
-    concurrency: 1,
+    concurrency: 5,
   });
 });
 
