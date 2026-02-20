@@ -8,6 +8,22 @@ This project is using Vite+, a modern toolchain built on top of Vite, Rolldown, 
 
 `vp` is a global binary that handles the full development lifecycle. Run `vp help` to print a list of commands and `vp <command> --help` for information about a specific command.
 
+### Install `vp`
+
+```bash
+## npm
+npm install -g vite-plus
+
+## pnpm
+pnpm install -g vite-plus
+
+## yarn
+yarn global add vite-plus
+
+#npx
+npx vite-plus
+```
+
 ### Vite+ Commands
 
 - dev - Run the development server

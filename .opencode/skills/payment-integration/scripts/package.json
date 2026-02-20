@@ -1,0 +1,17 @@
+{
+  "name": "payment-integration-scripts",
+  "version": "1.0.0",
+  "description": "Helper scripts for SePay and Polar payment integration",
+  "keywords": [
+    "checkout",
+    "payment",
+    "polar",
+    "sepay",
+    "webhook"
+  ],
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "test": "node test-scripts.js"
+  }
+}

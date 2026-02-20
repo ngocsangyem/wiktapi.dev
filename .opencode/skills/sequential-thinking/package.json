@@ -1,0 +1,31 @@
+{
+  "name": "sequential-thinking-skill",
+  "version": "1.0.0",
+  "description": "Sequential thinking methodology with thought processing scripts",
+  "keywords": [
+    "agent-skill",
+    "problem-solving",
+    "sequential-thinking"
+  ],
+  "license": "MIT",
+  "author": "Converted from Anthropic MCP Server",
+  "main": "scripts/process-thought.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/tests/"
+    ],
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  }
+}
