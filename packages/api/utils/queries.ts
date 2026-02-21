@@ -37,11 +37,14 @@ function mergeRows(rows: WordRow[]): WordRecord {
   const first = rows[0]!;
   const allMeanings = rows.flatMap((r) => safeParseJson<Meaning[]>(r.meanings, "meanings"));
 
+  // Pick phonetics from the first row that actually has them; fall back to first row
+  const phoneticRow = rows.find((r) => r.phonetic !== null) ?? first;
+
   return {
     id: first.id,
     word: first.word,
-    phonetic: first.phonetic,
-    phonetics: safeParseJson<PhoneticItem[]>(first.phonetics, "phonetics"),
+    phonetic: phoneticRow.phonetic,
+    phonetics: safeParseJson<PhoneticItem[]>(phoneticRow.phonetics, "phonetics"),
     meanings: allMeanings,
     category: first.category as WordCategory,
     translate: first.translate,
@@ -79,19 +82,23 @@ export function searchWords(
 
   type Row = { word: string; category: string; phonetic: string | null };
 
+  // GROUP BY word+category so multi-POS words appear once; MAX(phonetic) picks
+  // the non-null value when rows differ (SQLite MAX ignores NULLs).
   return (
     category
       ? db
           .prepare(
-            `SELECT DISTINCT word, category, phonetic FROM words
+            `SELECT word, category, MAX(phonetic) AS phonetic FROM words
              WHERE lower(word) LIKE ? ESCAPE '\\' AND category = ?
+             GROUP BY word, category
              ORDER BY word LIMIT 50`,
           )
           .all(escaped, category)
       : db
           .prepare(
-            `SELECT DISTINCT word, category, phonetic FROM words
+            `SELECT word, category, MAX(phonetic) AS phonetic FROM words
              WHERE lower(word) LIKE ? ESCAPE '\\'
+             GROUP BY word, category
              ORDER BY word LIMIT 50`,
           )
           .all(escaped)

@@ -5,6 +5,7 @@ import definitionsHandler from "../../routes/v1/word/[word]/definitions.get";
 import translationsHandler from "../../routes/v1/word/[word]/translations.get";
 import pronunciationsHandler from "../../routes/v1/word/[word]/pronunciations.get";
 import tensesHandler from "../../routes/v1/word/[word]/tenses.get";
+import synonymsAntonymsHandler from "../../routes/v1/word/[word]/synonyms-antonyms.get";
 
 // ── /word/{word} ─────────────────────────────────────────────────────────────
 
@@ -143,5 +144,40 @@ describe("GET /v1/word/{word}/tenses", () => {
     const result = tensesHandler(event);
 
     expect(result.tenses).toBeNull();
+  });
+});
+
+// ── /word/{word}/synonyms-antonyms ────────────────────────────────────────────
+
+describe("GET /v1/word/{word}/synonyms-antonyms", () => {
+  it("returns aggregated synonyms across all meanings", async () => {
+    const event = createTestEvent({ word: "chat" });
+    const result = synonymsAntonymsHandler(event);
+
+    expect(result.synonyms).toContain("talk");
+    expect(result.synonyms).toContain("conversation");
+  });
+
+  it("deduplicates synonyms that appear in multiple meanings", async () => {
+    const event = createTestEvent({ word: "run" });
+    const result = synonymsAntonymsHandler(event);
+
+    const unique = new Set(result.synonyms);
+    expect(unique.size).toBe(result.synonyms.length);
+  });
+
+  it("returns empty arrays when no synonyms or antonyms exist", async () => {
+    const event = createTestEvent({ word: "technology" });
+    const result = synonymsAntonymsHandler(event);
+
+    // technology sample has synonyms but no antonyms
+    expect(Array.isArray(result.antonyms)).toBe(true);
+  });
+
+  it("returns 404 for unknown word", async () => {
+    const event = createTestEvent({ word: "xyzunknown" });
+    await expect(call(synonymsAntonymsHandler, event)).rejects.toSatisfy(
+      (e: any) => e.statusCode === 404,
+    );
   });
 });

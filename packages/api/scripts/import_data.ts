@@ -63,14 +63,30 @@ const makeDatabase = (dbPath: string, fresh: boolean) =>
 
 // ── Parsing ───────────────────────────────────────────────────────────────────
 
+/** Normalizes IPA text to always use /phonemic/ slash delimiters. */
+function normalizeIpa(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    return `/${trimmed.slice(1, -1)}/`;
+  }
+  if (!trimmed.startsWith("/")) return `/${trimmed}/`;
+  return trimmed;
+}
+
 function extractPhonetics(sounds: Record<string, unknown>[]): PhoneticItem[] {
   return sounds
     .filter((s) => typeof s.ipa === "string")
     .map((s) => ({
-      text: s.ipa as string,
+      text: normalizeIpa(s.ipa as string),
       type: (s.tags as string[] | undefined)?.some((t) => t.toLowerCase() === "us") ? "us" : "uk",
       audioUrl: (s.audio as string | undefined) ?? null,
     }));
+}
+
+/** Extracts word strings from a LinkageData[] array (wiktextract format). */
+function extractLinkageWords(items: unknown): string[] {
+  const arr = (items as { word?: string }[] | undefined) ?? [];
+  return arr.map((item) => item.word ?? "").filter(Boolean);
 }
 
 function extractMeaning(parsed: Record<string, unknown>): Meaning {
@@ -86,12 +102,22 @@ function extractMeaning(parsed: Record<string, unknown>): Meaning {
     })
     .filter((d) => d.definition);
 
+  // Collect synonyms/antonyms from top-level (POS-wide) and per-sense arrays
+  const synonyms = [
+    ...extractLinkageWords(parsed.synonyms),
+    ...senses.flatMap((s) => extractLinkageWords(s.synonyms)),
+  ];
+  const antonyms = [
+    ...extractLinkageWords(parsed.antonyms),
+    ...senses.flatMap((s) => extractLinkageWords(s.antonyms)),
+  ];
+
   return {
     partOfSpeech: (parsed.pos as string | null) ?? "unknown",
     definitions,
     translate: null,
-    synonyms: [],
-    antonyms: [],
+    synonyms: [...new Set(synonyms)],
+    antonyms: [...new Set(antonyms)],
   };
 }
 
