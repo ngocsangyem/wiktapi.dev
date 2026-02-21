@@ -1,0 +1,3 @@
+{
+  "ignorePatterns": [".ai-devkit.json", ".claude/**", ".opencode/**"]
+}
