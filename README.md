@@ -10,6 +10,10 @@ The existing `en.wiktionary.org/api/rest_v1/` is English-only and returns HTML b
 
 ---
 
+## Prerequisites
+
+- Node.js v23 or later is required to execute .ts files directly using node. If using an earlier version, please run the command with the --experimental-strip-types flag.
+
 ## Monorepo structure
 
 ```
