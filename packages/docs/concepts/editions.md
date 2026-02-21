@@ -1,61 +1,45 @@
-# Editions & Languages
+# Word Categories
 
-There are two independent language axes in Wiktapi. Knowing the difference matters.
+Wiktapi organizes words by **category** rather than Wiktionary editions. This provides a more intuitive way to explore and filter vocabulary across multiple domains.
 
-## Editions
+## What is a category?
 
-An **edition** is the Wiktionary source you're querying, identified by its language code (`en`, `fr`, `de`, ...). It's the first segment of every URL:
+A **category** is a semantic domain that classifies words by their primary subject area. Each word in the database is assigned exactly one category from the following list:
 
 ```
-/v1/{edition}/word/{word}
+technology, business, travel, music, movies,
+sports, food, art, science, health,
+fashion, gaming, books, nature, photography,
+education, history, politics, automotive, pets,
+general
 ```
 
-The edition controls two things:
+## Default category
 
-1. **Which dictionary is queried**: `en` is English Wiktionary, `de` is German Wiktionary, etc.
-2. **The language definitions are written in**: the `en` edition writes glosses in English, `de` in German.
+When a word doesn't have domain-specific classification, it defaults to `general`. This includes common words like "the", "run", "chat", and other everyday vocabulary.
 
-To see which editions are available:
+## List all categories
+
+To see which categories are available in your instance:
 
 ```bash
-curl https://api.wiktapi.dev/v1/editions
-# { "editions": ["de", "en", "fr"] }
+curl https://api.wiktapi.dev/v1/categories
+# { "categories": ["art", "business", "education", ... "technology"] }
 ```
 
-## Word language (`?lang=`)
+## Filter by category
 
-The `?lang=` parameter filters entries to a specific **word language**: the language the word itself belongs to.
-
-This is independent of the edition. Both `en` and `fr` editions contain entries for German words; they just define them in English or French respectively.
+All word endpoints accept an optional `?category=` query parameter:
 
 ```bash
-# German word "Haus", English definitions
-GET /v1/en/word/Haus?lang=de
+# Technology-related search
+GET /v1/search?q=data&category=technology
 
-# German word "Haus", French definitions
-GET /v1/fr/word/Haus?lang=de
+# Sports vocabulary
+GET /v1/word/tennis?category=sports
+
+# Business definitions
+GET /v1/word/market/definitions?category=business
 ```
 
-Without `?lang=`, you get every language that has a word with that spelling:
-
-```bash
-# French "chat", English "chat", and any other language that spells it the same way
-GET /v1/en/word/chat
-```
-
-## Summary
-
-|              | Edition                 | `?lang=`                         |
-| ------------ | ----------------------- | -------------------------------- |
-| **Controls** | Which Wiktionary source | Which word language to filter to |
-| **Affects**  | Definition language     | Entries returned                 |
-| **Required** | Yes (URL path)          | No                               |
-| **Example**  | `en`, `fr`, `de`        | `de`, `ja`, `zh`                 |
-
-To see all word languages in a given instance:
-
-```bash
-curl https://api.wiktapi.dev/v1/languages
-```
-
-Returns each language code, its full name, and entry count.
+If the word is not in the requested category, the API returns a 404 Not Found response.

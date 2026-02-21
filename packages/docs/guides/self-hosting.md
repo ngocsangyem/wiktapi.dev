@@ -97,29 +97,29 @@ Set environment variables before starting the server:
 DATA_PATH=/var/data/wiktionary.db pnpm preview
 ```
 
-## Adding a new edition
+## Adding words from a new edition
 
-No code changes are needed. Download and import the edition, then it's immediately available:
+Re-import with a new edition to add words to the database:
 
 ```bash
 pnpm download -- --editions fr
 pnpm import -- --edition fr
 ```
 
-Queries to `/v1/fr/word/…` will work as soon as the import finishes.
+The words from that edition are merged into the existing `words` table. Queries immediately return results for those words.
 
 ## Verifying your instance
 
 ```bash
-# List loaded editions
-curl http://localhost:3000/v1/editions
-
-# List all word languages with entry counts
-curl http://localhost:3000/v1/languages
+# List all available categories
+curl http://localhost:3000/v1/categories
 
 # Look up a word
-curl "http://localhost:3000/v1/en/word/chat?lang=fr"
+curl "http://localhost:3000/v1/word/chat"
 
 # Prefix search
-curl "http://localhost:3000/v1/en/search?q=cha&lang=fr"
+curl "http://localhost:3000/v1/search?q=cha"
+
+# Search by category
+curl "http://localhost:3000/v1/search?q=sport&category=sports"
 ```

@@ -4,35 +4,43 @@ Get your first response from Wiktapi in under a minute. No API key required.
 
 ## Make your first request
 
-Fetch the English Wiktionary entry for the French word _chat_ (cat):
+Fetch a word entry:
 
 ```bash
-curl "https://api.wiktapi.dev/v1/en/word/chat?lang=fr"
+curl "https://api.wiktapi.dev/v1/word/chat"
 ```
 
 ```json
 {
   "word": "chat",
-  "edition": "en",
-  "entries": [
+  "phonetic": "/tʃæt/",
+  "phonetics": [
+    { "text": "/tʃæt/", "type": "uk", "audioUrl": null },
+    { "text": "/tʃæt/", "type": "us", "audioUrl": null }
+  ],
+  "meanings": [
     {
-      "word": "chat",
-      "lang": "French",
-      "lang_code": "fr",
-      "pos": "noun",
-      "senses": [{ "glosses": ["cat"] }],
-      "sounds": [{ "ipa": "/ʃa/" }]
+      "partOfSpeech": "noun",
+      "definitions": [
+        { "definition": "an informal conversation" },
+        { "definition": "a small domesticated carnivorous mammal" }
+      ],
+      "translate": null,
+      "synonyms": ["conversation", "talk"]
     }
-  ]
+  ],
+  "category": "general",
+  "translate": null,
+  "tenses": null
 }
 ```
 
 ## Fetch just the definitions
 
-Use the `/definitions` sub-resource to get only glosses, examples, and tags:
+Use the `/definitions` sub-resource to get only definitions by part of speech:
 
 ```bash
-curl "https://api.wiktapi.dev/v1/en/word/run/definitions"
+curl "https://api.wiktapi.dev/v1/word/run/definitions"
 ```
 
 ## Search for words
@@ -40,26 +48,34 @@ curl "https://api.wiktapi.dev/v1/en/word/run/definitions"
 Prefix search returns up to 50 matches:
 
 ```bash
-curl "https://api.wiktapi.dev/v1/en/search?q=katz&lang=de"
+curl "https://api.wiktapi.dev/v1/search?q=chat"
 ```
+
+## Filter by category
+
+All endpoints support optional category filtering:
+
+```bash
+curl "https://api.wiktapi.dev/v1/search?q=sport&category=sports"
+```
+
+Available categories: `technology`, `business`, `travel`, `music`, `movies`, `sports`, `food`, `art`, `science`, `health`, `fashion`, `gaming`, `books`, `nature`, `photography`, `education`, `history`, `politics`, `automotive`, `pets`, `general`.
 
 ## Explore all endpoints
 
-| Endpoint                                       | Description                           |
-| ---------------------------------------------- | ------------------------------------- |
-| `GET /v1/editions`                             | List available Wiktionary editions    |
-| `GET /v1/languages`                            | List word languages with entry counts |
-| `GET /v1/{edition}/word/{word}`                | Full entry                            |
-| `GET /v1/{edition}/word/{word}/definitions`    | Glosses, examples, tags               |
-| `GET /v1/{edition}/word/{word}/translations`   | Translation table                     |
-| `GET /v1/{edition}/word/{word}/pronunciations` | IPA and audio                         |
-| `GET /v1/{edition}/word/{word}/forms`          | Inflected forms                       |
-| `GET /v1/{edition}/search?q=`                  | Prefix search                         |
+| Endpoint                             | Description                          |
+| ------------------------------------ | ------------------------------------ |
+| `GET /v1/word/{word}`                | Full entry with phonetics & meanings |
+| `GET /v1/word/{word}/definitions`    | Definitions by part of speech        |
+| `GET /v1/word/{word}/translations`   | Translation information              |
+| `GET /v1/word/{word}/pronunciations` | Phonetic data and audio              |
+| `GET /v1/word/{word}/tenses`         | Inflected forms and tenses           |
+| `GET /v1/search?q=`                  | Prefix search (up to 50 results)     |
+| `GET /v1/categories`                 | List all available categories        |
 
-All word endpoints accept an optional `?lang={code}` query parameter to filter results to a single word language.
+All word endpoints accept an optional `?category={name}` query parameter to filter results.
 
 ## Next steps
 
-- Read about [editions and languages](/concepts/editions) to understand the two language axes
 - Browse all endpoints in the [API Explorer](https://api.wiktapi.dev/_scalar)
 - [Self-host your own instance](/guides/self-hosting)

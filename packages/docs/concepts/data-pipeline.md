@@ -18,46 +18,46 @@ The pipeline runs out-of-band (manually or in CI) whenever kaikki.org publishes 
 
 ## Database schema
 
-All entries are stored in a single `entries` table:
+All words are stored in a single `words` table with normalized JSON columns:
 
 ```sql
-CREATE TABLE entries (
-    id        INTEGER PRIMARY KEY,
-    word      TEXT    NOT NULL,
-    lang_code TEXT    NOT NULL,   -- BCP47 code of the word's language (fr, de, …)
-    lang      TEXT,               -- full language name ("French", "German", …)
-    edition   TEXT    NOT NULL,   -- source Wiktionary edition (en, fr, …)
-    pos       TEXT,               -- part of speech (noun, verb, adj, …)
-    entry     TEXT    NOT NULL    -- full wiktextract object as JSON string
+CREATE TABLE words (
+    id        TEXT PRIMARY KEY,          -- UUID or nanoid
+    word      TEXT NOT NULL,             -- the headword
+    phonetic  TEXT,                      -- primary phonetic string (IPA)
+    phonetics TEXT NOT NULL,             -- JSON: PhoneticItem[]
+    meanings  TEXT NOT NULL,             -- JSON: Meaning[]
+    category  TEXT NOT NULL,             -- WordCategory enum value
+    translate TEXT,                      -- simple translation
+    tenses    TEXT,                      -- JSON: Tenses object or null
+    createdAt TEXT NOT NULL              -- ISO 8601 timestamp
 );
 ```
 
-The `entry` column stores the complete wiktextract JSON object, giving all endpoints access to every field (senses, sounds, translations, forms, etymology, synonyms) without a normalized schema.
+Structured data (phonetics, meanings, tenses) is stored as JSON, allowing flexible querying while maintaining type safety through TypeScript interfaces.
 
-## Fields used from wiktextract
+## Mapped from wiktextract
 
-| Field                               | Description                  |
-| ----------------------------------- | ---------------------------- |
-| `word`                              | The headword                 |
-| `lang`, `lang_code`                 | Language name and BCP47 code |
-| `pos`                               | Part of speech               |
-| `senses[].glosses`                  | Definitions                  |
-| `senses[].examples`                 | Usage examples               |
-| `sounds[].ipa`, `sounds[].audio`    | Pronunciation                |
-| `translations[]`                    | Translation table            |
-| `forms[]`                           | Inflected forms              |
-| `etymology_text`                    | Etymology                    |
-| `synonyms`, `antonyms`, `hypernyms` | Related words                |
+| Source Field           | Target Column/Field        |
+| ---------------------- | -------------------------- |
+| `word`                 | `word`                     |
+| `sounds[].ipa`         | `phonetic` + `phonetics[]` |
+| `senses` + `pos`       | `meanings[].definitions`   |
+| `senses[].glosses`     | `meanings[].definitions[]` |
+| `translations[]`       | `meanings[].translate`     |
+| `forms[]`              | `tenses` object            |
+| _(inferred or tagged)_ | `category`                 |
+
+The import script parses kaikki.org JSONL and transforms nested wiktextract objects into the normalized schema.
 
 ## Caching
 
 Route-level `Cache-Control` headers are set automatically:
 
-| Route           | `max-age`                               |
-| --------------- | --------------------------------------- |
-| `/v1/*/word/**` | 24 hours + 7-day stale-while-revalidate |
-| `/v1/*/search`  | 1 hour                                  |
-| `/v1/editions`  | 24 hours                                |
-| `/v1/languages` | 24 hours                                |
+| Route            | `max-age`                               |
+| ---------------- | --------------------------------------- |
+| `/v1/word/**`    | 24 hours + 7-day stale-while-revalidate |
+| `/v1/search`     | 1 hour                                  |
+| `/v1/categories` | 24 hours                                |
 
 Data only changes when a new import runs, so long TTLs are appropriate.

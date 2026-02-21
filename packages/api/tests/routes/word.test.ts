@@ -1,119 +1,147 @@
 import { describe, it, expect } from "vite-plus/test";
 import { createTestEvent, call } from "../helpers/event.ts";
-import wordHandler from "../../routes/v1/[edition]/word/[word].get";
-import definitionsHandler from "../../routes/v1/[edition]/word/[word]/definitions.get";
-import translationsHandler from "../../routes/v1/[edition]/word/[word]/translations.get";
-import pronunciationsHandler from "../../routes/v1/[edition]/word/[word]/pronunciations.get";
-import formsHandler from "../../routes/v1/[edition]/word/[word]/forms.get";
+import wordHandler from "../../routes/v1/word/[word].get";
+import definitionsHandler from "../../routes/v1/word/[word]/definitions.get";
+import translationsHandler from "../../routes/v1/word/[word]/translations.get";
+import pronunciationsHandler from "../../routes/v1/word/[word]/pronunciations.get";
+import tensesHandler from "../../routes/v1/word/[word]/tenses.get";
 
 // ── /word/{word} ─────────────────────────────────────────────────────────────
 
-describe("GET /v1/{edition}/word/{word}", () => {
-  it("returns all entries for a word across languages", async () => {
-    const event = createTestEvent({ edition: "en", word: "run" });
+describe("GET /v1/word/{word}", () => {
+  it("returns merged WordData for a word with multiple POS rows", async () => {
+    const event = createTestEvent({ word: "run" });
     const result = wordHandler(event);
 
     expect(result.word).toBe("run");
-    expect(result.edition).toBe("en");
-    expect(result.entries).toHaveLength(2); // noun + verb
+    expect(result.category).toBe("sports");
+    expect(result.phonetic).toBe("/ɹʌn/");
+    // two rows (noun + verb) → two meanings merged
+    expect(result.meanings).toHaveLength(2);
   });
 
-  it("filters by lang when ?lang= is provided", async () => {
-    const event = createTestEvent({ edition: "en", word: "chat" }, { lang: "fr" });
+  it("returns phonetics array with uk/us types", async () => {
+    const event = createTestEvent({ word: "chat" });
     const result = wordHandler(event);
 
-    expect(result.entries).toHaveLength(1);
-    expect(result.entries[0]?.senses[0]?.glosses).toContain("cat");
+    expect(Array.isArray(result.phonetics)).toBe(true);
+    const types = result.phonetics.map((p: { type: string }) => p.type);
+    expect(types).toContain("us");
+    expect(types).toContain("uk");
+  });
+
+  it("filters by category when ?category= is provided", async () => {
+    const event = createTestEvent({ word: "run" }, { category: "sports" });
+    const result = wordHandler(event);
+
+    expect(result.category).toBe("sports");
   });
 
   it("returns 404 for unknown word", async () => {
-    const event = createTestEvent({ edition: "en", word: "xyzunknown" });
-    await expect(call(wordHandler, event)).rejects.toSatisfy((e: any) => e.statusCode === 404);
-  });
-
-  it("returns 404 for wrong edition", async () => {
-    const event = createTestEvent({ edition: "de", word: "chat" });
+    const event = createTestEvent({ word: "xyzunknown" });
     await expect(call(wordHandler, event)).rejects.toSatisfy((e: any) => e.statusCode === 404);
   });
 });
 
 // ── /word/{word}/definitions ──────────────────────────────────────────────────
 
-describe("GET /v1/{edition}/word/{word}/definitions", () => {
-  it("returns senses with glosses", async () => {
-    const event = createTestEvent({ edition: "en", word: "Haus" });
+describe("GET /v1/word/{word}/definitions", () => {
+  it("returns meanings with partOfSpeech and definitions", async () => {
+    const event = createTestEvent({ word: "run" });
     const result = definitionsHandler(event);
 
-    expect(result.definitions).toHaveLength(1);
-    expect(result.definitions[0]?.pos).toBe("noun");
-    expect(result.definitions[0]?.senses[0]?.glosses).toContain("house");
-  });
-
-  it("returns multiple POS entries for polysemous words", async () => {
-    const event = createTestEvent({ edition: "en", word: "run" });
-    const result = definitionsHandler(event);
-
-    const posList = result.definitions.map((d) => d.pos).filter(Boolean);
+    expect(result.meanings).toHaveLength(2);
+    const posList = result.meanings.map((m: { partOfSpeech: string }) => m.partOfSpeech);
     expect(posList).toContain("noun");
     expect(posList).toContain("verb");
+  });
+
+  it("includes definitions array in each meaning", async () => {
+    const event = createTestEvent({ word: "chat" });
+    const result = definitionsHandler(event);
+
+    expect(result.meanings[0]?.definitions[0]?.definition).toBeTruthy();
+  });
+
+  it("includes synonyms on meanings that have them", async () => {
+    const event = createTestEvent({ word: "chat" });
+    const result = definitionsHandler(event);
+
+    const nounMeaning = result.meanings.find(
+      (m: { partOfSpeech: string }) => m.partOfSpeech === "noun",
+    );
+    expect(nounMeaning?.synonyms).toContain("talk");
   });
 });
 
 // ── /word/{word}/translations ─────────────────────────────────────────────────
 
-describe("GET /v1/{edition}/word/{word}/translations", () => {
-  it("returns translations array", async () => {
-    const event = createTestEvent({ edition: "en", word: "run" }, { lang: "en" });
+describe("GET /v1/word/{word}/translations", () => {
+  it("returns word-level translate field", async () => {
+    const event = createTestEvent({ word: "run" });
     const result = translationsHandler(event);
 
-    const verbEntry = result.translations.find((t) => t.pos === "verb");
-    expect(verbEntry?.translations).toHaveLength(1);
-    expect(verbEntry?.translations[0].word).toBe("courir");
+    expect(result.translate).toBe("courir");
   });
 
-  it("returns empty translations for entries without them", async () => {
-    const event = createTestEvent({ edition: "en", word: "Haus" });
+  it("returns per-meaning translate fields", async () => {
+    const event = createTestEvent({ word: "run" });
     const result = translationsHandler(event);
 
-    expect(result.translations[0]?.translations).toHaveLength(0);
+    const verbMeaning = result.meanings.find(
+      (m: { partOfSpeech: string }) => m.partOfSpeech === "verb",
+    );
+    expect(verbMeaning?.translate).toBe("courir");
+  });
+
+  it("returns null translate for untranslated words", async () => {
+    const event = createTestEvent({ word: "chat" });
+    const result = translationsHandler(event);
+
+    expect(result.translate).toBeNull();
   });
 });
 
 // ── /word/{word}/pronunciations ───────────────────────────────────────────────
 
-describe("GET /v1/{edition}/word/{word}/pronunciations", () => {
-  it("returns IPA for French chat", async () => {
-    const event = createTestEvent({ edition: "en", word: "chat" }, { lang: "fr" });
+describe("GET /v1/word/{word}/pronunciations", () => {
+  it("returns phonetic string and phonetics array", async () => {
+    const event = createTestEvent({ word: "chat" });
     const result = pronunciationsHandler(event);
 
-    expect(result.pronunciations[0]?.sounds[0]?.ipa).toBe("/ʃa/");
+    expect(result.phonetic).toBe("/tʃæt/");
+    expect(result.phonetics).toHaveLength(2);
   });
 
-  it("returns IPA for German Haus", async () => {
-    const event = createTestEvent({ edition: "en", word: "Haus" });
+  it("each phonetic item has text, type, and audioUrl", async () => {
+    const event = createTestEvent({ word: "technology" });
     const result = pronunciationsHandler(event);
 
-    expect(result.pronunciations[0]?.sounds[0]?.ipa).toBe("/haʊ̯s/");
+    for (const p of result.phonetics) {
+      expect(typeof p.text).toBe("string");
+      expect(["uk", "us"]).toContain(p.type);
+      expect("audioUrl" in p).toBe(true);
+    }
   });
 });
 
-// ── /word/{word}/forms ────────────────────────────────────────────────────────
+// ── /word/{word}/tenses ────────────────────────────────────────────────────────
 
-describe("GET /v1/{edition}/word/{word}/forms", () => {
-  it("returns inflected forms for German Haus", async () => {
-    const event = createTestEvent({ edition: "en", word: "Haus" });
-    const result = formsHandler(event);
+describe("GET /v1/word/{word}/tenses", () => {
+  it("returns tenses for inflected words", async () => {
+    const event = createTestEvent({ word: "run" });
+    const result = tensesHandler(event);
 
-    const forms = result.forms[0]?.forms;
-    expect(forms.some((f: { form: string }) => f.form === "Hauses")).toBe(true);
-    expect(forms.some((f: { form: string }) => f.form === "Häuser")).toBe(true);
+    expect(result.tenses).not.toBeNull();
+    expect(result.tenses?.base).toBe("run");
+    expect(result.tenses?.past).toBe("ran");
+    expect(result.tenses?.singular).toBe("runs");
   });
 
-  it("returns empty forms for uninflected entries", async () => {
-    const event = createTestEvent({ edition: "en", word: "run" }, { lang: "en" });
-    const result = formsHandler(event);
+  it("returns null tenses for uninflected words", async () => {
+    const event = createTestEvent({ word: "chat" });
+    const result = tensesHandler(event);
 
-    const nounForms = result.forms.find((f) => f.pos === "noun");
-    expect(nounForms?.forms).toHaveLength(0);
+    expect(result.tenses).toBeNull();
   });
 });

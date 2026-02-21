@@ -10,4 +10,5 @@ pre-commit:
         - ".claude/**"
         - ".opencode/**"
         - ".ai-devkit/**"
-      run: vp lint --type-aware --type-check {staged_files} --ignore
+        - "**/*.test.ts"
+      run: vp lint --type-aware --type-check {staged_files}

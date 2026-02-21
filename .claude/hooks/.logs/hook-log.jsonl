@@ -1,0 +1,7 @@
+{"ts":"2026-02-21T13:30:44.533Z","hook":"scout-block","tool":"Bash","dur":6,"status":"block","exit":2,"error":""}
+{"ts":"2026-02-21T13:30:46.383Z","hook":"scout-block","tool":"Bash","dur":6,"status":"block","exit":2,"error":""}
+{"ts":"2026-02-21T13:40:59.000Z","hook":"scout-block","tool":"Bash","dur":5,"status":"block","exit":2,"error":""}
+{"ts":"2026-02-21T13:45:24.717Z","hook":"scout-block","tool":"Bash","dur":2,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-21T13:45:25.205Z","hook":"scout-block","tool":"Bash","dur":2,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-21T13:45:25.760Z","hook":"scout-block","tool":"Bash","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-21T13:45:32.862Z","hook":"scout-block","tool":"Bash","dur":5,"status":"block","exit":2,"error":""}

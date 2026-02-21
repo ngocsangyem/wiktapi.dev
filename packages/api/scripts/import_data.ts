@@ -11,11 +11,12 @@
 
 import { Effect, Console } from "effect";
 import Database from "better-sqlite3";
-import { ENTRIES_TABLE_DDL, ENTRIES_INDEXES_DDL, ENTRIES_INSERT_SQL } from "../utils/schema.ts";
+import { WORDS_TABLE_DDL, WORDS_INDEXES_DDL, WORDS_INSERT_SQL } from "../utils/schema.ts";
 import { createReadStream } from "node:fs";
 import { readdir, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline";
+import type { Meaning, PhoneticItem, Tenses } from "../utils/types.ts";
 
 const DATA_DIR = resolve("./data");
 const JSONL_DIR = resolve(DATA_DIR, "jsonl");
@@ -24,16 +25,16 @@ const BATCH_SIZE = 50_000;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface EntryRow {
+interface WordRow {
+  id: string;
   word: string;
-  lang_code: string;
-  lang: string | null;
-  edition: string;
-  pos: string | null;
-  senses: string;
-  sounds: string | null;
-  translations: string | null;
-  forms: string | null;
+  phonetic: string | null;
+  phonetics: string; // JSON: PhoneticItem[]
+  meanings: string; // JSON: Meaning[] (one element per POS row)
+  category: string;
+  translate: string | null;
+  tenses: string | null; // JSON: Tenses | null
+  createdAt: string;
 }
 
 // ── Database setup ───────────────────────────────────────────────────────────
@@ -49,9 +50,9 @@ const makeDatabase = (dbPath: string, fresh: boolean) =>
         db.pragma("temp_store = MEMORY");
         db.pragma("mmap_size = 268435456"); // 256 MB
 
-        if (fresh) db.exec("DROP TABLE IF EXISTS entries");
+        if (fresh) db.exec("DROP TABLE IF EXISTS words");
 
-        db.exec(ENTRIES_TABLE_DDL);
+        db.exec(WORDS_TABLE_DDL);
 
         return db;
       },
@@ -62,7 +63,68 @@ const makeDatabase = (dbPath: string, fresh: boolean) =>
 
 // ── Parsing ───────────────────────────────────────────────────────────────────
 
-function parseEntry(line: string, edition: string): EntryRow | null {
+function extractPhonetics(sounds: Record<string, unknown>[]): PhoneticItem[] {
+  return sounds
+    .filter((s) => typeof s.ipa === "string")
+    .map((s) => ({
+      text: s.ipa as string,
+      type: (s.tags as string[] | undefined)?.some((t) => t.toLowerCase() === "us") ? "us" : "uk",
+      audioUrl: (s.audio as string | undefined) ?? null,
+    }));
+}
+
+function extractMeaning(parsed: Record<string, unknown>): Meaning {
+  const senses = (parsed.senses as Record<string, unknown>[] | undefined) ?? [];
+  const definitions = senses
+    .map((s) => {
+      const glosses = s.glosses as string[] | undefined;
+      const examples = s.examples as Record<string, unknown>[] | undefined;
+      return {
+        definition: glosses?.[0] ?? "",
+        example: examples?.[0]?.text as string | undefined,
+      };
+    })
+    .filter((d) => d.definition);
+
+  return {
+    partOfSpeech: (parsed.pos as string | null) ?? "unknown",
+    definitions,
+    translate: null,
+    synonyms: [],
+    antonyms: [],
+  };
+}
+
+function extractTenses(forms: Record<string, unknown>[], baseWord: string): Tenses | null {
+  if (forms.length === 0) return null;
+
+  const getForm = (...tags: string[]): string => {
+    const match = forms.find((f) => {
+      const formTags = (f.tags as string[] | undefined) ?? [];
+      return tags.every((t) => formTags.includes(t));
+    });
+    return (match?.form as string | undefined) ?? "";
+  };
+
+  const past = getForm("past");
+  const present = getForm("present") || getForm("present", "participle");
+  const singular = getForm("singular") || getForm("third-person", "singular", "present");
+  const plural = getForm("plural");
+
+  // Only create tenses object if at least one meaningful form exists
+  if (!past && !present && !singular && !plural) return null;
+
+  return {
+    base: baseWord,
+    past,
+    present,
+    future: "",
+    singular,
+    plural,
+  };
+}
+
+function parseWord(line: string): WordRow | null {
   let parsed: Record<string, unknown>;
   try {
     parsed = JSON.parse(line);
@@ -71,24 +133,25 @@ function parseEntry(line: string, edition: string): EntryRow | null {
   }
 
   const word = parsed.word as string | undefined;
-  const lang_code = parsed.lang_code as string | undefined;
-  if (!word || !lang_code) return null;
+  if (!word) return null;
 
-  const toJsonOrNull = (val: unknown) => {
-    const arr = (val as unknown[]) ?? [];
-    return arr.length ? JSON.stringify(arr) : null;
-  };
+  const sounds = (parsed.sounds as Record<string, unknown>[] | undefined) ?? [];
+  const forms = (parsed.forms as Record<string, unknown>[] | undefined) ?? [];
+
+  const phonetics = extractPhonetics(sounds);
+  const tenses = extractTenses(forms, word);
 
   return {
+    id: crypto.randomUUID(),
     word,
-    lang_code,
-    lang: (parsed.lang as string | null) ?? null,
-    edition,
-    pos: (parsed.pos as string | null) ?? null,
-    senses: JSON.stringify(parsed.senses ?? []),
-    sounds: toJsonOrNull(parsed.sounds),
-    translations: toJsonOrNull(parsed.translations),
-    forms: toJsonOrNull(parsed.forms),
+    phonetic: phonetics[0]?.text ?? null,
+    phonetics: JSON.stringify(phonetics),
+    meanings: JSON.stringify([extractMeaning(parsed)]),
+    // TODO: assign category via external classifier — all words default to "general"
+    category: "general",
+    translate: null,
+    tenses: tenses ? JSON.stringify(tenses) : null,
+    createdAt: new Date().toISOString(),
   };
 }
 
@@ -97,14 +160,14 @@ function parseEntry(line: string, edition: string): EntryRow | null {
 const importJsonl = (
   db: Database.Database,
   filePath: string,
-  edition: string,
+  label: string,
 ): Effect.Effect<void, Error> =>
   Effect.gen(function* () {
-    yield* Console.log(`[${edition}] Importing ${filePath} …`);
+    yield* Console.log(`[${label}] Importing ${filePath} …`);
 
-    const insert = db.prepare(ENTRIES_INSERT_SQL);
+    const insert = db.prepare(WORDS_INSERT_SQL);
 
-    const insertMany = db.transaction((rows: EntryRow[]) => {
+    const insertMany = db.transaction((rows: WordRow[]) => {
       for (const row of rows) insert.run(row);
     });
 
@@ -117,13 +180,13 @@ const importJsonl = (
 
         let count = 0;
         let skipped = 0;
-        const batch: EntryRow[] = [];
+        const batch: WordRow[] = [];
 
         try {
           for await (const line of rl) {
             if (!line.trim()) continue;
 
-            const row = parseEntry(line, edition);
+            const row = parseWord(line);
             if (!row) {
               skipped++;
               continue;
@@ -155,7 +218,7 @@ const importJsonl = (
     });
 
     yield* Console.log(
-      `[${edition}] Done — ${count.toLocaleString()} rows inserted, ${skipped} skipped`,
+      `[${label}] Done — ${count.toLocaleString()} rows inserted, ${skipped} skipped`,
     );
   });
 
@@ -184,14 +247,14 @@ const main: Effect.Effect<void, Error> = Effect.scoped(
   Effect.gen(function* () {
     const { targetEdition, fresh, dbPath, skipIndexes } = parseArgs();
 
-    if (fresh) yield* Console.log("--fresh: dropping existing entries table …");
+    if (fresh) yield* Console.log("--fresh: dropping existing words table …");
 
     const db = yield* makeDatabase(dbPath, fresh);
 
-    let files: { path: string; edition: string }[];
+    let files: { path: string; label: string }[];
 
     if (targetEdition) {
-      files = [{ path: resolve(JSONL_DIR, `${targetEdition}.jsonl`), edition: targetEdition }];
+      files = [{ path: resolve(JSONL_DIR, `${targetEdition}.jsonl`), label: targetEdition }];
     } else {
       const entries = yield* Effect.tryPromise({
         try: () => readdir(JSONL_DIR),
@@ -199,7 +262,7 @@ const main: Effect.Effect<void, Error> = Effect.scoped(
       });
       files = entries
         .filter((f) => f.endsWith(".jsonl"))
-        .map((f) => ({ path: resolve(JSONL_DIR, f), edition: f.replace(/\.jsonl$/, "") }));
+        .map((f) => ({ path: resolve(JSONL_DIR, f), label: f.replace(/\.jsonl$/, "") }));
     }
 
     if (files.length === 0) {
@@ -210,14 +273,14 @@ const main: Effect.Effect<void, Error> = Effect.scoped(
 
     yield* Effect.forEach(
       files,
-      ({ path, edition }) =>
+      ({ path, label }) =>
         Effect.gen(function* () {
-          yield* importJsonl(db, path, edition);
+          yield* importJsonl(db, path, label);
           yield* Effect.tryPromise({
             try: () => unlink(path),
             catch: (e) => new Error(`Failed to delete ${path}: ${String(e)}`),
           });
-          yield* Console.log(`[${edition}] Deleted ${path}`);
+          yield* Console.log(`[${label}] Deleted ${path}`);
         }),
       { concurrency: 1 },
     );
@@ -226,13 +289,13 @@ const main: Effect.Effect<void, Error> = Effect.scoped(
       yield* Console.log("\nSkipping indexes (run `vp run @wiktapi/api#index` separately).");
     } else {
       yield* Console.log("\nBuilding indexes …");
-      db.exec(ENTRIES_INDEXES_DDL);
+      db.exec(WORDS_INDEXES_DDL);
     }
 
-    const { count } = db.prepare("SELECT COUNT(*) AS count FROM entries").get() as {
+    const { count } = db.prepare("SELECT COUNT(*) AS count FROM words").get() as {
       count: number;
     };
-    yield* Console.log(`\nDatabase ready at ${dbPath} — ${count.toLocaleString()} total entries`);
+    yield* Console.log(`\nDatabase ready at ${dbPath} — ${count.toLocaleString()} total words`);
     yield* Console.log(
       "\nReminder: purge the Cloudflare cache so clients get fresh data (dashboard → Caching → Purge Everything).",
     );

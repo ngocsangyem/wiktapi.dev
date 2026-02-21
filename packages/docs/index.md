@@ -24,10 +24,14 @@ features:
 
 ## Why Wiktapi?
 
-The only official Wiktionary API ([`en.wiktionary.org/api/rest_v1/`](https://en.wiktionary.org/api/rest_v1/)) has two big problems.
+The only official Wiktionary API ([`en.wiktionary.org/api/rest_v1/`](https://en.wiktionary.org/api/rest_v1/)) returns HTML fragments. Getting glosses, examples, pronunciations, or translations out means parsing HTML. It's fragile and painful.
 
-**It's English-only.** There's no equivalent for French, German, Japanese, or any other edition. Wiktionary has millions of entries across dozens of language editions, and none of it is accessible via a stable API.
+Wiktapi gives you **structured JSON** with normalized fields for every word:
 
-**It returns HTML.** Definitions come back as rendered HTML fragments. Getting glosses, examples, pronunciations, or translations out of them means parsing HTML. It's fragile and painful.
+- Phonetics (IPA + audio)
+- Meanings organized by part of speech
+- Translations
+- Inflected forms and tenses
+- Semantic categories (technology, sports, food, etc.)
 
-Wiktapi gives you structured JSON for any Wiktionary edition, any word language, every field. The data comes from [kaikki.org](https://kaikki.org/dictionary/rawdata.html), which pre-processes wiktextract JSONL for every edition. No scraping, no HTML parsing, no Python toolchain.
+The data comes from [kaikki.org](https://kaikki.org/dictionary/rawdata.html), which pre-processes wiktextract JSONL for every Wiktionary edition. No scraping, no HTML parsing, no Python toolchain.

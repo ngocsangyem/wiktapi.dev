@@ -10,6 +10,33 @@ The existing `en.wiktionary.org/api/rest_v1/` is English-only and returns HTML b
 
 ---
 
+## Breaking Changes (Schema Migration v2)
+
+**Version 2.0 introduces a major schema migration from `entries` table to `words` table with normalized structure.**
+
+### What changed
+
+| Aspect                  | v1                          | v2                       |
+| ----------------------- | --------------------------- | ------------------------ |
+| **Table**               | `entries`                   | `words`                  |
+| **URL structure**       | `/v1/{edition}/word/{word}` | `/v1/word/{word}`        |
+| **Filtering**           | `?lang={code}`              | `?category={name}`       |
+| **Response format**     | `{ edition, entries[] }`    | Direct word object       |
+| **Editions endpoint**   | `/v1/editions`              | _(removed)_              |
+| **Languages endpoint**  | `/v1/languages`             | _(removed)_              |
+| **Categories endpoint** | _(none)_                    | `/v1/categories` _(new)_ |
+
+### Migration guide
+
+For clients upgrading from v1:
+
+1. Remove edition from URL: `/v1/en/word/chat` → `/v1/word/chat`
+2. Replace `?lang={code}` with `?category={name}` (see [categories docs](/docs/concepts/editions.md))
+3. Update response parsing: access fields directly instead of unpacking from `entries[0]`
+4. See [Quickstart](/docs/quickstart.md) and [API Explorer](https://api.wiktapi.dev/_scalar) for new response shapes
+
+---
+
 ## Prerequisites
 
 - Node.js v23 or later is required to execute .ts files directly using node. If using an earlier version, please run the command with the --experimental-strip-types flag.
@@ -71,40 +98,28 @@ The database is written to `packages/api/data/wiktionary.db`. Override with the 
 
 All routes are under `/v1/`. See the [interactive explorer](https://api.wiktapi.dev/_scalar) for full request/response documentation.
 
-### Editions & languages
-
-```
-GET /v1/editions
-GET /v1/languages
-```
-
 ### Word lookup
 
 ```
-GET /v1/{edition}/word/{word}
-GET /v1/{edition}/word/{word}?lang={code}
-GET /v1/{edition}/word/{word}/definitions
-GET /v1/{edition}/word/{word}/translations
-GET /v1/{edition}/word/{word}/pronunciations
-GET /v1/{edition}/word/{word}/forms
+GET /v1/word/{word}
+GET /v1/word/{word}?category={category}
+GET /v1/word/{word}/definitions
+GET /v1/word/{word}/translations
+GET /v1/word/{word}/pronunciations
+GET /v1/word/{word}/tenses
 ```
 
-### Search
+### Search & categories
 
 ```
-GET /v1/{edition}/search?q={prefix}
-GET /v1/{edition}/search?q={prefix}&lang={code}
+GET /v1/search?q={prefix}
+GET /v1/search?q={prefix}&category={category}
+GET /v1/categories
 ```
 
-### Two language axes
+### Schema-based filtering
 
-| Parameter   | Position    | Meaning                                                             |
-| ----------- | ----------- | ------------------------------------------------------------------- |
-| `{edition}` | URL prefix  | Which Wiktionary (en, fr, de …). Determines the **gloss language**. |
-| `?lang=`    | Query param | Filters to words belonging to a specific language. Optional.        |
-
-**Example:** `GET /v1/en/word/Haus` returns every language that has a word spelled "Haus", all with English definitions.
-`GET /v1/en/word/Haus?lang=de` narrows to the German entry only.
+Words are now organized by **category** rather than Wiktionary editions and language codes. All queries return structured data with phonetics, meanings (definitions), translations, and tenses.
 
 ---
 
