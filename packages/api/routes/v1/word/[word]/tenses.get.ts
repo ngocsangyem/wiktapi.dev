@@ -26,6 +26,7 @@ defineRouteMeta({
               type: "object",
               properties: {
                 word: { type: "string" },
+                edition: { type: "string", example: "en" },
                 tenses: {
                   type: "object",
                   nullable: true,
@@ -53,6 +54,7 @@ export default defineHandler((event) => {
   const record = fetchWord(word);
   return {
     word: record.word,
+    edition: record.edition,
     tenses: record.tenses ?? null,
   };
 });

@@ -15,7 +15,7 @@ hero:
       link: https://api.wiktapi.dev/_scalar
 features:
   - title: 100+ Languages
-    details: Access entries from English, French, German Wiktionary editions and many more. Filter by source language with a single query param.
+    details: Access entries from multiple Wiktionary editions. Each word includes an edition field identifying its source language (e.g., "en", "fr", "de"). Combine editions in a single database.
   - title: Structured JSON
     details: No HTML blobs. Clean, consistent JSON with definitions, translations, pronunciations, and inflected forms.
   - title: Open & Self-Hostable

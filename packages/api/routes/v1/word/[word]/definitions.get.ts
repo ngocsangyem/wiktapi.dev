@@ -26,6 +26,7 @@ defineRouteMeta({
               type: "object",
               properties: {
                 word: { type: "string" },
+                edition: { type: "string", example: "en" },
                 meanings: {
                   type: "array",
                   items: {
@@ -61,5 +62,5 @@ defineRouteMeta({
 export default defineHandler((event) => {
   const word = getRouterParam(event, "word")!;
   const record = fetchWord(word);
-  return { word: record.word, meanings: record.meanings };
+  return { word: record.word, edition: record.edition, meanings: record.meanings };
 });

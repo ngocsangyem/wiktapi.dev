@@ -15,6 +15,7 @@ describe("GET /v1/word/{word}", () => {
     const result = wordHandler(event);
 
     expect(result.word).toBe("run");
+    expect(result.edition).toBe("en");
     expect(result.category).toBe("sports");
     expect(result.phonetic).toBe("/ɹʌn/");
     // two rows (noun + verb) → two meanings merged
@@ -51,6 +52,7 @@ describe("GET /v1/word/{word}/definitions", () => {
     const event = createTestEvent({ word: "run" });
     const result = definitionsHandler(event);
 
+    expect(result.edition).toBe("en");
     expect(result.meanings).toHaveLength(2);
     const posList = result.meanings.map((m: { partOfSpeech: string }) => m.partOfSpeech);
     expect(posList).toContain("noun");
@@ -78,28 +80,41 @@ describe("GET /v1/word/{word}/definitions", () => {
 // ── /word/{word}/translations ─────────────────────────────────────────────────
 
 describe("GET /v1/word/{word}/translations", () => {
-  it("returns word-level translate field", async () => {
+  it("returns translations array with TranslationItem shape", async () => {
     const event = createTestEvent({ word: "run" });
     const result = translationsHandler(event);
 
-    expect(result.translate).toBe("courir");
+    expect(Array.isArray(result.translations)).toBe(true);
+    expect(result.translations.length).toBeGreaterThan(0);
+    const item = result.translations[0];
+    expect(typeof item?.lang_code).toBe("string");
+    expect(typeof item?.code).toBe("string");
+    expect(typeof item?.lang).toBe("string");
+    expect(typeof item?.word).toBe("string");
+    expect(typeof item?.partOfSpeech).toBe("string");
   });
 
-  it("returns per-meaning translate fields", async () => {
+  it("includes French and Vietnamese translations for 'run'", async () => {
     const event = createTestEvent({ word: "run" });
     const result = translationsHandler(event);
 
-    const verbMeaning = result.meanings.find(
-      (m: { partOfSpeech: string }) => m.partOfSpeech === "verb",
-    );
-    expect(verbMeaning?.translate).toBe("courir");
+    const langCodes = result.translations.map((t: { lang_code: string }) => t.lang_code);
+    expect(langCodes).toContain("fr");
+    expect(langCodes).toContain("vi");
   });
 
-  it("returns null translate for untranslated words", async () => {
+  it("includes edition field derived from source data", async () => {
+    const event = createTestEvent({ word: "run" });
+    const result = translationsHandler(event);
+
+    expect(result.edition).toBe("en");
+  });
+
+  it("returns empty translations array for untranslated words", async () => {
     const event = createTestEvent({ word: "chat" });
     const result = translationsHandler(event);
 
-    expect(result.translate).toBeNull();
+    expect(result.translations).toHaveLength(0);
   });
 });
 
@@ -110,6 +125,7 @@ describe("GET /v1/word/{word}/pronunciations", () => {
     const event = createTestEvent({ word: "chat" });
     const result = pronunciationsHandler(event);
 
+    expect(result.edition).toBe("en");
     expect(result.phonetic).toBe("/tʃæt/");
     expect(result.phonetics).toHaveLength(2);
   });
@@ -133,6 +149,7 @@ describe("GET /v1/word/{word}/tenses", () => {
     const event = createTestEvent({ word: "run" });
     const result = tensesHandler(event);
 
+    expect(result.edition).toBe("en");
     expect(result.tenses).not.toBeNull();
     expect(result.tenses?.base).toBe("run");
     expect(result.tenses?.past).toBe("ran");
@@ -154,6 +171,7 @@ describe("GET /v1/word/{word}/synonyms-antonyms", () => {
     const event = createTestEvent({ word: "chat" });
     const result = synonymsAntonymsHandler(event);
 
+    expect(result.edition).toBe("en");
     expect(result.synonyms).toContain("talk");
     expect(result.synonyms).toContain("conversation");
   });

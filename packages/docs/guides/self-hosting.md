@@ -38,16 +38,16 @@ Files land at `packages/api/data/jsonl/{edition}.jsonl`.
 
 ```bash
 # Import all downloaded JSONL files
-pnpm import
+vp run @wiktapi/api#import
 
 # Import a single edition
-pnpm import -- --edition en
+vp run @wiktapi/api#import -- --edition en
 
 # Drop and recreate the table first (clean import)
-pnpm import -- --edition en --fresh
+vp run @wiktapi/api#import -- --edition en --fresh
 ```
 
-The database is written to `packages/api/data/wiktionary.db`.
+The database is written to `packages/api/data/wiktionary.db`. The `edition` field is automatically derived from the JSONL filename (e.g., `en.jsonl` → edition `"en"`), enabling you to mix data from multiple Wiktionary editions in a single database.
 
 ## 4. Start the server
 
@@ -103,10 +103,10 @@ Re-import with a new edition to add words to the database:
 
 ```bash
 pnpm download -- --editions fr
-pnpm import -- --edition fr
+vp run @wiktapi/api#import -- --edition fr
 ```
 
-The words from that edition are merged into the existing `words` table. Queries immediately return results for those words.
+The words from that edition are merged into the existing `words` table with their `edition` field set to `"fr"`. Queries immediately return results for those words. You can now distinguish between English and French entries via the `edition` field in API responses.
 
 ## Verifying your instance
 

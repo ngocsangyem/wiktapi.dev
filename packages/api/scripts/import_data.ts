@@ -16,7 +16,7 @@ import { createReadStream } from "node:fs";
 import { readdir, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline";
-import type { Meaning, PhoneticItem, Tenses } from "../utils/types.ts";
+import type { Meaning, PhoneticItem, Tenses, TranslationItem } from "../utils/types.ts";
 
 const DATA_DIR = resolve("./data");
 const JSONL_DIR = resolve(DATA_DIR, "jsonl");
@@ -28,11 +28,12 @@ const BATCH_SIZE = 50_000;
 interface WordRow {
   id: string;
   word: string;
+  edition: string; // language code of the source Wiktionary edition (e.g. "en", "fr")
   phonetic: string | null;
   phonetics: string; // JSON: PhoneticItem[]
   meanings: string; // JSON: Meaning[] (one element per POS row)
   category: string;
-  translate: string | null;
+  translations: string; // JSON: TranslationItem[]
   tenses: string | null; // JSON: Tenses | null
   createdAt: string;
 }
@@ -115,10 +116,28 @@ function extractMeaning(parsed: Record<string, unknown>): Meaning {
   return {
     partOfSpeech: (parsed.pos as string | null) ?? "unknown",
     definitions,
-    translate: null,
+    translations: [], // translations stored at word level, not per-meaning
     synonyms: [...new Set(synonyms)],
     antonyms: [...new Set(antonyms)],
   };
+}
+
+/**
+ * Extracts translation items from a wiktextract JSONL entry.
+ * Translations live at the POS-entry level; each item is a LinkageData-like object.
+ */
+function extractTranslations(parsed: Record<string, unknown>): TranslationItem[] {
+  const pos = (parsed.pos as string | null) ?? "unknown";
+  const raw = (parsed.translations as Record<string, unknown>[] | undefined) ?? [];
+  return raw
+    .filter((t) => typeof t.word === "string" && typeof t.lang_code === "string")
+    .map((t) => ({
+      partOfSpeech: pos,
+      lang_code: t.lang_code as string,
+      code: t.lang_code as string, // wiktextract uses lang_code as the short language code
+      lang: (t.lang as string | undefined) ?? "",
+      word: t.word as string,
+    }));
 }
 
 function extractTenses(forms: Record<string, unknown>[], baseWord: string): Tenses | null {
@@ -150,7 +169,7 @@ function extractTenses(forms: Record<string, unknown>[], baseWord: string): Tens
   };
 }
 
-function parseWord(line: string): WordRow | null {
+function parseWord(line: string, edition: string): WordRow | null {
   let parsed: Record<string, unknown>;
   try {
     parsed = JSON.parse(line);
@@ -170,12 +189,13 @@ function parseWord(line: string): WordRow | null {
   return {
     id: crypto.randomUUID(),
     word,
+    edition,
     phonetic: phonetics[0]?.text ?? null,
     phonetics: JSON.stringify(phonetics),
     meanings: JSON.stringify([extractMeaning(parsed)]),
     // TODO: assign category via external classifier — all words default to "general"
     category: "general",
-    translate: null,
+    translations: JSON.stringify(extractTranslations(parsed)),
     tenses: tenses ? JSON.stringify(tenses) : null,
     createdAt: new Date().toISOString(),
   };
@@ -187,6 +207,7 @@ const importJsonl = (
   db: Database.Database,
   filePath: string,
   label: string,
+  edition: string,
 ): Effect.Effect<void, Error> =>
   Effect.gen(function* () {
     yield* Console.log(`[${label}] Importing ${filePath} …`);
@@ -212,7 +233,7 @@ const importJsonl = (
           for await (const line of rl) {
             if (!line.trim()) continue;
 
-            const row = parseWord(line);
+            const row = parseWord(line, edition);
             if (!row) {
               skipped++;
               continue;
@@ -301,7 +322,7 @@ const main: Effect.Effect<void, Error> = Effect.scoped(
       files,
       ({ path, label }) =>
         Effect.gen(function* () {
-          yield* importJsonl(db, path, label);
+          yield* importJsonl(db, path, label, label);
           yield* Effect.tryPromise({
             try: () => unlink(path),
             catch: (e) => new Error(`Failed to delete ${path}: ${String(e)}`),

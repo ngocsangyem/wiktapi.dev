@@ -33,11 +33,12 @@ defineRouteMeta({
               type: "object",
               properties: {
                 word: { type: "string" },
+                edition: { type: "string", example: "en" },
                 phonetic: { type: "string", nullable: true },
                 phonetics: { type: "array", items: { type: "object" } },
                 meanings: { type: "array", items: { type: "object" } },
                 category: { type: "string" },
-                translate: { type: "string", nullable: true },
+                translations: { type: "array", items: { type: "object" } },
                 tenses: { type: "object", nullable: true },
               },
             },
@@ -56,11 +57,12 @@ export default defineHandler((event) => {
   const record = fetchWord(word, category);
   return {
     word: record.word,
+    edition: record.edition,
     phonetic: record.phonetic,
     phonetics: record.phonetics,
     meanings: record.meanings,
     category: record.category,
-    translate: record.translate,
+    translations: record.translations,
     tenses: record.tenses ?? null,
   };
 });

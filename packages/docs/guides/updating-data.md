@@ -13,7 +13,7 @@ cd packages/api
 pnpm download -- --force
 
 # Step 2 — import into a staging file (server keeps serving the old DB)
-pnpm import:staging
+pnpm import -- --output data/wiktionary.db.new
 
 # Step 3 — atomic swap (single syscall on POSIX; existing connections keep the old inode)
 pnpm swap
@@ -23,7 +23,7 @@ pnpm swap
 systemctl restart wiktionary-api   # or however you manage the process
 ```
 
-`import:staging` writes to `data/wiktionary.db.new`. `swap` runs `mv data/wiktionary.db.new data/wiktionary.db`, which is an atomic rename on the same filesystem. The live server continues reading its open file descriptor pointing at the old inode; after you restart it opens the new file.
+`pnpm import -- --output data/wiktionary.db.new` writes to `data/wiktionary.db.new`. `swap` runs `mv data/wiktionary.db.new data/wiktionary.db`, which is an atomic rename on the same filesystem. The live server continues reading its open file descriptor pointing at the old inode; after you restart it opens the new file.
 
 ## Simple re-import (downtime)
 
@@ -36,15 +36,15 @@ pnpm download -- --force
 pnpm import -- --fresh
 ```
 
-The `--fresh` flag drops the existing `entries` table before importing, so no stale rows from previous imports are left behind.
+The `--fresh` flag drops the existing `words` table before importing, so no stale rows from previous imports are left behind.
 
 ## Partial updates
 
-To update only one edition without touching others:
+To update or add a single edition without touching others:
 
 ```bash
 pnpm download -- --editions en --force
-pnpm import -- --edition en --fresh
+pnpm import -- --edition en
 ```
 
 Other editions remain in the database and queryable while the import runs. For zero-downtime partial updates, pass `--edition` and `--output` together:
@@ -54,6 +54,10 @@ Other editions remain in the database and queryable while the import runs. For z
 pnpm import -- --edition en --output data/wiktionary.db.new --fresh
 pnpm swap
 ```
+
+::: tip
+Use `--fresh` only if you're replacing an edition entirely. Without it, a partial import merges new words into the existing database.
+:::
 
 ## Automating updates
 
@@ -99,10 +103,10 @@ jobs:
 
 ## Checking what's loaded
 
-```bash
 # See which editions are in the database
-curl http://localhost:3000/v1/editions
+
+curl http://localhost:3000/v1/words
 
 # See entry counts per language
+
 curl http://localhost:3000/v1/languages
-```

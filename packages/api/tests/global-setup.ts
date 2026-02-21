@@ -11,6 +11,7 @@ const SAMPLE_WORDS = [
   {
     id: "test-1",
     word: "chat",
+    edition: "en",
     phonetic: "/tʃæt/",
     phonetics: JSON.stringify([
       { text: "/tʃæt/", type: "us", audioUrl: null },
@@ -23,19 +24,20 @@ const SAMPLE_WORDS = [
           { definition: "an informal conversation" },
           { definition: "a small songbird of the Old World" },
         ],
-        translate: null,
+        translations: [],
         synonyms: ["talk", "conversation"],
         antonyms: [],
       },
     ]),
     category: "general",
-    translate: null,
+    translations: JSON.stringify([]),
     tenses: null,
     createdAt: "2026-01-01T00:00:00.000Z",
   },
   {
     id: "test-2",
     word: "chat",
+    edition: "en",
     phonetic: "/tʃæt/",
     phonetics: JSON.stringify([
       { text: "/tʃæt/", type: "us", audioUrl: null },
@@ -45,19 +47,20 @@ const SAMPLE_WORDS = [
       {
         partOfSpeech: "verb",
         definitions: [{ definition: "to converse casually", example: "They chat online." }],
-        translate: null,
+        translations: [],
         synonyms: [],
         antonyms: [],
       },
     ]),
     category: "general",
-    translate: null,
+    translations: JSON.stringify([]),
     tenses: null,
     createdAt: "2026-01-01T00:00:00.000Z",
   },
   {
     id: "test-3",
     word: "run",
+    edition: "en",
     phonetic: "/ɹʌn/",
     phonetics: JSON.stringify([
       { text: "/ɹʌn/", type: "us", audioUrl: null },
@@ -67,13 +70,13 @@ const SAMPLE_WORDS = [
       {
         partOfSpeech: "noun",
         definitions: [{ definition: "an act of running" }],
-        translate: null,
+        translations: [],
         synonyms: ["sprint", "dash"],
         antonyms: [],
       },
     ]),
     category: "sports",
-    translate: "courir",
+    translations: JSON.stringify([]),
     tenses: JSON.stringify({
       base: "run",
       past: "ran",
@@ -87,6 +90,7 @@ const SAMPLE_WORDS = [
   {
     id: "test-4",
     word: "run",
+    edition: "en",
     phonetic: "/ɹʌn/",
     phonetics: JSON.stringify([
       { text: "/ɹʌn/", type: "us", audioUrl: null },
@@ -96,13 +100,16 @@ const SAMPLE_WORDS = [
       {
         partOfSpeech: "verb",
         definitions: [{ definition: "to move quickly on foot", example: "I run every day." }],
-        translate: "courir",
+        translations: [],
         synonyms: [],
         antonyms: [],
       },
     ]),
     category: "sports",
-    translate: "courir",
+    translations: JSON.stringify([
+      { partOfSpeech: "verb", lang_code: "fr", code: "fr", lang: "French", word: "courir" },
+      { partOfSpeech: "verb", lang_code: "vi", code: "vi", lang: "Vietnamese", word: "chạy" },
+    ]),
     tenses: JSON.stringify({
       base: "run",
       past: "ran",
@@ -116,6 +123,7 @@ const SAMPLE_WORDS = [
   {
     id: "test-5",
     word: "technology",
+    edition: "en",
     phonetic: "/tɛkˈnɒlədʒi/",
     phonetics: JSON.stringify([
       { text: "/tɛkˈnɒlədʒi/", type: "uk", audioUrl: null },
@@ -127,13 +135,13 @@ const SAMPLE_WORDS = [
         definitions: [
           { definition: "the application of scientific knowledge for practical purposes" },
         ],
-        translate: null,
+        translations: [],
         synonyms: ["tech", "innovation"],
         antonyms: [],
       },
     ]),
     category: "technology",
-    translate: null,
+    translations: JSON.stringify([]),
     tenses: null,
     createdAt: "2026-01-01T00:00:00.000Z",
   },

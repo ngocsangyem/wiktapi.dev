@@ -22,33 +22,35 @@ All words are stored in a single `words` table with normalized JSON columns:
 
 ```sql
 CREATE TABLE words (
-    id        TEXT PRIMARY KEY,          -- UUID or nanoid
-    word      TEXT NOT NULL,             -- the headword
-    phonetic  TEXT,                      -- primary phonetic string (IPA)
-    phonetics TEXT NOT NULL,             -- JSON: PhoneticItem[]
-    meanings  TEXT NOT NULL,             -- JSON: Meaning[]
-    category  TEXT NOT NULL,             -- WordCategory enum value
-    translate TEXT,                      -- simple translation
-    tenses    TEXT,                      -- JSON: Tenses object or null
-    createdAt TEXT NOT NULL              -- ISO 8601 timestamp
+    id            TEXT PRIMARY KEY,          -- UUID
+    word          TEXT NOT NULL,             -- the headword
+    edition       TEXT NOT NULL,             -- language code (e.g. "en", "fr", "de")
+    phonetic      TEXT,                      -- primary phonetic string (IPA)
+    phonetics     TEXT NOT NULL,             -- JSON: PhoneticItem[]
+    meanings      TEXT NOT NULL,             -- JSON: Meaning[]
+    category      TEXT NOT NULL,             -- WordCategory enum value
+    translations  TEXT NOT NULL,             -- JSON: TranslationItem[]
+    tenses        TEXT,                      -- JSON: Tenses object or null
+    createdAt     TEXT NOT NULL              -- ISO 8601 timestamp
 );
 ```
 
-Structured data (phonetics, meanings, tenses) is stored as JSON, allowing flexible querying while maintaining type safety through TypeScript interfaces.
+Structured data (phonetics, meanings, tenses, translations) is stored as JSON, allowing flexible querying while maintaining type safety through TypeScript interfaces.
 
 ## Mapped from wiktextract
 
 | Source Field           | Target Column/Field        |
 | ---------------------- | -------------------------- |
 | `word`                 | `word`                     |
+| _(from filename)_      | `edition`                  |
 | `sounds[].ipa`         | `phonetic` + `phonetics[]` |
 | `senses` + `pos`       | `meanings[].definitions`   |
 | `senses[].glosses`     | `meanings[].definitions[]` |
-| `translations[]`       | `meanings[].translate`     |
+| `translations[]`       | `translations[]`           |
 | `forms[]`              | `tenses` object            |
 | _(inferred or tagged)_ | `category`                 |
 
-The import script parses kaikki.org JSONL and transforms nested wiktextract objects into the normalized schema.
+The import script parses kaikki.org JSONL and transforms nested wiktextract objects into the normalized schema. The `edition` field is derived from the JSONL filename (e.g., `en.jsonl` → edition `"en"`).
 
 ## Caching
 

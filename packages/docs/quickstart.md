@@ -13,6 +13,7 @@ curl "https://api.wiktapi.dev/v1/word/chat"
 ```json
 {
   "word": "chat",
+  "edition": "en",
   "phonetic": "/tʃæt/",
   "phonetics": [
     { "text": "/tʃæt/", "type": "uk", "audioUrl": null },

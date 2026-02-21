@@ -6,7 +6,8 @@ defineRouteMeta({
   openAPI: {
     tags: ["Word"],
     summary: "Word translations",
-    description: "Returns the overall word translation and per-meaning translations.",
+    description:
+      "Returns all translations for a word across all parts of speech, aggregated from the source edition.",
     parameters: [
       {
         in: "path",
@@ -25,14 +26,17 @@ defineRouteMeta({
               type: "object",
               properties: {
                 word: { type: "string" },
-                translate: { type: "string", nullable: true },
-                meanings: {
+                edition: { type: "string", example: "en" },
+                translations: {
                   type: "array",
                   items: {
                     type: "object",
                     properties: {
                       partOfSpeech: { type: "string" },
-                      translate: { type: "string", nullable: true },
+                      lang_code: { type: "string", example: "vi" },
+                      code: { type: "string", example: "vi" },
+                      lang: { type: "string", example: "Vietnamese" },
+                      word: { type: "string" },
                     },
                   },
                 },
@@ -51,10 +55,7 @@ export default defineHandler((event) => {
   const record = fetchWord(word);
   return {
     word: record.word,
-    translate: record.translate,
-    meanings: record.meanings.map((m) => ({
-      partOfSpeech: m.partOfSpeech,
-      translate: m.translate,
-    })),
+    edition: record.edition,
+    translations: record.translations,
   };
 });

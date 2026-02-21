@@ -26,6 +26,7 @@ defineRouteMeta({
               type: "object",
               properties: {
                 word: { type: "string" },
+                edition: { type: "string", example: "en" },
                 synonyms: { type: "array", items: { type: "string" } },
                 antonyms: { type: "array", items: { type: "string" } },
               },
@@ -45,5 +46,5 @@ export default defineHandler((event) => {
   const synonyms = [...new Set(record.meanings.flatMap((m) => m.synonyms ?? []))];
   const antonyms = [...new Set(record.meanings.flatMap((m) => m.antonyms ?? []))];
 
-  return { word: record.word, synonyms, antonyms };
+  return { word: record.word, edition: record.edition, synonyms, antonyms };
 });

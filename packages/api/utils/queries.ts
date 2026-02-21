@@ -1,15 +1,23 @@
 import { HTTPError } from "nitro/h3";
 import { db } from "./db.ts";
-import type { Meaning, PhoneticItem, Tenses, WordCategory, WordRecord } from "./types.ts";
+import type {
+  Meaning,
+  PhoneticItem,
+  Tenses,
+  TranslationItem,
+  WordCategory,
+  WordRecord,
+} from "./types.ts";
 
 interface WordRow {
   id: string;
   word: string;
+  edition: string;
   phonetic: string | null;
   phonetics: string;
   meanings: string;
   category: string;
-  translate: string | null;
+  translations: string; // JSON: TranslationItem[]
   tenses: string | null;
   createdAt: string;
 }
@@ -43,11 +51,14 @@ function mergeRows(rows: WordRow[]): WordRecord {
   return {
     id: first.id,
     word: first.word,
+    edition: first.edition,
     phonetic: phoneticRow.phonetic,
     phonetics: safeParseJson<PhoneticItem[]>(phoneticRow.phonetics, "phonetics"),
     meanings: allMeanings,
     category: first.category as WordCategory,
-    translate: first.translate,
+    translations: rows.flatMap((r) =>
+      safeParseJson<TranslationItem[]>(r.translations, "translations"),
+    ),
     tenses: first.tenses ? safeParseJson<Tenses>(first.tenses, "tenses") : undefined,
     createdAt: first.createdAt,
   };
