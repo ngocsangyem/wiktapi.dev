@@ -2,10 +2,6 @@ pre-commit:
   parallel: true
   commands:
     fmt:
-      exclude:
-        - ".claude/**"
-        - ".opencode/**"
-        - ".ai-devkit/**"
       run: vp fmt --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
     lint:
