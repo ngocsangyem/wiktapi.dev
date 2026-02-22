@@ -99,6 +99,7 @@ export interface WordRecord extends WordData {
 }
 
 export interface WordListItem {
+  id: string;
   word: string;
   edition: string;
   category: string;
@@ -113,5 +114,5 @@ export interface WordsListResponse {
 }
 
 export interface SearchResponse {
-  results: { word: string; category: string; phonetic: string | null }[];
+  results: { id: string; word: string; category: string; phonetic: string | null }[];
 }

@@ -23,7 +23,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  delete: [word: string];
+  delete: [data: { id: string; word: string }];
   "update:selected": [words: string[]];
 }>();
 
@@ -60,7 +60,7 @@ const columns: ColumnDef<WordListItem>[] = [
       h(
         RouterLink,
         {
-          to: `/words/${encodeURIComponent(row.original.word)}`,
+          to: `/words/${row.original.id}`,
           class: "font-medium hover:underline",
         },
         () => row.original.word,
@@ -89,7 +89,7 @@ const columns: ColumnDef<WordListItem>[] = [
     header: "",
     cell: ({ row }) =>
       h("div", { class: "flex items-center gap-2 justify-end" }, [
-        h(RouterLink, { to: `/words/${encodeURIComponent(row.original.word)}` }, () =>
+        h(RouterLink, { to: `/words/${row.original.id}` }, () =>
           h(Button, { variant: "ghost", size: "sm" }, () => "Edit"),
         ),
         h(
@@ -98,7 +98,7 @@ const columns: ColumnDef<WordListItem>[] = [
             variant: "ghost",
             size: "sm",
             class: "text-destructive hover:text-destructive",
-            onClick: () => emit("delete", row.original.word),
+            onClick: () => emit("delete", { id: row.original.id, word: row.original.word }),
           },
           () => "Delete",
         ),

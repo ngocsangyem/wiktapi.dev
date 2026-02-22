@@ -4,6 +4,7 @@ import {
   fetchWords,
   searchWords,
   fetchWord,
+  fetchWordById,
   createWord,
   updateWord,
   deleteWord,
@@ -56,6 +57,14 @@ export function useWordQuery(word: Ref<string>) {
   });
 }
 
+export function useWordByIdQuery(id: Ref<string>) {
+  return useQuery({
+    key: computed(() => ["word", "by-id", id.value]),
+    query: () => fetchWordById(id.value),
+    enabled: computed(() => !!id.value),
+  });
+}
+
 export function useCreateWordMutation() {
   const queryCache = useQueryCache();
   return useMutation({
@@ -78,15 +87,8 @@ export function useUpdateWordMutation() {
 export function useDeleteWordMutation() {
   const queryCache = useQueryCache();
   return useMutation({
-    mutation: ({
-      word,
-      edition,
-      category,
-    }: {
-      word: string;
-      edition?: string;
-      category?: string;
-    }) => deleteWord(word, edition, category),
+    mutation: ({ id, edition, category }: { id: string; edition?: string; category?: string }) =>
+      deleteWord(id, edition, category),
     onSettled: () => queryCache.invalidateQueries({ key: ["words"] }),
   });
 }

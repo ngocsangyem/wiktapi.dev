@@ -15,7 +15,7 @@ export const router = createRouter({
       component: () => import("@/pages/WordCreatePage.vue"),
     },
     {
-      path: "/words/:word",
+      path: "/words/:id",
       name: "word-detail",
       component: () => import("@/pages/WordDetailPage.vue"),
       props: true,

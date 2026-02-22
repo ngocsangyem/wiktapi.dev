@@ -97,13 +97,19 @@ export default defineHandler((event) => {
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  type Row = { word: string; edition: string; category: string; phonetic: string | null };
+  type Row = {
+    id: string;
+    word: string;
+    edition: string;
+    category: string;
+    phonetic: string | null;
+  };
 
   const words = db
     .prepare(
-      `SELECT word, edition, category, MAX(phonetic) AS phonetic FROM words
+      `SELECT id, word, edition, category, MAX(phonetic) AS phonetic FROM words
        ${where}
-       GROUP BY word, edition, category
+       GROUP BY id, word, edition, category
        ORDER BY word
        LIMIT ? OFFSET ?`,
     )

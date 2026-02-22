@@ -15,13 +15,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useDeleteWordMutation } from "@/queries/words";
 
-const props = defineProps<{ word: string }>();
+const props = defineProps<{ id: string; word: string }>();
 const router = useRouter();
 const deleteMutation = useDeleteWordMutation();
 const open = ref(false);
 
 async function handleDelete() {
-  await deleteMutation.mutateAsync({ word: props.word });
+  await deleteMutation.mutateAsync({ id: props.id });
   open.value = false;
   router.push("/words");
 }

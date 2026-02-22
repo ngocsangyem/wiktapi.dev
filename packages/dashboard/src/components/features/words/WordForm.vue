@@ -22,7 +22,7 @@ import { wordDataSchema } from "@/schemas/word";
 import { WORD_CATEGORIES } from "@/types/word";
 import type { WordData, Meaning, PhoneticItem, TranslationItem } from "@/types/word";
 
-const props = defineProps<{ initialData?: WordData; mode: "create" | "edit" }>();
+const props = defineProps<{ initialData?: WordData; mode: "create" | "edit"; wordId?: string }>();
 const router = useRouter();
 const createMutation = useCreateWordMutation();
 const updateMutation = useUpdateWordMutation();
@@ -93,7 +93,7 @@ async function handleSubmit() {
       router.push("/words");
     } else {
       await updateMutation.mutateAsync({ word: form.word, data: result.data as WordData });
-      router.push(`/words/${encodeURIComponent(form.word)}`);
+      router.push(`/words/${props.wordId}`);
     }
   } catch (e) {
     submitError.value = e instanceof Error ? e.message : "An unexpected error occurred";

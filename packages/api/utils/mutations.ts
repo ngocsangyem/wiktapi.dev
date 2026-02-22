@@ -1,7 +1,7 @@
 import { HTTPError } from "nitro/h3";
 import { dbWrite } from "./db";
 import { WORDS_INSERT_SQL } from "./schema";
-import { fetchWord, mergeRows } from "./queries";
+import { fetchWord, fetchWordById, mergeRows } from "./queries";
 import { WORD_CATEGORIES } from "./types";
 import type { WordRow } from "./queries";
 import type { WordData, WordCategory, WordRecord } from "./types";
@@ -126,6 +126,58 @@ export function deleteWord(word: string, edition?: string, category?: string): v
   const result = deleteRows(word, edition, category);
   if (result.changes === 0) {
     throw new HTTPError({ statusCode: 404, message: `No entry found for "${word}"` });
+  }
+}
+
+export function updateWordById(
+  id: string,
+  rawBody: unknown,
+  edition?: string,
+  category?: string,
+): WordRecord {
+  const data = validateWordBody(rawBody);
+
+  // Verify word exists before mutating; throws 404 if not found
+  const existing = fetchWordById(id, category);
+  const insertStmt = dbWrite.prepare(WORDS_INSERT_SQL);
+
+  dbWrite.transaction(() => {
+    deleteWordById(id, edition, category);
+    for (const meaning of data.meanings) {
+      insertStmt.run({
+        id: crypto.randomUUID(),
+        word: data.word,
+        edition: data.edition,
+        phonetic: data.phonetic ?? null,
+        phonetics: JSON.stringify(data.phonetics),
+        meanings: JSON.stringify([meaning]),
+        category: data.category,
+        translations: JSON.stringify(data.translations),
+        tenses: data.tenses ? JSON.stringify(data.tenses) : null,
+        createdAt: existing.createdAt, // preserve original creation timestamp
+      });
+    }
+  })();
+
+  return fetchWrittenWord(data.word, data.category);
+}
+
+export function deleteWordById(id: string, edition?: string, category?: string): void {
+  let sql = "DELETE FROM words WHERE id = ?";
+  const params: (string | undefined)[] = [id];
+
+  if (edition) {
+    sql += " AND edition = ?";
+    params.push(edition);
+  }
+  if (category) {
+    sql += " AND category = ?";
+    params.push(category);
+  }
+
+  const result = dbWrite.prepare(sql).run(...params);
+  if (result.changes === 0) {
+    throw new HTTPError({ statusCode: 404, message: `No entry found for id "${id}"` });
   }
 }
 

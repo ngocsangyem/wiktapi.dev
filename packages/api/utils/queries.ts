@@ -83,6 +83,24 @@ export function fetchWord(word: string, category?: string): WordRecord {
 }
 
 /**
+ * Fetch a word by its ID.
+ * Throws 404 if not found.
+ */
+export function fetchWordById(id: string, category?: string): WordRecord {
+  const rows = (
+    category
+      ? db.prepare(`SELECT * FROM words WHERE id = ? AND category = ?`).all(id, category)
+      : db.prepare(`SELECT * FROM words WHERE id = ?`).all(id)
+  ) as WordRow[];
+
+  if (rows.length === 0) {
+    throw new HTTPError({ statusCode: 404, message: `No entry found for id "${id}"` });
+  }
+
+  return mergeRows(rows);
+}
+
+/**
  * Search words — returns up to 50 results with word, category, and phonetic.
  * Supports prefix search (default) or regex matching.
  */
@@ -91,7 +109,7 @@ export function searchWords(
   category?: string,
   useRegex?: boolean,
 ): { word: string; category: string; phonetic: string | null }[] {
-  type Row = { word: string; category: string; phonetic: string | null };
+  type Row = { id: string; word: string; category: string; phonetic: string | null };
 
   // For regex mode, fetch more results and filter in JavaScript
   if (useRegex) {
@@ -108,16 +126,16 @@ export function searchWords(
       category
         ? db
             .prepare(
-              `SELECT word, category, MAX(phonetic) AS phonetic FROM words
+              `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
              WHERE category = ?
-             GROUP BY word, category
+             GROUP BY id, word, category
              ORDER BY word LIMIT 200`,
             )
             .all(category)
         : db
             .prepare(
-              `SELECT word, category, MAX(phonetic) AS phonetic FROM words
-             GROUP BY word, category
+              `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
+             GROUP BY id, word, category
              ORDER BY word LIMIT 200`,
             )
             .all()
@@ -136,17 +154,17 @@ export function searchWords(
     category
       ? db
           .prepare(
-            `SELECT word, category, MAX(phonetic) AS phonetic FROM words
+            `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
              WHERE lower(word) LIKE ? ESCAPE '\\' AND category = ?
-             GROUP BY word, category
+             GROUP BY id, word, category
              ORDER BY word LIMIT 50`,
           )
           .all(escaped, category)
       : db
           .prepare(
-            `SELECT word, category, MAX(phonetic) AS phonetic FROM words
+            `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
              WHERE lower(word) LIKE ? ESCAPE '\\'
-             GROUP BY word, category
+             GROUP BY id, word, category
              ORDER BY word LIMIT 50`,
           )
           .all(escaped)

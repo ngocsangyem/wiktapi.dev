@@ -29,7 +29,7 @@ const page = ref(1);
 const limit = ref(50);
 const searchTerm = ref("");
 const useRegex = ref(false);
-const pendingDelete = ref<string | null>(null);
+const pendingDelete = ref<{ id: string; word: string } | "bulk" | null>(null);
 const selectedWords = ref<string[]>([]);
 const isDeleting = ref(false);
 const isDialogOpen = ref(false);
@@ -45,6 +45,7 @@ const isSearching = computed(() => searchTerm.value.length >= 2);
 const tableWords = computed<WordListItem[]>(() => {
   if (isSearching.value) {
     return (searchData.value?.results ?? []).map((r) => ({
+      id: r.id,
       word: r.word,
       edition: "",
       category: r.category,
@@ -76,7 +77,7 @@ async function handleDelete() {
       await bulkDeleteMutation.mutateAsync(selectedWords.value);
       selectedWords.value = [];
     } else {
-      await deleteMutation.mutateAsync({ word: toDelete });
+      await deleteMutation.mutateAsync({ id: toDelete.id });
     }
   } finally {
     pendingDelete.value = null;
@@ -84,8 +85,12 @@ async function handleDelete() {
   }
 }
 
-function handleOpenAlertDialog(type: string) {
-  pendingDelete.value = type;
+function handleOpenAlertDialog(data: { id: string; word: string } | "bulk") {
+  if (typeof data === "string") {
+    pendingDelete.value = data;
+  } else {
+    pendingDelete.value = { id: data.id, word: data.word };
+  }
   isDialogOpen.value = true;
 }
 </script>
@@ -144,7 +149,9 @@ function handleOpenAlertDialog(type: string) {
           {{
             pendingDelete === "bulk"
               ? `Delete ${selectedWords.length} words?`
-              : `Delete "${pendingDelete}"?`
+              : pendingDelete
+                ? `Delete "${pendingDelete.word}"?`
+                : "Delete word?"
           }}
         </AlertDialogTitle>
         <AlertDialogDescription>

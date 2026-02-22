@@ -33,6 +33,11 @@ export function fetchWord(word: string, category?: string): Promise<WordRecord> 
   return apiFetch(`/word/${encodeURIComponent(word)}${qs}`);
 }
 
+export function fetchWordById(id: string, category?: string): Promise<WordRecord> {
+  const qs = category ? `?category=${encodeURIComponent(category)}` : "";
+  return apiFetch(`/word/${encodeURIComponent(id)}${qs}`);
+}
+
 export function createWord(data: WordData): Promise<WordRecord> {
   return apiFetch("/word", { method: "POST", body: JSON.stringify(data) });
 }
@@ -44,12 +49,19 @@ export function updateWord(word: string, data: WordData): Promise<WordRecord> {
   });
 }
 
-export function deleteWord(word: string, edition?: string, category?: string): Promise<void> {
+export function updateWordById(id: string, data: WordData): Promise<WordRecord> {
+  return apiFetch(`/word/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export function deleteWord(id: string, edition?: string, category?: string): Promise<void> {
   const qs = new URLSearchParams();
   if (edition) qs.set("edition", edition);
   if (category) qs.set("category", category);
   const query = qs.toString() ? `?${qs}` : "";
-  return apiFetch(`/word/${encodeURIComponent(word)}${query}`, { method: "DELETE" });
+  return apiFetch(`/word/${encodeURIComponent(id)}${query}`, { method: "DELETE" });
 }
 
 export function bulkDeleteWords(words: string[]): Promise<void> {
