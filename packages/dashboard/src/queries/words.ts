@@ -14,6 +14,7 @@ import type { WordData } from "@/types/word";
 
 export function useWordsQuery(page: Ref<number>, limit: Ref<number>) {
   const filters = useFiltersStore();
+
   return useQuery({
     key: computed(() => [
       "words",
@@ -22,12 +23,13 @@ export function useWordsQuery(page: Ref<number>, limit: Ref<number>) {
       filters.selectedCategory ?? "",
       filters.selectedEdition ?? "",
     ]),
-    query: () =>
+    query: ({ signal }: { signal?: AbortSignal }) =>
       fetchWords({
         page: page.value,
         limit: limit.value,
         category: filters.selectedCategory ?? undefined,
         edition: filters.selectedEdition ?? undefined,
+        signal,
       }),
   });
 }

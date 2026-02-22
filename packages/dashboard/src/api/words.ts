@@ -6,13 +6,14 @@ export function fetchWords(params: {
   limit?: number;
   category?: string;
   edition?: string;
+  signal?: AbortSignal;
 }): Promise<WordsListResponse> {
   const qs = new URLSearchParams();
   if (params.page) qs.set("page", String(params.page));
   if (params.limit) qs.set("limit", String(params.limit));
   if (params.category) qs.set("category", params.category);
   if (params.edition) qs.set("edition", params.edition);
-  return apiFetch(`/words?${qs}`);
+  return apiFetch(`/words?${qs}`, { signal: params.signal });
 }
 
 export function searchWords(q: string, category?: string): Promise<SearchResponse> {
