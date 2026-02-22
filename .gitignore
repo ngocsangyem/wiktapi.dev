@@ -39,3 +39,4 @@ packages/docs/.vitepress/cache/
 
 plans/*
 docs/*
+.mcp.json

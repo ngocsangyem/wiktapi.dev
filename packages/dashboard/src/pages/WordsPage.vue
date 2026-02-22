@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import { RouterLink } from "vue-router";
-import { Plus } from "lucide-vue-next";
+import { Plus, Trash2 } from "lucide-vue-next";
 import WordsTable from "@/components/features/words/WordsTable.vue";
 import WordsSearch from "@/components/features/words/WordsSearch.vue";
 import WordsPagination from "@/components/features/words/WordsPagination.vue";
@@ -16,7 +16,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useWordsQuery, useSearchQuery, useDeleteWordMutation } from "@/queries/words";
+import {
+  useWordsQuery,
+  useSearchQuery,
+  useDeleteWordMutation,
+  useBulkDeleteWordsMutation,
+} from "@/queries/words";
 import { useFiltersStore } from "@/stores/filters";
 import type { WordListItem } from "@/types/word";
 
@@ -24,11 +29,13 @@ const page = ref(1);
 const limit = ref(50);
 const searchTerm = ref("");
 const pendingDelete = ref<string | null>(null);
+const selectedWords = ref<string[]>([]);
 
 const filters = useFiltersStore();
 const { data: wordsData, status: wordsStatus } = useWordsQuery(page, limit);
 const { data: searchData, status: searchStatus } = useSearchQuery(searchTerm);
 const deleteMutation = useDeleteWordMutation();
+const bulkDeleteMutation = useBulkDeleteWordsMutation();
 
 const isSearching = computed(() => searchTerm.value.length >= 2);
 
@@ -58,18 +65,38 @@ async function handleDelete() {
   await deleteMutation.mutateAsync({ word: pendingDelete.value });
   pendingDelete.value = null;
 }
+
+async function handleBulkDelete() {
+  if (!selectedWords.value.length) return;
+  await bulkDeleteMutation.mutateAsync(selectedWords.value);
+  selectedWords.value = [];
+}
+
+function handleSelectionUpdate(words: string[]) {
+  selectedWords.value = words;
+}
 </script>
 
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h2 class="text-2xl font-bold">Words</h2>
-      <RouterLink to="/words/new">
-        <Button>
-          <Plus class="size-4 mr-2" />
-          Add Word
+      <div class="flex items-center gap-2">
+        <Button
+          v-if="selectedWords.length > 0"
+          variant="destructive"
+          @click="pendingDelete = 'bulk'"
+        >
+          <Trash2 class="size-4 mr-2" />
+          Delete ({{ selectedWords.length }})
         </Button>
-      </RouterLink>
+        <RouterLink to="/words/new">
+          <Button>
+            <Plus class="size-4 mr-2" />
+            Add Word
+          </Button>
+        </RouterLink>
+      </div>
     </div>
 
     <WordsSearch v-model:search="searchTerm" />
@@ -77,6 +104,7 @@ async function handleDelete() {
     <WordsTable
       :words="tableWords"
       :loading="isLoading"
+      v-model:selected="selectedWords"
       @delete="(word) => (pendingDelete = word)"
     />
 
@@ -99,16 +127,26 @@ async function handleDelete() {
   <AlertDialog :open="!!pendingDelete" @update:open="(v) => !v && (pendingDelete = null)">
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>Delete "{{ pendingDelete }}"?</AlertDialogTitle>
+        <AlertDialogTitle>
+          {{
+            pendingDelete === "bulk"
+              ? `Delete ${selectedWords.length} words?`
+              : `Delete "${pendingDelete}"?`
+          }}
+        </AlertDialogTitle>
         <AlertDialogDescription>
-          This will permanently remove all entries for this word. This action cannot be undone.
+          {{
+            pendingDelete === "bulk"
+              ? "This will permanently remove all selected words. This action cannot be undone."
+              : "This will permanently remove all entries for this word. This action cannot be undone."
+          }}
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
         <AlertDialogAction
           class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          @click="handleDelete"
+          @click="pendingDelete === 'bulk' ? handleBulkDelete() : handleDelete()"
         >
           Delete
         </AlertDialogAction>

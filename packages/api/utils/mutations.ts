@@ -128,3 +128,13 @@ export function deleteWord(word: string, edition?: string, category?: string): v
     throw new HTTPError({ statusCode: 404, message: `No entry found for "${word}"` });
   }
 }
+
+export function bulkDeleteWords(words: string[]): number {
+  if (!Array.isArray(words) || words.length === 0) {
+    throw new HTTPError({ statusCode: 400, message: "words must be a non-empty array" });
+  }
+
+  const placeholders = words.map(() => "?").join(", ");
+  const result = dbWrite.prepare(`DELETE FROM words WHERE word IN (${placeholders})`).run(...words);
+  return result.changes;
+}

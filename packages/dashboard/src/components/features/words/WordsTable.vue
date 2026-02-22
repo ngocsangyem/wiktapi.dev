@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h } from "vue";
+import { h, watch, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useVueTable, getCoreRowModel, FlexRender, type ColumnDef } from "@tanstack/vue-table";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { WordListItem } from "@/types/word";
 
@@ -21,9 +22,37 @@ const props = defineProps<{
   loading: boolean;
 }>();
 
-const emit = defineEmits<{ delete: [word: string] }>();
+const emit = defineEmits<{
+  delete: [word: string];
+  "update:selected": [words: string[]];
+}>();
+
+function valueUpdater(updater: (value: unknown) => unknown, ref: { value: unknown }) {
+  ref.value = updater(ref.value);
+}
+
+const rowSelection = ref<Record<number, boolean>>({});
 
 const columns: ColumnDef<WordListItem>[] = [
+  {
+    id: "select",
+    header: ({ table }) =>
+      h(Checkbox, {
+        modelValue:
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate"),
+        "onUpdate:modelValue": (value) => table.toggleAllPageRowsSelected(!!value),
+        "aria-label": "Select all",
+      }),
+    cell: ({ row }) =>
+      h(Checkbox, {
+        modelValue: row.getIsSelected(),
+        "onUpdate:modelValue": (value) => row.toggleSelected(!!value),
+        "aria-label": "Select row",
+      }),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "word",
     header: "Word",
@@ -83,7 +112,34 @@ const table = useVueTable({
   },
   columns,
   getCoreRowModel: getCoreRowModel(),
+  onRowSelectionChange: (updaterOrValue) => {
+    rowSelection.value =
+      typeof updaterOrValue === "function" ? updaterOrValue(rowSelection.value) : updaterOrValue;
+  },
+  state: {
+    get rowSelection() {
+      return rowSelection.value;
+    },
+  },
 });
+
+// Watch row selection and emit selected words
+watch(
+  rowSelection,
+  (selection) => {
+    const selected = props.words.filter((_, index) => selection[index]).map((w) => w.word);
+    emit("update:selected", selected);
+  },
+  { deep: true },
+);
+
+// Reset selection when words change
+watch(
+  () => props.words,
+  () => {
+    rowSelection.value = {};
+  },
+);
 </script>
 
 <template>
@@ -103,7 +159,7 @@ const table = useVueTable({
       <TableBody>
         <template v-if="loading">
           <TableRow v-for="i in 5" :key="i">
-            <TableCell v-for="j in 5" :key="j">
+            <TableCell v-for="j in 6" :key="j">
               <Skeleton class="h-4 w-full" />
             </TableCell>
           </TableRow>

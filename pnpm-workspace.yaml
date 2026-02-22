@@ -7,6 +7,7 @@ catalog:
   "@vee-validate/zod": ^4.15.1
   "@vueuse/core": ^14.2.1
   reka-ui: ^2.8.2
+  shadcn-vue: ^2.4.3
   typescript: ^5
   vee-validate: ^4.15.1
   vite: npm:@voidzero-dev/vite-plus-core@latest

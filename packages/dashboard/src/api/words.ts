@@ -44,3 +44,10 @@ export function deleteWord(word: string, edition?: string, category?: string): P
   const query = qs.toString() ? `?${qs}` : "";
   return apiFetch(`/word/${encodeURIComponent(word)}${query}`, { method: "DELETE" });
 }
+
+export function bulkDeleteWords(words: string[]): Promise<void> {
+  return apiFetch("/words/bulk-delete", {
+    method: "POST",
+    body: JSON.stringify({ words }),
+  });
+}

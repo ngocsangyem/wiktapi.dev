@@ -7,6 +7,7 @@ import {
   createWord,
   updateWord,
   deleteWord,
+  bulkDeleteWords,
 } from "@/api/words";
 import { useFiltersStore } from "@/stores/filters";
 import type { WordData } from "@/types/word";
@@ -80,5 +81,16 @@ export function useDeleteWordMutation() {
       category?: string;
     }) => deleteWord(word, edition, category),
     onSettled: () => queryCache.invalidateQueries({ key: ["words"] }),
+  });
+}
+
+export function useBulkDeleteWordsMutation() {
+  const queryCache = useQueryCache();
+  return useMutation({
+    mutation: (words: string[]) => bulkDeleteWords(words),
+    onSettled: () => {
+      void queryCache.invalidateQueries({ key: ["words"] });
+      void queryCache.invalidateQueries({ key: ["search"] });
+    },
   });
 }
