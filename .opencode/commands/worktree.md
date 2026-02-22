@@ -17,7 +17,6 @@ Parse JSON response for: `repoType`, `baseBranch`, `projects`, `worktreeRoot`, `
 ### Step 2: Detect Branch Prefix
 
 From user's description:
-
 - "fix", "bug", "error", "issue" → `fix`
 - "refactor", "restructure", "rewrite" → `refactor`
 - "docs", "documentation", "readme" → `docs`
@@ -35,36 +34,30 @@ Max 50 chars, kebab-case.
 ### Step 4: Handle Monorepo
 
 If `repoType === "monorepo"` and project not specified, use AskUserQuestion:
-
 ```javascript
 AskUserQuestion({
-  questions: [
-    {
-      header: "Project",
-      question: "Which project for the worktree?",
-      options: projects.map((p) => ({ label: p.name, description: p.path })),
-      multiSelect: false,
-    },
-  ],
-});
+  questions: [{
+    header: "Project",
+    question: "Which project for the worktree?",
+    options: projects.map(p => ({ label: p.name, description: p.path })),
+    multiSelect: false
+  }]
+})
 ```
 
 ### Step 5: Execute
 
 **Monorepo:**
-
 ```bash
 node .opencode/scripts/worktree.cjs create "<PROJECT>" "<SLUG>" --prefix <TYPE>
 ```
 
 **Standalone:**
-
 ```bash
 node .opencode/scripts/worktree.cjs create "<SLUG>" --prefix <TYPE>
 ```
 
 **Options:**
-
 - `--prefix` - Branch type: feat|fix|refactor|docs|test|chore|perf
 - `--worktree-root <path>` - Override default location (only if needed)
 - `--json` - JSON output
@@ -73,7 +66,6 @@ node .opencode/scripts/worktree.cjs create "<SLUG>" --prefix <TYPE>
 ### Step 6: Install Dependencies
 
 Based on project context, run in background:
-
 - `bun.lock` → `bun install`
 - `pnpm-lock.yaml` → `pnpm install`
 - `yarn.lock` → `yarn install`
@@ -85,12 +77,12 @@ Based on project context, run in background:
 
 ## Commands
 
-| Command  | Usage                        | Description                      |
-| -------- | ---------------------------- | -------------------------------- |
-| `create` | `create [project] <feature>` | Create worktree                  |
-| `remove` | `remove <name-or-path>`      | Remove worktree                  |
-| `info`   | `info`                       | Repo info with worktree location |
-| `list`   | `list`                       | List worktrees                   |
+| Command | Usage | Description |
+|---------|-------|-------------|
+| `create` | `create [project] <feature>` | Create worktree |
+| `remove` | `remove <name-or-path>` | Remove worktree |
+| `info` | `info` | Repo info with worktree location |
+| `list` | `list` | List worktrees |
 
 ## Example
 

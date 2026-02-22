@@ -24,38 +24,38 @@
 
 // Crash wrapper — catches require() failures and logs them
 try {
-  const fs = require("fs");
-  const path = require("path");
+  const fs = require('fs');
+  const path = require('path');
 
   // Import shared scout checking logic
   const {
     checkScoutBlock,
     isBuildCommand,
     isVenvExecutable,
-    isAllowedCommand,
-  } = require("./lib/scout-checker.cjs");
-  const { isHookEnabled } = require("./lib/ck-config-utils.cjs");
+    isAllowedCommand
+  } = require('./lib/scout-checker.cjs');
+  const { isHookEnabled } = require('./lib/ck-config-utils.cjs');
 
   // Early exit if hook disabled in config
-  if (!isHookEnabled("scout-block")) {
+  if (!isHookEnabled('scout-block')) {
     process.exit(0);
   }
 
   // Import formatters (kept local as they're Claude-specific output)
-  const { formatBlockedError } = require("./scout-block/error-formatter.cjs");
-  const { formatBroadPatternError } = require("./scout-block/broad-pattern-detector.cjs");
+  const { formatBlockedError } = require('./scout-block/error-formatter.cjs');
+  const { formatBroadPatternError } = require('./scout-block/broad-pattern-detector.cjs');
 
-  const { createHookTimer } = require("./lib/hook-logger.cjs");
+  const { createHookTimer } = require('./lib/hook-logger.cjs');
 
   try {
-    const timer = createHookTimer("scout-block");
+    const timer = createHookTimer('scout-block');
     // Read stdin synchronously
-    const hookInput = fs.readFileSync(0, "utf-8");
+    const hookInput = fs.readFileSync(0, 'utf-8');
 
     // Validate input not empty
     if (!hookInput || hookInput.trim().length === 0) {
-      console.error("ERROR: Empty input");
-      timer.end({ status: "error", exit: 2 });
+      console.error('ERROR: Empty input');
+      timer.end({ status: 'error', exit: 2 });
       process.exit(2);
     }
 
@@ -65,21 +65,21 @@ try {
       data = JSON.parse(hookInput);
     } catch (parseError) {
       // Fail-open for unparseable input
-      console.error("WARN: JSON parse failed, allowing operation");
-      timer.end({ status: "ok", exit: 0 });
+      console.error('WARN: JSON parse failed, allowing operation');
+      timer.end({ status: 'ok', exit: 0 });
       process.exit(0);
     }
 
     // Validate structure
-    if (!data.tool_input || typeof data.tool_input !== "object") {
+    if (!data.tool_input || typeof data.tool_input !== 'object') {
       // Fail-open for invalid structure
-      console.error("WARN: Invalid JSON structure, allowing operation");
-      timer.end({ status: "ok", exit: 0 });
+      console.error('WARN: Invalid JSON structure, allowing operation');
+      timer.end({ status: 'ok', exit: 0 });
       process.exit(0);
     }
 
     const toolInput = data.tool_input;
-    const toolName = data.tool_name || "unknown";
+    const toolName = data.tool_name || 'unknown';
     const claudeDir = path.dirname(__dirname); // Go up from hooks/ to .claude/
 
     // Use shared scout checker
@@ -88,29 +88,26 @@ try {
       toolInput,
       options: {
         claudeDir,
-        ckignorePath: path.join(claudeDir, ".ckignore"),
-        checkBroadPatterns: true,
-      },
+        ckignorePath: path.join(claudeDir, '.ckignore'),
+        checkBroadPatterns: true
+      }
     });
 
     // Handle allowed commands
     if (result.isAllowedCommand) {
-      timer.end({ tool: toolName, status: "ok", exit: 0 });
+      timer.end({ tool: toolName, status: 'ok', exit: 0 });
       process.exit(0);
     }
 
     // Handle broad pattern blocks
     if (result.blocked && result.isBroadPattern) {
-      const errorMsg = formatBroadPatternError(
-        {
-          blocked: true,
-          reason: result.reason,
-          suggestions: result.suggestions,
-        },
-        claudeDir,
-      );
+      const errorMsg = formatBroadPatternError({
+        blocked: true,
+        reason: result.reason,
+        suggestions: result.suggestions
+      }, claudeDir);
       console.error(errorMsg);
-      timer.end({ tool: toolName, status: "block", exit: 2 });
+      timer.end({ tool: toolName, status: 'block', exit: 2 });
       process.exit(2);
     }
 
@@ -120,37 +117,31 @@ try {
         path: result.path,
         pattern: result.pattern,
         tool: toolName,
-        claudeDir: claudeDir,
+        claudeDir: claudeDir
       });
       console.error(errorMsg);
-      timer.end({ tool: toolName, status: "block", exit: 2 });
+      timer.end({ tool: toolName, status: 'block', exit: 2 });
       process.exit(2);
     }
 
     // All paths allowed
-    timer.end({ tool: toolName, status: "ok", exit: 0 });
+    timer.end({ tool: toolName, status: 'ok', exit: 0 });
     process.exit(0);
+
   } catch (error) {
     // Fail-open for unexpected errors
-    console.error("WARN: Hook error, allowing operation -", error.message);
+    console.error('WARN: Hook error, allowing operation -', error.message);
     process.exit(0);
   }
 } catch (e) {
   // Minimal crash logging (zero deps — only Node builtins)
   try {
-    const fs = require("fs");
-    const p = require("path");
-    const logDir = p.join(__dirname, ".logs");
+    const fs = require('fs');
+    const p = require('path');
+    const logDir = p.join(__dirname, '.logs');
     if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-    fs.appendFileSync(
-      p.join(logDir, "hook-log.jsonl"),
-      JSON.stringify({
-        ts: new Date().toISOString(),
-        hook: p.basename(__filename, ".cjs"),
-        status: "crash",
-        error: e.message,
-      }) + "\n",
-    );
+    fs.appendFileSync(p.join(logDir, 'hook-log.jsonl'),
+      JSON.stringify({ ts: new Date().toISOString(), hook: p.basename(__filename, '.cjs'), status: 'crash', error: e.message }) + '\n');
   } catch (_) {}
   process.exit(0); // fail-open
 }

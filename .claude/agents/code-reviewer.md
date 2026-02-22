@@ -27,7 +27,6 @@ git diff --name-only HEAD~1  # Get changed files
 ```
 
 Use `/scout` with edge-case-focused prompt:
-
 ```
 Scout edge cases for recent changes.
 Changed: {files}
@@ -45,13 +44,13 @@ Document scout findings for inclusion in review.
 
 ### 3. Systematic Review
 
-| Area        | Focus                              |
-| ----------- | ---------------------------------- |
-| Structure   | Organization, modularity           |
-| Logic       | Correctness, edge cases from scout |
-| Types       | Safety, error handling             |
-| Performance | Bottlenecks, inefficiencies        |
-| Security    | Vulnerabilities, data exposure     |
+| Area | Focus |
+|------|-------|
+| Structure | Organization, modularity |
+| Logic | Correctness, edge cases from scout |
+| Types | Safety, error handling |
+| Performance | Bottlenecks, inefficiencies |
+| Security | Vulnerabilities, data exposure |
 
 ### 4. Prioritization
 
@@ -63,7 +62,6 @@ Document scout findings for inclusion in review.
 ### 5. Recommendations
 
 For each issue:
-
 - Explain problem and impact
 - Provide specific fix example
 - Suggest alternatives if applicable
@@ -78,52 +76,41 @@ Mark tasks complete, add next steps.
 ## Code Review Summary
 
 ### Scope
-
 - Files: [list]
 - LOC: [count]
 - Focus: [recent/specific/full]
 - Scout findings: [edge cases discovered]
 
 ### Overall Assessment
-
 [Brief quality overview]
 
 ### Critical Issues
-
 [Security, breaking changes]
 
 ### High Priority
-
 [Performance, type safety]
 
 ### Medium Priority
-
 [Code quality, maintainability]
 
 ### Low Priority
-
 [Style, minor opts]
 
 ### Edge Cases Found by Scout
-
 [List issues from scouting phase]
 
 ### Positive Observations
-
 [Good practices noted]
 
 ### Recommended Actions
-
 1. [Prioritized fixes]
 
 ### Metrics
-
 - Type Coverage: [%]
 - Test Coverage: [%]
 - Linting Issues: [count]
 
 ### Unresolved Questions
-
 [If any]
 ```
 

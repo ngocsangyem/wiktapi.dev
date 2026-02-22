@@ -30,7 +30,8 @@ export const ContextInjectorPlugin: Plugin = async ({ directory }) => {
   return {
     "chat.message": async ({}: any, { message }: any) => {
       // Get or generate session ID
-      const sessionId = process.env.OPENCODE_SESSION_ID || `opencode-${Date.now()}`;
+      const sessionId = process.env.OPENCODE_SESSION_ID ||
+                        `opencode-${Date.now()}`;
 
       // Only inject on first message per session
       if (injectedSessions.has(sessionId)) {
@@ -49,10 +50,10 @@ export const ContextInjectorPlugin: Plugin = async ({ directory }) => {
             gitBranch: detections.gitBranch,
             gitRoot: detections.gitRoot,
             user: process.env.USER || process.env.USERNAME,
-            locale: process.env.LANG || "",
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            locale: process.env.LANG || '',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
           },
-          configDirName: ".opencode",
+          configDirName: '.opencode'
         });
 
         // Inject coding level guidelines if configured
@@ -61,24 +62,22 @@ export const ContextInjectorPlugin: Plugin = async ({ directory }) => {
 
         // Prepend context to first user message
         const contextBlock = [
-          "<system-context>",
+          '<system-context>',
           content,
-          guidelines ? `\n${guidelines}` : "",
-          "</system-context>",
-          "",
-        ]
-          .filter(Boolean)
-          .join("\n");
+          guidelines ? `\n${guidelines}` : '',
+          '</system-context>',
+          ''
+        ].filter(Boolean).join('\n');
 
         // Modify message content (prepend context)
-        if (message && typeof message.content === "string") {
+        if (message && typeof message.content === 'string') {
           message.content = contextBlock + message.content;
         }
       } catch (e) {
         // Silently fail - don't break the chat if context injection fails
-        console.error("[ContextInjector] Failed to inject context:", e);
+        console.error('[ContextInjector] Failed to inject context:', e);
       }
-    },
+    }
   };
 };
 

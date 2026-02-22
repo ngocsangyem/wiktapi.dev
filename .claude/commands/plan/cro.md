@@ -54,10 +54,10 @@ Activate `planning` skill.
     description: "{One sentence for card preview}"
     status: pending
     priority: P2
-    effort: { sum of phases, e.g., 4h }
-    branch: { current git branch }
+    effort: {sum of phases, e.g., 4h}
+    branch: {current git branch}
     tags: [cro, conversion]
-    created: { YYYY-MM-DD }
+    created: {YYYY-MM-DD}
     ---
     ```
   - Save the overview access point at `plan.md`, keep it generic, under 80 lines, and list each phase with status/progress and links.

@@ -3,13 +3,11 @@
 For fixing issues from application logs.
 
 ## Prerequisites
-
 - Log file at `./logs.txt` or similar
 
 ## Setup (if logs missing)
 
 Add permanent log piping to project config:
-
 - **Bash/Unix**: `command 2>&1 | tee logs.txt`
 - **PowerShell**: `command *>&1 | Tee-Object logs.txt`
 
@@ -33,7 +31,6 @@ Add permanent log piping to project config:
 8. **Iterate** if issues remain, repeat from step 3
 
 ## Tips
-
 - Focus on last N lines first (most recent errors)
 - Look for stack traces, error codes, timestamps
 - Check for patterns/repeated errors

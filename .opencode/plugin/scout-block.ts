@@ -17,7 +17,7 @@ export const ScoutBlockPlugin: Plugin = async ({ directory }) => {
       const result = checkScoutBlock({
         toolName: input.tool,
         toolInput: output.args,
-        options: { ckignorePath, claudeDir },
+        options: { ckignorePath, claudeDir }
       });
 
       if (result.blocked) {
@@ -26,14 +26,14 @@ export const ScoutBlockPlugin: Plugin = async ({ directory }) => {
 
         if (result.isBroadPattern && result.suggestions?.length) {
           errorMsg += `\nSuggested alternatives:\n`;
-          result.suggestions.forEach((s: string) => (errorMsg += `  - ${s}\n`));
+          result.suggestions.forEach((s: string) => errorMsg += `  - ${s}\n`);
         }
 
         errorMsg += `\nTo allow, add '!${result.pattern}' to .opencode/.ckignore`;
 
         throw new Error(errorMsg);
       }
-    },
+    }
   };
 };
 

@@ -3,7 +3,6 @@
 ## Plan File Format
 
 **Important:**
-
 - DO NOT create plans or reports in USER directory.
 - ALWAYS create plans or reports in CURRENT WORKING PROJECT DIRECTORY.
 
@@ -15,12 +14,12 @@ All `plan.md` files MUST include YAML frontmatter at the top:
 ---
 title: "{Brief plan title}"
 description: "{One-sentence summary for card preview}"
-status: pending # pending | in-progress | completed | cancelled
-priority: P2 # P1 (High) | P2 (Medium) | P3 (Low)
-effort: 4h # Estimated total effort
-issue: 74 # GitHub issue number (if applicable)
+status: pending  # pending | in-progress | completed | cancelled
+priority: P2     # P1 (High) | P2 (Medium) | P3 (Low)
+effort: 4h       # Estimated total effort
+issue: 74        # GitHub issue number (if applicable)
 branch: kai/feat/feature-name
-tags: [frontend, api] # Category tags
+tags: [frontend, api]  # Category tags
 created: 2025-12-16
 ---
 ```
@@ -28,7 +27,6 @@ created: 2025-12-16
 ### Auto-Population Rules
 
 When creating plans, auto-populate these fields:
-
 - **title**: Extract from task description
 - **description**: First sentence of Overview section
 - **status**: Always `pending` for new plans
@@ -42,7 +40,6 @@ When creating plans, auto-populate these fields:
 ### Tag Vocabulary (Recommended)
 
 Use these predefined tags for consistency:
-
 - **Type**: `feature`, `bugfix`, `refactor`, `docs`, `infra`
 - **Domain**: `frontend`, `backend`, `database`, `api`, `auth`
 - **Scope**: `critical`, `tech-debt`, `experimental`
@@ -59,12 +56,10 @@ Use these predefined tags for consistency:
 ### File Management
 
 **Important:**
-
 - DO NOT create plans or reports in USER directory.
 - ALWAYS create plans or reports in CURRENT WORKING PROJECT DIRECTORY.
 
 List affected files with:
-
 - Full paths (not relative)
 - Action type (modify/create/delete)
 - Brief change description
@@ -83,12 +78,10 @@ List affected files with:
 ## Output Requirements
 
 **Important:**
-
 - DO NOT create plans or reports in USER directory.
 - ALWAYS create plans or reports in CURRENT WORKING PROJECT DIRECTORY.
 
 ### What Planners Do
-
 - Create plans ONLY (no implementation)
 - Provide plan file path and summary
 - Self-contained plans with necessary context
@@ -97,9 +90,7 @@ List affected files with:
 - Fully respect the `./docs/development-rules.md` file.
 
 ### Writing Style
-
 **IMPORTANT:** Sacrifice grammar for concision
-
 - Focus clarity over eloquence
 - Use bullets and lists
 - Short sentences
@@ -107,26 +98,22 @@ List affected files with:
 - Prioritize actionable info
 
 ### Unresolved Questions
-
 **IMPORTANT:** Use `AskUserQuestion` to ask users for unresolved questions at the end
-
 - Questions needing clarification
 - Technical decisions requiring input
 - Unknowns impacting implementation
 - Trade-offs requiring business decisions
-  Revise the plan and phases based on the answers.
+Revise the plan and phases based on the answers.
 
 ## Quality Standards
 
 ### Thoroughness
-
 - Thorough and specific in research/planning
 - Consider edge cases, failure modes
 - Think through entire user journey
 - Document all assumptions
 
 ### Maintainability
-
 - Consider long-term maintainability
 - Design for future modifications
 - Document decision rationale
@@ -134,21 +121,18 @@ List affected files with:
 - Fully respect the `./docs/development-rules.md` file.
 
 ### Research Depth
-
 - When uncertain, research more
 - Multiple options with clear trade-offs
 - Validate against best practices
 - Consider industry standards
 
 ### Security & Performance
-
 - Address all security concerns
 - Identify performance implications
 - Plan for scalability
 - Consider resource constraints
 
 ### Implementability
-
 - Detailed enough for junior developers
 - Validate against existing patterns
 - Ensure codebase standards consistency

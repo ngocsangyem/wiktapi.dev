@@ -1,5 +1,5 @@
 ---
-description: 'Stage, commit, and push code changes with conventional commits. Use when user says "commit", "push", or finishes a feature/fix.'
+description: "Stage, commit, and push code changes with conventional commits. Use when user says \"commit\", \"push\", or finishes a feature/fix."
 mode: subagent
 tools:
   read: true

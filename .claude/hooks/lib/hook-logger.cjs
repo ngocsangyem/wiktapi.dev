@@ -8,11 +8,11 @@
  * Export: logHook(hookName, data), createHookTimer(hookName)
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const LOG_DIR = path.join(__dirname, "..", ".logs");
-const LOG_FILE = path.join(LOG_DIR, "hook-log.jsonl");
+const LOG_DIR = path.join(__dirname, '..', '.logs');
+const LOG_FILE = path.join(LOG_DIR, 'hook-log.jsonl');
 const MAX_LINES = 1000;
 const TRUNCATE_TO = 500;
 
@@ -35,10 +35,10 @@ function ensureLogDir() {
 function rotateIfNeeded() {
   try {
     if (!fs.existsSync(LOG_FILE)) return;
-    const lines = fs.readFileSync(LOG_FILE, "utf-8").split("\n").filter(Boolean);
+    const lines = fs.readFileSync(LOG_FILE, 'utf-8').split('\n').filter(Boolean);
     if (lines.length >= MAX_LINES) {
-      const truncated = lines.slice(-TRUNCATE_TO).join("\n") + "\n";
-      fs.writeFileSync(LOG_FILE, truncated, "utf-8");
+      const truncated = lines.slice(-TRUNCATE_TO).join('\n') + '\n';
+      fs.writeFileSync(LOG_FILE, truncated, 'utf-8');
     }
   } catch (_) {
     // Fail silently
@@ -58,14 +58,14 @@ function logHook(hookName, data) {
     const entry = {
       ts: new Date().toISOString(),
       hook: hookName,
-      tool: data.tool || "",
+      tool: data.tool || '',
       dur: data.dur || 0,
-      status: data.status || "ok",
+      status: data.status || 'ok',
       exit: data.exit !== undefined ? data.exit : 0,
-      error: data.error || "",
+      error: data.error || ''
     };
 
-    fs.appendFileSync(LOG_FILE, JSON.stringify(entry) + "\n", "utf-8");
+    fs.appendFileSync(LOG_FILE, JSON.stringify(entry) + '\n', 'utf-8');
   } catch (_) {
     // Never crash — fail silently
   }
@@ -82,11 +82,11 @@ function createHookTimer(hookName) {
     end(data = {}) {
       const dur = Date.now() - start;
       logHook(hookName, { ...data, dur });
-    },
+    }
   };
 }
 
 module.exports = {
   logHook,
-  createHookTimer,
+  createHookTimer
 };

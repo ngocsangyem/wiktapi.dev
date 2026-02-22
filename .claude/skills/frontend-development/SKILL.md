@@ -56,12 +56,12 @@ Creating a feature? Set up this structure:
 
 ## Import Aliases Quick Reference
 
-| Alias         | Resolves To      | Example                                                       |
-| ------------- | ---------------- | ------------------------------------------------------------- |
-| `@/`          | `src/`           | `import { apiClient } from '@/lib/apiClient'`                 |
-| `~types`      | `src/types`      | `import type { User } from '~types/user'`                     |
+| Alias | Resolves To | Example |
+|-------|-------------|---------|
+| `@/` | `src/` | `import { apiClient } from '@/lib/apiClient'` |
+| `~types` | `src/types` | `import type { User } from '~types/user'` |
 | `~components` | `src/components` | `import { SuspenseLoader } from '~components/SuspenseLoader'` |
-| `~features`   | `src/features`   | `import { authApi } from '~features/auth'`                    |
+| `~features` | `src/features` | `import { authApi } from '~features/auth'` |
 
 Defined in: [vite.config.ts](../../vite.config.ts) lines 180-185
 
@@ -71,28 +71,28 @@ Defined in: [vite.config.ts](../../vite.config.ts) lines 180-185
 
 ```typescript
 // React & Lazy Loading
-import React, { useState, useCallback, useMemo } from "react";
-const Heavy = React.lazy(() => import("./Heavy"));
+import React, { useState, useCallback, useMemo } from 'react';
+const Heavy = React.lazy(() => import('./Heavy'));
 
 // MUI Components
-import { Box, Paper, Typography, Button, Grid } from "@mui/material";
-import type { SxProps, Theme } from "@mui/material";
+import { Box, Paper, Typography, Button, Grid } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material';
 
 // TanStack Query (Suspense)
-import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 
 // TanStack Router
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
 
 // Project Components
-import { SuspenseLoader } from "~components/SuspenseLoader";
+import { SuspenseLoader } from '~components/SuspenseLoader';
 
 // Hooks
-import { useAuth } from "@/hooks/useAuth";
-import { useMuiSnackbar } from "@/hooks/useMuiSnackbar";
+import { useAuth } from '@/hooks/useAuth';
+import { useMuiSnackbar } from '@/hooks/useMuiSnackbar';
 
 // Types
-import type { Post } from "~types/post";
+import type { Post } from '~types/post';
 ```
 
 ---
@@ -102,14 +102,12 @@ import type { Post } from "~types/post";
 ### 🎨 Component Patterns
 
 **Modern React components use:**
-
 - `React.FC<Props>` for type safety
 - `React.lazy()` for code splitting
 - `SuspenseLoader` for loading states
 - Named const + default export pattern
 
 **Key Concepts:**
-
 - Lazy load heavy components (DataGrid, charts, editors)
 - Always wrap lazy components in Suspense
 - Use SuspenseLoader component (with fade animation)
@@ -122,14 +120,12 @@ import type { Post } from "~types/post";
 ### 📊 Data Fetching
 
 **PRIMARY PATTERN: useSuspenseQuery**
-
 - Use with Suspense boundaries
 - Cache-first strategy (check grid cache before API)
 - Replaces `isLoading` checks
 - Type-safe with generics
 
 **API Service Layer:**
-
 - Create `features/{feature}/api/{feature}Api.ts`
 - Use `apiClient` axios instance
 - Centralized methods per feature
@@ -142,12 +138,10 @@ import type { Post } from "~types/post";
 ### 📁 File Organization
 
 **features/ vs components/:**
-
 - `features/`: Domain-specific (posts, comments, auth)
 - `components/`: Truly reusable (SuspenseLoader, CustomAppBar)
 
 **Feature Subdirectories:**
-
 ```
 features/
   my-feature/
@@ -165,18 +159,15 @@ features/
 ### 🎨 Styling
 
 **Inline vs Separate:**
-
 - <100 lines: Inline `const styles: Record<string, SxProps<Theme>>`
-- > 100 lines: Separate `.styles.ts` file
+- >100 lines: Separate `.styles.ts` file
 
 **Primary Method:**
-
 - Use `sx` prop for MUI components
 - Type-safe with `SxProps<Theme>`
 - Theme access: `(theme) => theme.palette.primary.main`
 
 **MUI v7 Grid:**
-
 ```typescript
 <Grid size={{ xs: 12, md: 6 }}>  // ✅ v7 syntax
 <Grid xs={12} md={6}>             // ❌ Old syntax
@@ -189,23 +180,21 @@ features/
 ### 🛣️ Routing
 
 **TanStack Router - Folder-Based:**
-
 - Directory: `routes/my-route/index.tsx`
 - Lazy load components
 - Use `createFileRoute`
 - Breadcrumb data in loader
 
 **Example:**
-
 ```typescript
-import { createFileRoute } from "@tanstack/react-router";
-import { lazy } from "react";
+import { createFileRoute } from '@tanstack/react-router';
+import { lazy } from 'react';
 
-const MyPage = lazy(() => import("@/features/my-feature/components/MyPage"));
+const MyPage = lazy(() => import('@/features/my-feature/components/MyPage'));
 
-export const Route = createFileRoute("/my-route/")({
-  component: MyPage,
-  loader: () => ({ crumb: "My Route" }),
+export const Route = createFileRoute('/my-route/')({
+    component: MyPage,
+    loader: () => ({ crumb: 'My Route' }),
 });
 ```
 
@@ -232,7 +221,6 @@ if (isLoading) {
 **Why:** Prevents Cumulative Layout Shift (CLS), better UX
 
 **Error Handling:**
-
 - Use `useMuiSnackbar` for user feedback
 - NEVER `react-toastify`
 - TanStack Query `onError` callbacks
@@ -244,7 +232,6 @@ if (isLoading) {
 ### ⚡ Performance
 
 **Optimization Patterns:**
-
 - `useMemo`: Expensive computations (filter, sort, map)
 - `useCallback`: Event handlers passed to children
 - `React.memo`: Expensive components
@@ -258,7 +245,6 @@ if (isLoading) {
 ### 📘 TypeScript
 
 **Standards:**
-
 - Strict mode, no `any` type
 - Explicit return types on functions
 - Type imports: `import type { User } from '~types/user'`
@@ -271,7 +257,6 @@ if (isLoading) {
 ### 🔧 Common Patterns
 
 **Covered Topics:**
-
 - React Hook Form with Zod validation
 - DataGrid wrapper contracts
 - Dialog component standards
@@ -285,7 +270,6 @@ if (isLoading) {
 ### 📚 Complete Examples
 
 **Full working examples:**
-
 - Modern component with all patterns
 - Complete feature structure
 - API service layer
@@ -299,18 +283,18 @@ if (isLoading) {
 
 ## Navigation Guide
 
-| Need to...             | Read this resource                                                   |
-| ---------------------- | -------------------------------------------------------------------- |
-| Create a component     | [component-patterns.md](resources/component-patterns.md)             |
-| Fetch data             | [data-fetching.md](resources/data-fetching.md)                       |
-| Organize files/folders | [file-organization.md](resources/file-organization.md)               |
-| Style components       | [styling-guide.md](resources/styling-guide.md)                       |
-| Set up routing         | [routing-guide.md](resources/routing-guide.md)                       |
-| Handle loading/errors  | [loading-and-error-states.md](resources/loading-and-error-states.md) |
-| Optimize performance   | [performance.md](resources/performance.md)                           |
-| TypeScript types       | [typescript-standards.md](resources/typescript-standards.md)         |
-| Forms/Auth/DataGrid    | [common-patterns.md](resources/common-patterns.md)                   |
-| See full examples      | [complete-examples.md](resources/complete-examples.md)               |
+| Need to... | Read this resource |
+|------------|-------------------|
+| Create a component | [component-patterns.md](resources/component-patterns.md) |
+| Fetch data | [data-fetching.md](resources/data-fetching.md) |
+| Organize files/folders | [file-organization.md](resources/file-organization.md) |
+| Style components | [styling-guide.md](resources/styling-guide.md) |
+| Set up routing | [routing-guide.md](resources/routing-guide.md) |
+| Handle loading/errors | [loading-and-error-states.md](resources/loading-and-error-states.md) |
+| Optimize performance | [performance.md](resources/performance.md) |
+| TypeScript types | [typescript-standards.md](resources/typescript-standards.md) |
+| Forms/Auth/DataGrid | [common-patterns.md](resources/common-patterns.md) |
+| See full examples | [complete-examples.md](resources/complete-examples.md) |
 
 ---
 

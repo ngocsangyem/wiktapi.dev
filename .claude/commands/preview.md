@@ -11,13 +11,11 @@ Universal viewer + visual generator. View existing content OR generate new visua
 ## Usage
 
 ### View Mode (existing behavior)
-
 - `/preview <file.md>` - View markdown file in novel-reader UI
 - `/preview <directory/>` - Browse directory contents
 - `/preview --stop` - Stop running server
 
 ### Generation Mode (new)
-
 - `/preview --explain <topic>` - Generate visual explanation (ASCII + Mermaid + prose)
 - `/preview --slides <topic>` - Generate presentation slides (one concept per slide)
 - `/preview --diagram <topic>` - Generate focused diagram (ASCII + Mermaid)
@@ -47,7 +45,6 @@ When processing arguments, follow this priority order:
 4. **Neither flag nor valid path** → Error: suggest `/preview --help`
 
 **Topic-to-slug conversion:**
-
 - Lowercase the topic
 - Replace spaces/special chars with hyphens
 - Remove non-alphanumeric except hyphens
@@ -102,13 +99,11 @@ fi
 ```
 
 **Critical:** When calling the Bash tool:
-
 - Set `run_in_background: true` to run as CC background task
 - Set `timeout: 300000` (5 minutes) to prevent premature termination
 - Parse JSON output and report URL to user
 
 Example Bash tool call:
-
 ```json
 {
   "command": "node .claude/skills/markdown-novel-viewer/scripts/server.cjs --dir \"path\" --host 0.0.0.0 --open --foreground",
@@ -119,7 +114,6 @@ Example Bash tool call:
 ```
 
 After starting, parse the JSON output (e.g., `{"success":true,"url":"http://localhost:3456/view?file=...","networkUrl":"http://192.168.1.x:3456/view?file=..."}`) and report:
-
 - Local URL for browser access
 - Network URL for remote device access (if available)
 - Inform user that server is now running as CC background task (visible in `/tasks`)
@@ -145,113 +139,97 @@ When `--explain`, `--slides`, `--diagram`, or `--ascii` flag is provided:
 When generating ` ```mermaid ` code blocks, use `/mermaidjs-v11` skill for v11 syntax rules.
 
 **Essential rules (always apply):**
-
 - Quote node text with special characters: `A["text with /slashes"]`
 - Escape brackets in labels: `A["array[0]"]`
 
 Use the appropriate template based on flag:
 
 #### --explain (Visual Explanation)
-
-````markdown
+```markdown
 # Visual Explanation: {topic}
 
 ## Overview
-
 Brief description of what we're explaining.
 
 ## Quick View (ASCII)
-
-┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
 │ Component A │───>│ Component B │───>│ Component C │
-└─────────────┘ └─────────────┘ └─────────────┘
+└─────────────┘    └─────────────┘    └─────────────┘
 
 ## Detailed Flow
-
 \```mermaid
 sequenceDiagram
-participant A as Component A
-participant B as Component B
-A->>B: Request
-B-->>A: Response
+    participant A as Component A
+    participant B as Component B
+    A->>B: Request
+    B-->>A: Response
 \```
 
 ## Key Concepts
-
 1. **Concept A** - Explanation
 2. **Concept B** - Explanation
 
 ## Code Example (if applicable)
-
 \```typescript
 // Relevant code snippet with comments
 \```
-````
+```
 
 #### --slides (Presentation Format)
-
-````markdown
+```markdown
 # {Topic} - Visual Presentation
 
 ---
 
 ## Slide 1: Introduction
-
 - One concept per slide
 - Bullet points only
 
 ---
 
 ## Slide 2: The Problem
-
 \```mermaid
 flowchart TD
-A[Problem] --> B[Impact]
+    A[Problem] --> B[Impact]
 \```
 
 ---
 
 ## Slide 3: The Solution
-
 - Key point 1
 - Key point 2
 
 ---
 
 ## Slide 4: Summary
-
 Key takeaways...
-````
+```
 
 #### --diagram (Focused Diagram)
-
-````markdown
+```markdown
 # Diagram: {topic}
 
 ## ASCII Version
-
 ┌──────────────────────────────────────────┐
-│ Architecture │
+│               Architecture               │
 ├─────────────┬──────────────┬─────────────┤
-│ Layer 1 │ Layer 2 │ Layer 3 │
+│   Layer 1   │   Layer 2    │   Layer 3   │
 └─────────────┴──────────────┴─────────────┘
 
 ## Mermaid Version
-
 \```mermaid
 flowchart TB
-subgraph Layer1[Layer 1]
-A[Component A]
-end
-subgraph Layer2[Layer 2]
-B[Component B]
-end
-A --> B
+    subgraph Layer1[Layer 1]
+        A[Component A]
+    end
+    subgraph Layer2[Layer 2]
+        B[Component B]
+    end
+    A --> B
 \```
-````
+```
 
 #### --ascii (Terminal-Friendly Only)
-
 ```
 ┌────────────────────────────────────────────────────────┐
 │                    {Topic} Overview                    │
@@ -272,7 +250,6 @@ A --> B
 
 1. Write generated content to determined path
 2. Start preview server with the generated file:
-
 ```bash
 node .claude/skills/markdown-novel-viewer/scripts/server.cjs \
   --file "<generated-file-path>" \
@@ -284,21 +261,20 @@ node .claude/skills/markdown-novel-viewer/scripts/server.cjs \
 ### Step 4: Report to User
 
 Report:
-
 - Generated file path
 - Preview URL (local + network)
 - Remind: file saved in plan's `visuals/` folder for future reference
 
 ## Error Handling
 
-| Error                                     | Action                                                           |
-| ----------------------------------------- | ---------------------------------------------------------------- |
-| Invalid topic (empty)                     | Ask user to provide a topic                                      |
+| Error | Action |
+|-------|--------|
+| Invalid topic (empty) | Ask user to provide a topic |
 | Flag without topic (`/preview --explain`) | Ask user: "Please provide a topic: `/preview --explain <topic>`" |
-| Topic becomes empty after sanitization    | Ask user to provide topic with alphanumeric characters           |
-| File write failure                        | Report error, suggest checking permissions                       |
-| Server startup failure                    | Check if port in use, try `/preview --stop` first                |
-| No generation flag + invalid path         | Suggest `/preview --help` or correct syntax                      |
-| Existing file at output path              | Overwrite with new content (no prompt)                           |
-| Server already running                    | Reuse existing server instance, just open new URL                |
-| Parent `plans/` dir missing               | Create directories recursively before write                      |
+| Topic becomes empty after sanitization | Ask user to provide topic with alphanumeric characters |
+| File write failure | Report error, suggest checking permissions |
+| Server startup failure | Check if port in use, try `/preview --stop` first |
+| No generation flag + invalid path | Suggest `/preview --help` or correct syntax |
+| Existing file at output path | Overwrite with new content (no prompt) |
+| Server already running | Reuse existing server instance, just open new URL |
+| Parent `plans/` dir missing | Create directories recursively before write |

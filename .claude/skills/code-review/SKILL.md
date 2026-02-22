@@ -16,12 +16,12 @@ Verify before implementing. Ask before assuming. Evidence before claims.
 
 ## Three Practices
 
-| Practice               | When                                                       | Reference                                      |
-| ---------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
-| Receiving feedback     | Unclear feedback, external reviewers, needs prioritization | `references/code-review-reception.md`          |
-| Requesting review      | After tasks, before merge, stuck on problem                | `references/requesting-code-review.md`         |
-| Verification gates     | Before any completion claim, commit, PR                    | `references/verification-before-completion.md` |
-| **Edge case scouting** | After implementation, before review                        | `references/edge-case-scouting.md`             |
+| Practice | When | Reference |
+|----------|------|-----------|
+| Receiving feedback | Unclear feedback, external reviewers, needs prioritization | `references/code-review-reception.md` |
+| Requesting review | After tasks, before merge, stuck on problem | `references/requesting-code-review.md` |
+| Verification gates | Before any completion claim, commit, PR | `references/verification-before-completion.md` |
+| **Edge case scouting** | After implementation, before review | `references/edge-case-scouting.md` |
 
 ## Quick Decision Tree
 
@@ -38,14 +38,12 @@ SITUATION?
 **Pattern:** READ → UNDERSTAND → VERIFY → EVALUATE → RESPOND → IMPLEMENT
 
 **Rules:**
-
 - ❌ No performative agreement: "You're absolutely right!", "Great point!"
 - ❌ No implementation before verification
 - ✅ Restate, ask questions, push back with reasoning, or just work
 - ✅ YAGNI check: grep for usage before implementing "proper" features
 
 **Source handling:**
-
 - Human partner: Trusted - implement after understanding
 - External reviewers: Verify technically, check breakage, push back if wrong
 
@@ -56,7 +54,6 @@ SITUATION?
 **When:** After each task, major features, before merge
 
 **Process:**
-
 1. **Scout edge cases first** (see below)
 2. Get SHAs: `BASE_SHA=$(git rev-parse HEAD~1)` and `HEAD_SHA=$(git rev-parse HEAD)`
 3. Dispatch code-reviewer subagent with: WHAT, PLAN, BASE_SHA, HEAD_SHA, DESCRIPTION
@@ -71,7 +68,6 @@ SITUATION?
 **Purpose:** Proactively find edge cases, side effects, and potential issues using scout skill.
 
 **Process:**
-
 1. Invoke `/scout` with edge-case-focused prompt
 2. Scout analyzes: affected files, data flows, error paths, boundary conditions
 3. Review scout findings for potential issues
@@ -86,7 +82,6 @@ SITUATION?
 **Gate:** IDENTIFY command → RUN full → READ output → VERIFY confirms → THEN claim
 
 **Requirements:**
-
 - Tests pass: Output shows 0 failures
 - Build succeeds: Exit 0
 - Bug fixed: Original symptom passes

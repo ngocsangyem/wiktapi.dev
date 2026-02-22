@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-"use strict";
+'use strict';
 
 /**
  * Transcript Parser - Extract tool/agent/todo state from session JSONL
  * @module transcript-parser
  */
 
-const fs = require("fs");
-const readline = require("readline");
+const fs = require('fs');
+const readline = require('readline');
 
 /**
  * Parse transcript JSONL file
@@ -19,7 +19,7 @@ async function parseTranscript(transcriptPath) {
     tools: [],
     agents: [],
     todos: [],
-    sessionStart: null,
+    sessionStart: null
   };
 
   if (!transcriptPath || !fs.existsSync(transcriptPath)) {
@@ -34,7 +34,7 @@ async function parseTranscript(transcriptPath) {
     const fileStream = fs.createReadStream(transcriptPath);
     const rl = readline.createInterface({
       input: fileStream,
-      crlfDelay: Infinity,
+      crlfDelay: Infinity
     });
 
     for await (const line of rl) {
@@ -79,37 +79,37 @@ function processEntry(entry, toolMap, agentMap, latestTodos, result) {
 
   for (const block of content) {
     // Handle tool_use blocks
-    if (block.type === "tool_use" && block.id && block.name) {
-      if (block.name === "Task") {
+    if (block.type === 'tool_use' && block.id && block.name) {
+      if (block.name === 'Task') {
         // Agent spawn
         agentMap.set(block.id, {
           id: block.id,
-          type: block.input?.subagent_type ?? "unknown",
+          type: block.input?.subagent_type ?? 'unknown',
           model: block.input?.model ?? null,
           description: block.input?.description ?? null,
-          status: "running",
+          status: 'running',
           startTime: timestamp,
-          endTime: null,
+          endTime: null
         });
-      } else if (block.name === "TodoWrite") {
+      } else if (block.name === 'TodoWrite') {
         // Legacy: Replace todo array (deprecated, kept for backwards compatibility)
         if (block.input?.todos && Array.isArray(block.input.todos)) {
           latestTodos.length = 0;
           latestTodos.push(...block.input.todos);
         }
-      } else if (block.name === "TaskCreate") {
+      } else if (block.name === 'TaskCreate') {
         // Native Task API: Add new task
         if (block.input?.subject) {
           latestTodos.push({
             content: block.input.subject,
-            status: "pending",
-            activeForm: block.input.activeForm || null,
+            status: 'pending',
+            activeForm: block.input.activeForm || null
           });
         }
-      } else if (block.name === "TaskUpdate") {
+      } else if (block.name === 'TaskUpdate') {
         // Native Task API: Update existing task status
         if (block.input?.taskId && block.input?.status) {
-          const task = latestTodos.find((t) => t.id === block.input.taskId);
+          const task = latestTodos.find(t => t.id === block.input.taskId);
           if (task) {
             task.status = block.input.status;
           }
@@ -120,24 +120,24 @@ function processEntry(entry, toolMap, agentMap, latestTodos, result) {
           id: block.id,
           name: block.name,
           target: extractTarget(block.name, block.input),
-          status: "running",
+          status: 'running',
           startTime: timestamp,
-          endTime: null,
+          endTime: null
         });
       }
     }
 
     // Handle tool_result blocks
-    if (block.type === "tool_result" && block.tool_use_id) {
+    if (block.type === 'tool_result' && block.tool_use_id) {
       const tool = toolMap.get(block.tool_use_id);
       if (tool) {
-        tool.status = block.is_error ? "error" : "completed";
+        tool.status = block.is_error ? 'error' : 'completed';
         tool.endTime = timestamp;
       }
 
       const agent = agentMap.get(block.tool_use_id);
       if (agent) {
-        agent.status = "completed";
+        agent.status = 'completed';
         agent.endTime = timestamp;
       }
     }
@@ -154,19 +154,19 @@ function extractTarget(toolName, input) {
   if (!input) return null;
 
   switch (toolName) {
-    case "Read":
-    case "Write":
-    case "Edit":
+    case 'Read':
+    case 'Write':
+    case 'Edit':
       return input.file_path ?? input.path ?? null;
 
-    case "Glob":
-    case "Grep":
+    case 'Glob':
+    case 'Grep':
       return input.pattern ?? null;
 
-    case "Bash":
+    case 'Bash':
       const cmd = input.command;
       if (!cmd) return null;
-      return cmd.length > 30 ? cmd.slice(0, 30) + "..." : cmd;
+      return cmd.length > 30 ? cmd.slice(0, 30) + '...' : cmd;
 
     default:
       return null;
@@ -177,5 +177,5 @@ module.exports = {
   parseTranscript,
   // Export for testing
   processEntry,
-  extractTarget,
+  extractTarget
 };

@@ -11,7 +11,6 @@ description: "⚡⚡⚡ Ultrathink edge cases, then parallel verify with code-re
 ### 1. Ultrathink Edge Cases
 
 Main agent deeply analyzes the scope to LIST all potential edge cases FIRST:
-
 - Read `codebase-summary.md` for context
 - Use `/scout:ext` to find relevant files
 - **Think exhaustively** about what could go wrong:
@@ -25,24 +24,20 @@ Main agent deeply analyzes the scope to LIST all potential edge cases FIRST:
   - Untested code paths
 
 **Output format:**
-
 ```markdown
 ## Edge Cases Identified
 
 ### Category: [scope-area]
-
 1. [edge case description] → files: [file1, file2]
 2. [edge case description] → files: [file3]
 
 ### Category: [another-area]
-
 1. [edge case description] → files: [file4, file5]
 ```
 
 ### 2. Categorize & Assign
 
 Group edge cases by similar scope for parallel verification:
-
 - Each category → one `code-reviewer` agent
 - Max 6 categories (merge small ones)
 - Each reviewer gets specific edge cases to VERIFY, not discover
@@ -50,13 +45,11 @@ Group edge cases by similar scope for parallel verification:
 ### 3. Parallel Verification
 
 Launch N `code-reviewer` subagents simultaneously:
-
 - Pass: category name, list of edge cases, relevant files
 - Task: **VERIFY** if each edge case is properly handled in code
 - Report: which edge cases are handled vs unhandled
 
 **Reviewer instruction:**
-
 ```
 Verify these specific edge cases in the given files:
 [list of edge cases]
@@ -70,34 +63,29 @@ For each, report:
 ### 4. Aggregate Results
 
 Collect all verification reports:
-
 ```markdown
 ## Edge Case Verification Report
 
 ### Summary
-
 - Total edge cases: X
 - Handled: Y ✅
 - Unhandled: Z ❌
 - Partial: W ⚠️
 
 ### Unhandled Edge Cases (Need Fix)
-
-| #   | Edge Case | File | Status |
-| --- | --------- | ---- | ------ |
-| 1   | ...       | ...  | ❌     |
+| # | Edge Case | File | Status |
+|---|-----------|------|--------|
+| 1 | ...       | ...  | ❌     |
 
 ### Partial Handling (Need Review)
-
-| #   | Edge Case | File | Issue |
-| --- | --------- | ---- | ----- |
-| 1   | ...       | ...  | ...   |
+| # | Edge Case | File | Issue |
+|---|-----------|------|-------|
+| 1 | ...       | ...  | ...   |
 ```
 
 ### 5. Auto-Fix Pipeline
 
 **IF** unhandled/partial edge cases found:
-
 - Ask: "Found N unhandled edge cases. Fix with /fix --parallel? [Y/n]"
 - **IF yes:** Trigger `/fix --parallel` with unhandled list
 

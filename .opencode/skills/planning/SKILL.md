@@ -11,7 +11,6 @@ Create detailed technical implementation plans through research, codebase analys
 ## When to Use
 
 Use this skill when:
-
 - Planning new feature implementations
 - Architecting system designs
 - Evaluating technical approaches
@@ -25,25 +24,20 @@ Always honoring **YAGNI**, **KISS**, and **DRY** principles.
 **Be honest, be brutal, straight to the point, and be concise.**
 
 ### 1. Research & Analysis
-
 Load: `references/research-phase.md`
 **Skip if:** Provided with researcher reports
 
 ### 2. Codebase Understanding
-
 Load: `references/codebase-understanding.md`
 **Skip if:** Provided with scout reports
 
 ### 3. Solution Design
-
 Load: `references/solution-design.md`
 
 ### 4. Plan Creation & Organization
-
 Load: `references/plan-organization.md`
 
 ### 5. Task Breakdown & Output Standards
-
 Load: `references/output-standards.md`
 
 ## Workflow Process
@@ -67,20 +61,17 @@ Load: `references/output-standards.md`
 ## Task Integration (Optional)
 
 When session has `CLAUDE_CODE_TASK_LIST_ID` set (active plan):
-
 - Use TaskCreate to create tasks for each phase with clear subjects
 - Set dependencies: Phase N+1 `blockedBy` Phase N
 - Subagents coordinate via shared task list automatically
 - Use TaskUpdate to mark progress (in_progress → completed)
 
 ### Important
-
 DO NOT create plans or reports in USER directory.
 ALWAYS create plans or reports in CURRENT WORKING PROJECT DIRECTORY.
 
 **Plan Directory Structure**
 IN CURRENT WORKING PROJECT DIRECTORY:
-
 ```
 plans/
 └── {date}-plan-name/
@@ -105,7 +96,6 @@ Prevents version proliferation by tracking current working plan via session stat
 ### Active vs Suggested Plans
 
 Check the `## Plan Context` section injected by hooks:
-
 - **"Plan: {path}"** = Active plan, explicitly set via `set-active-plan.cjs` - use for reports
 - **"Suggested: {path}"** = Branch-matched, hint only - do NOT auto-use
 - **"Plan: none"** = No active plan
@@ -120,13 +110,11 @@ Check the `## Plan Context` section injected by hooks:
 ### Report Output Location
 
 All agents writing reports MUST:
-
 1. Check `## Naming` section injected by hooks for the computed naming pattern
 2. Active plans use plan-specific reports path
 3. Suggested plans use default reports path (not plan folder)
 
 ### Important
-
 DO NOT create plans or reports in USER directory.
 ALWAYS create plans or reports in CURRENT WORKING PROJECT DIRECTORY.
 

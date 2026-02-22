@@ -9,7 +9,6 @@ argument-hint: [issues]
 ## Decision Tree
 
 **1. Check for existing plan:**
-
 - If markdown plan exists → `/code <path-to-plan>`
 
 **2. Route by issue type:**
@@ -39,7 +38,6 @@ argument-hint: [issues]
 → `/fix:fast <detailed-description>`
 
 ## Notes
-
 - `detailed-description` = enhanced prompt describing issue in detail
 - If unclear, ask user for clarification before routing
 - Can combine routes: e.g., multiple type errors + UI issue → `/fix:parallel`

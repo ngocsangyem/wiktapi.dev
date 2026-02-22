@@ -15,7 +15,6 @@ Interview the user with critical questions to validate assumptions, confirm deci
 ## Configuration (from injected context)
 
 Check `## Plan Context` section for validation settings:
-
 - `mode` - Controls auto/prompt/off behavior
 - `questions` - Range like `3-8` (min-max)
 
@@ -26,7 +25,6 @@ These values are automatically injected from user config. Use them as constraint
 ### Step 1: Read Plan Files
 
 Read the plan directory:
-
 - `plan.md` - Overview and phases list
 - `phase-*.md` - All phase files
 - Look for decision points, assumptions, risks, tradeoffs
@@ -35,20 +33,19 @@ Read the plan directory:
 
 Scan plan content for:
 
-| Category         | Keywords to detect                                                |
-| ---------------- | ----------------------------------------------------------------- |
-| **Architecture** | "approach", "pattern", "design", "structure", "database", "API"   |
-| **Assumptions**  | "assume", "expect", "should", "will", "must", "default"           |
-| **Tradeoffs**    | "tradeoff", "vs", "alternative", "option", "choice", "either/or"  |
-| **Risks**        | "risk", "might", "could fail", "dependency", "blocker", "concern" |
-| **Scope**        | "phase", "MVP", "future", "out of scope", "nice to have"          |
+| Category | Keywords to detect |
+|----------|-------------------|
+| **Architecture** | "approach", "pattern", "design", "structure", "database", "API" |
+| **Assumptions** | "assume", "expect", "should", "will", "must", "default" |
+| **Tradeoffs** | "tradeoff", "vs", "alternative", "option", "choice", "either/or" |
+| **Risks** | "risk", "might", "could fail", "dependency", "blocker", "concern" |
+| **Scope** | "phase", "MVP", "future", "out of scope", "nice to have" |
 
 ### Step 3: Generate Questions
 
 For each detected topic, formulate a concrete question:
 
 **Question format rules:**
-
 - Each question must have 2-4 concrete options
 - Mark recommended option with "(Recommended)" suffix
 - Include "Other" option is automatic - don't add it
@@ -79,7 +76,6 @@ Options:
 Use `AskUserQuestion` tool to present questions.
 
 **Rules:**
-
 - Use question count from `## Plan Context` → `Validation: mode=X, questions=MIN-MAX`
 - Group related questions when possible (max 4 questions per tool call)
 - Focus on: assumptions, risks, tradeoffs, architecture
@@ -94,7 +90,6 @@ After collecting answers, update `plan.md` with a detailed validation log. If a 
 ## Validation Log
 
 ### Session 1 — {YYYY-MM-DD}
-
 **Trigger:** {what prompted this validation — initial plan creation, re-validation after scope change, etc.}
 **Questions asked:** {count}
 
@@ -113,20 +108,16 @@ After collecting answers, update `plan.md` with a detailed validation log. If a 
    - **Rationale:** {why this matters}
 
 #### Confirmed Decisions
-
 - {decision}: {choice} — {brief why}
 
 #### Action Items
-
 - [ ] {specific change needed based on answers}
 
 #### Impact on Phases
-
 - Phase {N}: {what needs updating and why}
 ```
 
 **Recording rules:**
-
 - **Full question text**: Copy the exact question asked, not a summary
 - **All options**: List every option that was presented
 - **Verbatim custom input**: If user selected "Other" and typed custom text, record it exactly as entered — this often contains critical context
@@ -141,7 +132,6 @@ After collecting answers, update `plan.md` with a detailed validation log. If a 
 **Auto-propagate** validation decisions to affected phase files.
 
 **Process:**
-
 1. Parse "Impact on Phases" section → If empty, skip and report "No phase changes required"
 2. For each phase reference (accepts "Phase 2", "phase-02", "P2"):
    - Glob for `phase-{N:02d}-*.md` → If missing, warn and skip
@@ -163,7 +153,6 @@ After collecting answers, update `plan.md` with a detailed validation log. If a 
 ## Output
 
 After validation completes, provide summary:
-
 - Number of questions asked
 - Key decisions confirmed
 - **Phase propagation results:**
@@ -179,12 +168,10 @@ After validation completes, provide summary:
 
 > **Best Practice:** Run `/clear` before implementing to start with fresh context.
 > Then run:
->
 > ```
 > /cook --auto {ABSOLUTE_PATH_TO_PLAN_DIR}/plan.md
 > ```
->
-> _(Replace with actual absolute path, e.g., `/home/user/project/plans/260203-1234-feature/plan.md`)_
+> *(Replace with actual absolute path, e.g., `/home/user/project/plans/260203-1234-feature/plan.md`)*
 >
 > **Why `--auto`?** Plan was already validated - safe to skip review gates.
 > **Why absolute path?** After `/clear`, the new session loses context. Worktree paths won't be discoverable without the full path.

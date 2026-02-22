@@ -8,13 +8,13 @@
  * @module context-builder
  */
 
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { execSync } = require('child_process');
 
 // Usage cache file path (written by usage-context-awareness.cjs hook)
-const USAGE_CACHE_FILE = path.join(os.tmpdir(), "ck-usage-limits-cache.json");
+const USAGE_CACHE_FILE = path.join(os.tmpdir(), 'ck-usage-limits-cache.json');
 const WARN_THRESHOLD = 70;
 const CRITICAL_THRESHOLD = 90;
 const {
@@ -22,8 +22,8 @@ const {
   resolvePlanPath,
   getReportsPath,
   resolveNamingPattern,
-  normalizePath,
-} = require("./ck-config-utils.cjs");
+  normalizePath
+} = require('./ck-config-utils.cjs');
 
 // ═══════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
@@ -36,7 +36,7 @@ const {
  */
 function execSafe(cmd) {
   try {
-    return execSync(cmd, { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }).trim();
+    return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
   } catch (e) {
     return null;
   }
@@ -48,17 +48,17 @@ function execSafe(cmd) {
  * @param {string} [configDirName='.claude'] - Config directory name
  * @returns {string|null} Resolved path or null
  */
-function resolveRulesPath(filename, configDirName = ".claude") {
+function resolveRulesPath(filename, configDirName = '.claude') {
   // Try rules/ first (new location)
-  const localRulesPath = path.join(process.cwd(), configDirName, "rules", filename);
-  const globalRulesPath = path.join(os.homedir(), ".claude", "rules", filename);
+  const localRulesPath = path.join(process.cwd(), configDirName, 'rules', filename);
+  const globalRulesPath = path.join(os.homedir(), '.claude', 'rules', filename);
 
   if (fs.existsSync(localRulesPath)) return `${configDirName}/rules/${filename}`;
   if (fs.existsSync(globalRulesPath)) return `~/.claude/rules/${filename}`;
 
   // Backward compat: try workflows/ (legacy location)
-  const localWorkflowsPath = path.join(process.cwd(), configDirName, "workflows", filename);
-  const globalWorkflowsPath = path.join(os.homedir(), ".claude", "workflows", filename);
+  const localWorkflowsPath = path.join(process.cwd(), configDirName, 'workflows', filename);
+  const globalWorkflowsPath = path.join(os.homedir(), '.claude', 'workflows', filename);
 
   if (fs.existsSync(localWorkflowsPath)) return `${configDirName}/workflows/${filename}`;
   if (fs.existsSync(globalWorkflowsPath)) return `~/.claude/workflows/${filename}`;
@@ -72,9 +72,9 @@ function resolveRulesPath(filename, configDirName = ".claude") {
  * @param {string} [configDirName='.claude'] - Config directory name
  * @returns {string|null} Resolved path or null
  */
-function resolveScriptPath(filename, configDirName = ".claude") {
-  const localPath = path.join(process.cwd(), configDirName, "scripts", filename);
-  const globalPath = path.join(os.homedir(), ".claude", "scripts", filename);
+function resolveScriptPath(filename, configDirName = '.claude') {
+  const localPath = path.join(process.cwd(), configDirName, 'scripts', filename);
+  const globalPath = path.join(os.homedir(), '.claude', 'scripts', filename);
   if (fs.existsSync(localPath)) return `${configDirName}/scripts/${filename}`;
   if (fs.existsSync(globalPath)) return `~/.claude/scripts/${filename}`;
   return null;
@@ -85,13 +85,13 @@ function resolveScriptPath(filename, configDirName = ".claude") {
  * @param {string} [configDirName='.claude'] - Config directory name
  * @returns {string|null} Resolved venv Python path or null
  */
-function resolveSkillsVenv(configDirName = ".claude") {
-  const isWindows = process.platform === "win32";
-  const venvBin = isWindows ? "Scripts" : "bin";
-  const pythonExe = isWindows ? "python.exe" : "python3";
+function resolveSkillsVenv(configDirName = '.claude') {
+  const isWindows = process.platform === 'win32';
+  const venvBin = isWindows ? 'Scripts' : 'bin';
+  const pythonExe = isWindows ? 'python.exe' : 'python3';
 
-  const localVenv = path.join(process.cwd(), configDirName, "skills", ".venv", venvBin, pythonExe);
-  const globalVenv = path.join(os.homedir(), ".claude", "skills", ".venv", venvBin, pythonExe);
+  const localVenv = path.join(process.cwd(), configDirName, 'skills', '.venv', venvBin, pythonExe);
+  const globalVenv = path.join(os.homedir(), '.claude', 'skills', '.venv', venvBin, pythonExe);
 
   if (fs.existsSync(localVenv)) {
     return isWindows
@@ -100,8 +100,8 @@ function resolveSkillsVenv(configDirName = ".claude") {
   }
   if (fs.existsSync(globalVenv)) {
     return isWindows
-      ? "~\\.claude\\skills\\.venv\\Scripts\\python.exe"
-      : "~/.claude/skills/.venv/bin/python3";
+      ? '~\\.claude\\skills\\.venv\\Scripts\\python.exe'
+      : '~/.claude/skills/.venv/bin/python3';
   }
   return null;
 }
@@ -114,35 +114,26 @@ function resolveSkillsVenv(configDirName = ".claude") {
  */
 function buildPlanContext(sessionId, config) {
   const { plan, paths } = config;
-  const gitBranch = execSafe("git branch --show-current");
+  const gitBranch = execSafe('git branch --show-current');
   const resolved = resolvePlanPath(sessionId, config);
   const reportsPath = getReportsPath(resolved.path, resolved.resolvedBy, plan, paths);
 
   // Compute naming pattern directly for reliable injection
   const namePattern = resolveNamingPattern(plan, gitBranch);
 
-  const planLine =
-    resolved.resolvedBy === "session"
-      ? `- Plan: ${resolved.path}`
-      : resolved.resolvedBy === "branch"
-        ? `- Plan: none | Suggested: ${resolved.path}`
-        : `- Plan: none`;
+  const planLine = resolved.resolvedBy === 'session'
+    ? `- Plan: ${resolved.path}`
+    : resolved.resolvedBy === 'branch'
+      ? `- Plan: none | Suggested: ${resolved.path}`
+      : `- Plan: none`;
 
   // Validation config (injected so LLM can reference it)
   const validation = plan.validation || {};
-  const validationMode = validation.mode || "prompt";
+  const validationMode = validation.mode || 'prompt';
   const validationMin = validation.minQuestions || 3;
   const validationMax = validation.maxQuestions || 8;
 
-  return {
-    reportsPath,
-    gitBranch,
-    planLine,
-    namePattern,
-    validationMode,
-    validationMin,
-    validationMax,
-  };
+  return { reportsPath, gitBranch, planLine, namePattern, validationMode, validationMin, validationMax };
 }
 
 /**
@@ -153,12 +144,9 @@ function buildPlanContext(sessionId, config) {
 function wasRecentlyInjected(transcriptPath) {
   try {
     if (!transcriptPath || !fs.existsSync(transcriptPath)) return false;
-    const transcript = fs.readFileSync(transcriptPath, "utf-8");
+    const transcript = fs.readFileSync(transcriptPath, 'utf-8');
     // Check last 150 lines (hook output is ~30 lines, so this covers ~5 user prompts)
-    return transcript
-      .split("\n")
-      .slice(-150)
-      .some((line) => line.includes("[IMPORTANT] Consider Modularization"));
+    return transcript.split('\n').slice(-150).some(line => line.includes('[IMPORTANT] Consider Modularization'));
   } catch (e) {
     return false;
   }
@@ -177,7 +165,7 @@ function wasRecentlyInjected(transcriptPath) {
  */
 function buildLanguageSection({ thinkingLanguage, responseLanguage }) {
   // Auto-default thinkingLanguage to 'en' when only responseLanguage is set
-  const effectiveThinking = thinkingLanguage || (responseLanguage ? "en" : null);
+  const effectiveThinking = thinkingLanguage || (responseLanguage ? 'en' : null);
   const hasThinking = effectiveThinking && effectiveThinking !== responseLanguage;
   const hasResponse = responseLanguage;
   const lines = [];
@@ -216,13 +204,13 @@ function buildSessionSection(staticEnv = {}) {
     `- Working directory: ${staticEnv.cwd || process.cwd()}`,
     `- OS: ${staticEnv.osPlatform || process.platform}`,
     `- User: ${staticEnv.user || process.env.USERNAME || process.env.USER}`,
-    `- Locale: ${staticEnv.locale || process.env.LANG || ""}`,
+    `- Locale: ${staticEnv.locale || process.env.LANG || ''}`,
     `- Memory usage: ${memUsed}MB/${memTotal}MB (${memPercent}%)`,
     `- CPU usage: ${cpuUsage}% user / ${cpuSystem}% system`,
     `- Spawning multiple subagents can cause performance issues, spawn and delegate tasks intelligently based on the available system resources.`,
     `- Remember that each subagent only has 200K tokens in context window, spawn and delegate tasks intelligently to make sure their context windows don't get bloated.`,
     `- IMPORTANT: Include these environment information when prompting subagents to perform tasks.`,
-    ``,
+    ``
   ];
 }
 
@@ -233,13 +221,13 @@ function buildSessionSection(staticEnv = {}) {
 function readUsageCache() {
   try {
     if (fs.existsSync(USAGE_CACHE_FILE)) {
-      const cache = JSON.parse(fs.readFileSync(USAGE_CACHE_FILE, "utf-8"));
+      const cache = JSON.parse(fs.readFileSync(USAGE_CACHE_FILE, 'utf-8'));
       // Cache is valid for 5 minutes for injection purposes
       if (Date.now() - cache.timestamp < 300000 && cache.data) {
         return cache.data;
       }
     }
-  } catch {}
+  } catch { }
   return null;
 }
 
@@ -283,7 +271,7 @@ function buildContextSection(sessionId) {
     const contextPath = path.join(os.tmpdir(), `ck-context-${sessionId}.json`);
     if (!fs.existsSync(contextPath)) return [];
 
-    const data = JSON.parse(fs.readFileSync(contextPath, "utf-8"));
+    const data = JSON.parse(fs.readFileSync(contextPath, 'utf-8'));
     // Only use fresh data (< 5 min old - statusline updates every 300ms when active)
     if (Date.now() - data.timestamp > 300000) return [];
 
@@ -297,13 +285,9 @@ function buildContextSection(sessionId) {
 
     // Warning if high usage
     if (data.percent >= CRITICAL_THRESHOLD) {
-      lines.push(
-        `- **CRITICAL:** Context nearly full - consider compaction or being concise, update current phase's status before the compaction.`,
-      );
+      lines.push(`- **CRITICAL:** Context nearly full - consider compaction or being concise, update current phase's status before the compaction.`);
     } else if (data.percent >= WARN_THRESHOLD) {
-      lines.push(
-        `- **WARNING:** Context usage moderate - being concise and optimize token efficiency.`,
-      );
+      lines.push(`- **WARNING:** Context usage moderate - being concise and optimize token efficiency.`);
     }
 
     lines.push(``);
@@ -327,8 +311,8 @@ function buildUsageSection() {
   // 5-hour limit
   if (usage.five_hour) {
     const util = usage.five_hour.utilization;
-    if (typeof util === "number") {
-      parts.push(formatUsagePercent(util, "5h"));
+    if (typeof util === 'number') {
+      parts.push(formatUsagePercent(util, '5h'));
     }
     const timeLeft = formatTimeUntilReset(usage.five_hour.resets_at);
     if (timeLeft) {
@@ -338,12 +322,12 @@ function buildUsageSection() {
 
   // 7-day limit
   if (usage.seven_day?.utilization != null) {
-    parts.push(formatUsagePercent(usage.seven_day.utilization, "7d"));
+    parts.push(formatUsagePercent(usage.seven_day.utilization, '7d'));
   }
 
   if (parts.length > 0) {
     lines.push(`## Usage Limits`);
-    lines.push(`- ${parts.join(" | ")}`);
+    lines.push(`- ${parts.join(' | ')}`);
     lines.push(``);
   }
 
@@ -356,41 +340,34 @@ function buildUsageSection() {
  * @param {string} [params.devRulesPath] - Path to dev rules
  * @param {string} [params.catalogScript] - Path to catalog script
  * @param {string} [params.skillsVenv] - Path to skills venv
+ * @param {string} [params.plansPath] - Absolute plans path (Issue #476: prevents wrong subdirectory creation)
+ * @param {string} [params.docsPath] - Absolute docs path
  * @returns {string[]} Lines for rules section
  */
-function buildRulesSection({ devRulesPath, catalogScript, skillsVenv }) {
+function buildRulesSection({ devRulesPath, catalogScript, skillsVenv, plansPath, docsPath }) {
   const lines = [`## Rules`];
 
   if (devRulesPath) {
     lines.push(`- Read and follow development rules: "${devRulesPath}"`);
   }
 
-  lines.push(
-    `- Markdown files are organized in: Plans → "plans/" directory, Docs → "docs/" directory`,
-  );
-  lines.push(
-    `- **IMPORTANT:** DO NOT create markdown files out of "plans/" or "docs/" directories UNLESS the user explicitly requests it.`,
-  );
+  // Issue #476: Use absolute paths to prevent LLM confusion in multi-CLAUDE.md projects
+  const plansRef = plansPath || 'plans';
+  const docsRef = docsPath || 'docs';
+  lines.push(`- Markdown files are organized in: Plans → "${plansRef}" directory, Docs → "${docsRef}" directory`);
+  lines.push(`- **IMPORTANT:** DO NOT create markdown files outside of "${plansRef}" or "${docsRef}" UNLESS the user explicitly requests it.`);
 
   if (catalogScript) {
-    lines.push(
-      `- Activate skills: Run \`python ${catalogScript} --skills\` to generate a skills catalog and analyze it, then activate the relevant skills that are needed for the task during the process.`,
-    );
-    lines.push(
-      `- Execute commands: Run \`python ${catalogScript} --commands\` to generate a commands catalog and analyze it, then execute the relevant SlashCommands that are needed for the task during the process.`,
-    );
+    lines.push(`- Activate skills: Run \`python ${catalogScript} --skills\` to generate a skills catalog and analyze it, then activate the relevant skills that are needed for the task during the process.`);
+    lines.push(`- Execute commands: Run \`python ${catalogScript} --commands\` to generate a commands catalog and analyze it, then execute the relevant SlashCommands that are needed for the task during the process.`);
   }
 
   if (skillsVenv) {
     lines.push(`- Python scripts in .claude/skills/: Use \`${skillsVenv}\``);
   }
 
-  lines.push(
-    `- When skills' scripts are failed to execute, always fix them and run again, repeat until success.`,
-  );
-  lines.push(
-    `- Follow **YAGNI (You Aren't Gonna Need It) - KISS (Keep It Simple, Stupid) - DRY (Don't Repeat Yourself)** principles`,
-  );
+  lines.push(`- When skills' scripts are failed to execute, always fix them and run again, repeat until success.`);
+  lines.push(`- Follow **YAGNI (You Aren't Gonna Need It) - KISS (Keep It Simple, Stupid) - DRY (Don't Repeat Yourself)** principles`);
   lines.push(`- Sacrifice grammar for the sake of concision when writing reports.`);
   lines.push(`- In reports, list any unresolved questions at the end, if any.`);
   lines.push(`- IMPORTANT: Ensure token consumption efficiency while maintaining high quality.`);
@@ -412,7 +389,7 @@ function buildModularizationSection() {
     `- Write descriptive code comments`,
     `- After modularization, continue with main task`,
     `- When not to modularize: Markdown files, plain text files, bash scripts, configuration files, environment variables files, etc.`,
-    ``,
+    ``
   ];
 }
 
@@ -429,7 +406,7 @@ function buildPathsSection({ reportsPath, plansPath, docsPath, docsMaxLoc = 800 
   return [
     `## Paths`,
     `Reports: ${reportsPath} | Plans: ${plansPath}/ | Docs: ${docsPath}/ | docs.maxLoc: ${docsMaxLoc}`,
-    ``,
+    ``
   ];
 }
 
@@ -444,15 +421,12 @@ function buildPathsSection({ reportsPath, plansPath, docsPath, docsMaxLoc = 800 
  * @param {number} params.validationMax - Max questions
  * @returns {string[]} Lines for plan context section
  */
-function buildPlanContextSection({
-  planLine,
-  reportsPath,
-  gitBranch,
-  validationMode,
-  validationMin,
-  validationMax,
-}) {
-  const lines = [`## Plan Context`, planLine, `- Reports: ${reportsPath}`];
+function buildPlanContextSection({ planLine, reportsPath, gitBranch, validationMode, validationMin, validationMax }) {
+  const lines = [
+    `## Plan Context`,
+    planLine,
+    `- Reports: ${reportsPath}`
+  ];
 
   if (gitBranch) {
     lines.push(`- Branch: ${gitBranch}`);
@@ -478,7 +452,7 @@ function buildNamingSection({ reportsPath, plansPath, namePattern }) {
     `- Report: \`${reportsPath}{type}-${namePattern}.md\``,
     `- Plan dir: \`${plansPath}/${namePattern}/\``,
     `- Replace \`{type}\` with: agent name, report type, or context`,
-    `- Replace \`{slug}\` in pattern with: descriptive-kebab-slug`,
+    `- Replace \`{slug}\` in pattern with: descriptive-kebab-slug`
   ];
 }
 
@@ -510,31 +484,24 @@ function buildReminder(params) {
     validationMin,
     validationMax,
     staticEnv,
-    hooks,
+    hooks
   } = params;
 
   // Respect hooks config — skip sections when their corresponding hook is disabled
   const hooksConfig = hooks || {};
-  const contextEnabled = hooksConfig["context-tracking"] !== false;
-  const usageEnabled = hooksConfig["usage-context-awareness"] !== false;
+  const contextEnabled = hooksConfig['context-tracking'] !== false;
+  const usageEnabled = hooksConfig['usage-context-awareness'] !== false;
 
   return [
     ...buildLanguageSection({ thinkingLanguage, responseLanguage }),
     ...buildSessionSection(staticEnv),
     ...(contextEnabled ? buildContextSection(sessionId) : []),
     ...(usageEnabled ? buildUsageSection() : []),
-    ...buildRulesSection({ devRulesPath, catalogScript, skillsVenv }),
+    ...buildRulesSection({ devRulesPath, catalogScript, skillsVenv, plansPath, docsPath }),
     ...buildModularizationSection(),
     ...buildPathsSection({ reportsPath, plansPath, docsPath, docsMaxLoc }),
-    ...buildPlanContextSection({
-      planLine,
-      reportsPath,
-      gitBranch,
-      validationMode,
-      validationMin,
-      validationMax,
-    }),
-    ...buildNamingSection({ reportsPath, plansPath, namePattern }),
+    ...buildPlanContextSection({ planLine, reportsPath, gitBranch, validationMode, validationMin, validationMax }),
+    ...buildNamingSection({ reportsPath, plansPath, namePattern })
   ];
 }
 
@@ -553,19 +520,13 @@ function buildReminder(params) {
  *   sections: Object
  * }}
  */
-function buildReminderContext({
-  sessionId,
-  config,
-  staticEnv,
-  configDirName = ".claude",
-  baseDir,
-} = {}) {
+function buildReminderContext({ sessionId, config, staticEnv, configDirName = '.claude', baseDir } = {}) {
   // Load config if not provided
   const cfg = config || loadConfig({ includeProject: false, includeAssertions: false });
 
   // Resolve paths
-  const devRulesPath = resolveRulesPath("development-rules.md", configDirName);
-  const catalogScript = resolveScriptPath("generate_catalogs.py", configDirName);
+  const devRulesPath = resolveRulesPath('development-rules.md', configDirName);
+  const catalogScript = resolveScriptPath('generate_catalogs.py', configDirName);
   const skillsVenv = resolveSkillsVenv(configDirName);
 
   // Build plan context
@@ -574,8 +535,8 @@ function buildReminderContext({
   // Issue #327: Use baseDir for absolute path resolution (subdirectory workflow support)
   // If baseDir provided, resolve paths as absolute; otherwise use relative paths
   const effectiveBaseDir = baseDir || null;
-  const plansPathRel = normalizePath(cfg.paths?.plans) || "plans";
-  const docsPathRel = normalizePath(cfg.paths?.docs) || "docs";
+  const plansPathRel = normalizePath(cfg.paths?.plans) || 'plans';
+  const docsPathRel = normalizePath(cfg.paths?.docs) || 'docs';
 
   // Build all parameters with absolute paths if baseDir provided
   const params = {
@@ -585,9 +546,7 @@ function buildReminderContext({
     devRulesPath,
     catalogScript,
     skillsVenv,
-    reportsPath: effectiveBaseDir
-      ? path.join(effectiveBaseDir, planCtx.reportsPath)
-      : planCtx.reportsPath,
+    reportsPath: effectiveBaseDir ? path.join(effectiveBaseDir, planCtx.reportsPath) : planCtx.reportsPath,
     plansPath: effectiveBaseDir ? path.join(effectiveBaseDir, plansPathRel) : plansPathRel,
     docsPath: effectiveBaseDir ? path.join(effectiveBaseDir, docsPathRel) : docsPathRel,
     docsMaxLoc: Math.max(1, parseInt(cfg.docs?.maxLoc, 10) || 800),
@@ -598,42 +557,30 @@ function buildReminderContext({
     validationMin: planCtx.validationMin,
     validationMax: planCtx.validationMax,
     staticEnv,
-    hooks: cfg.hooks,
+    hooks: cfg.hooks
   };
 
   const lines = buildReminder(params);
 
   // Respect hooks config for sections object too
   const hooksConfig = cfg.hooks || {};
-  const contextEnabled = hooksConfig["context-tracking"] !== false;
-  const usageEnabled = hooksConfig["usage-context-awareness"] !== false;
+  const contextEnabled = hooksConfig['context-tracking'] !== false;
+  const usageEnabled = hooksConfig['usage-context-awareness'] !== false;
 
   return {
-    content: lines.join("\n"),
+    content: lines.join('\n'),
     lines,
     sections: {
-      language: buildLanguageSection({
-        thinkingLanguage: params.thinkingLanguage,
-        responseLanguage: params.responseLanguage,
-      }),
+      language: buildLanguageSection({ thinkingLanguage: params.thinkingLanguage, responseLanguage: params.responseLanguage }),
       session: buildSessionSection(staticEnv),
       context: contextEnabled ? buildContextSection(sessionId) : [],
       usage: usageEnabled ? buildUsageSection() : [],
-      rules: buildRulesSection({ devRulesPath, catalogScript, skillsVenv }),
+      rules: buildRulesSection({ devRulesPath, catalogScript, skillsVenv, plansPath: params.plansPath, docsPath: params.docsPath }),
       modularization: buildModularizationSection(),
-      paths: buildPathsSection({
-        reportsPath: params.reportsPath,
-        plansPath: params.plansPath,
-        docsPath: params.docsPath,
-        docsMaxLoc: params.docsMaxLoc,
-      }),
+      paths: buildPathsSection({ reportsPath: params.reportsPath, plansPath: params.plansPath, docsPath: params.docsPath, docsMaxLoc: params.docsMaxLoc }),
       planContext: buildPlanContextSection(planCtx),
-      naming: buildNamingSection({
-        reportsPath: params.reportsPath,
-        plansPath: params.plansPath,
-        namePattern: params.namePattern,
-      }),
-    },
+      naming: buildNamingSection({ reportsPath: params.reportsPath, plansPath: params.plansPath, namePattern: params.namePattern })
+    }
   };
 }
 
@@ -666,5 +613,5 @@ module.exports = {
   wasRecentlyInjected,
 
   // Backward compat alias
-  resolveWorkflowPath: resolveRulesPath,
+  resolveWorkflowPath: resolveRulesPath
 };

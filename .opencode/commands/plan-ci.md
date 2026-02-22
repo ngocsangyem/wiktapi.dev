@@ -5,13 +5,11 @@ description: "Analyze Github Actions logs and provide a plan to fix the issues -
 Activate `planning` skill.
 
 ## Github Actions URL
-
-$ARGUMENTS
+ $ARGUMENTS
 
 Use the `planner` subagent to read the github actions logs, analyze and find the root causes of the issues, then provide a detailed plan for implementing the fixes.
 
 **Plan File Specification:**
-
 - Every `plan.md` MUST start with YAML frontmatter:
   ```yaml
   ---
@@ -19,10 +17,10 @@ Use the `planner` subagent to read the github actions logs, analyze and find the
   description: "{One sentence for card preview}"
   status: pending
   priority: P1
-  effort: { estimated fix time }
-  branch: { current git branch }
+  effort: {estimated fix time}
+  branch: {current git branch}
   tags: [ci, bugfix]
-  created: { YYYY-MM-DD }
+  created: {YYYY-MM-DD}
   ---
   ```
 

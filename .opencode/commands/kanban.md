@@ -50,13 +50,11 @@ node .opencode/skills/plans-kanban/scripts/server.cjs \
 ```
 
 **Critical:** When calling the Bash tool:
-
 - Set `run_in_background: true` to run as CC background task
 - Set `timeout: 300000` (5 minutes) to prevent premature termination
 - Parse JSON output and report URL to user
 
 Example Bash tool call:
-
 ```json
 {
   "command": "node .opencode/skills/plans-kanban/scripts/server.cjs --dir \"./plans\" --host 0.0.0.0 --open --foreground",
@@ -67,7 +65,6 @@ Example Bash tool call:
 ```
 
 After starting, parse the JSON output (e.g., `{"success":true,"url":"http://localhost:3500/kanban?dir=...","networkUrl":"http://192.168.1.x:3500/kanban?dir=..."}`) and report:
-
 - Local URL for browser access
 - Network URL for remote device access (if available)
 - Inform user that server is now running as CC background task (visible in `/tasks`)
@@ -79,19 +76,16 @@ After starting, parse the JSON output (e.g., `{"success":true,"url":"http://loca
 The `/kanban` command will evolve into **VibeKanban-inspired** AI agent orchestration:
 
 ### Phase 1 (Current - MVP)
-
 - ✅ Task board with progress tracking
 - ✅ Visual representation of plans/tasks
 - ✅ Click to view plan details
 
 ### Phase 2 (Worktree Integration)
-
 - Create tasks → spawn git worktrees
 - Assign agents to tasks
 - Track agent progress per worktree
 
 ### Phase 3 (Full Orchestration)
-
 - Parallel agent execution monitoring
 - Code diff/review interface
 - PR creation workflow

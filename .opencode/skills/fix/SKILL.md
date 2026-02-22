@@ -21,11 +21,11 @@ Unified skill for fixing issues of any complexity with intelligent routing.
 
 **First action:** If there is no "auto" keyword in the request, use `AskUserQuestion` to determine workflow mode:
 
-| Option                       | Recommend When                  | Behavior                                  |
-| ---------------------------- | ------------------------------- | ----------------------------------------- |
-| **Autonomous** (default)     | Simple/moderate issues          | Auto-approve if score >= 9.5 & 0 critical |
-| **Human-in-the-loop Review** | Critical/production code        | Pause for approval at each step           |
-| **Quick**                    | Type errors, lint, trivial bugs | Fast debug → fix → review cycle           |
+| Option | Recommend When | Behavior |
+|--------|----------------|----------|
+| **Autonomous** (default) | Simple/moderate issues | Auto-approve if score >= 9.5 & 0 critical |
+| **Human-in-the-loop Review** | Critical/production code | Pause for approval at each step |
+| **Quick** | Type errors, lint, trivial bugs | Fast debug → fix → review cycle |
 
 See `references/mode-selection.md` for AskUserQuestion format.
 
@@ -40,11 +40,11 @@ See `references/mode-selection.md` for AskUserQuestion format.
 
 Classify before routing. See `references/complexity-assessment.md`.
 
-| Level        | Indicators                                 | Workflow                              |
-| ------------ | ------------------------------------------ | ------------------------------------- |
-| **Simple**   | Single file, clear error, type/lint        | `references/workflow-quick.md`        |
-| **Moderate** | Multi-file, root cause unclear             | `references/workflow-standard.md`     |
-| **Complex**  | System-wide, architecture impact           | `references/workflow-deep.md`         |
+| Level | Indicators | Workflow |
+|-------|------------|----------|
+| **Simple** | Single file, clear error, type/lint | `references/workflow-quick.md` |
+| **Moderate** | Multi-file, root cause unclear | `references/workflow-standard.md` |
+| **Complex** | System-wide, architecture impact | `references/workflow-deep.md` |
 | **Parallel** | 2+ independent issues OR `--parallel` flag | Parallel `fullstack-developer` agents |
 
 ### Step 4: Fix Verification & Prevent Future Issues
@@ -75,7 +75,6 @@ See `references/skill-activation-matrix.md` for complete matrix.
 ## Output Format
 
 Unified step markers:
-
 ```
 ✓ Step 0: [Mode] selected - [Complexity] detected
 ✓ Step 1: Root cause identified - [summary]
@@ -88,7 +87,6 @@ Unified step markers:
 ## References
 
 Load as needed:
-
 - `references/mode-selection.md` - AskUserQuestion format for mode
 - `references/complexity-assessment.md` - Classification criteria
 - `references/workflow-quick.md` - Quick: debug → fix → review
@@ -99,7 +97,6 @@ Load as needed:
 - `references/parallel-exploration.md` - Parallel Explore/Bash subagents patterns
 
 **Specialized Workflows:**
-
 - `references/workflow-ci.md` - GitHub Actions/CI failures
 - `references/workflow-logs.md` - Application log analysis
 - `references/workflow-test.md` - Test suite failures

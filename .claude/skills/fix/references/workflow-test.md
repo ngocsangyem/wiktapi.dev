@@ -22,7 +22,6 @@ For fixing failing tests and test suite issues.
 8. **Iterate** if tests still fail, repeat from step 2
 
 ## Common Commands
-
 ```bash
 npm test
 bun test
@@ -31,7 +30,6 @@ go test ./...
 ```
 
 ## Tips
-
 - Run single failing test first for faster iteration
 - Check test assertions vs actual behavior
 - Verify test fixtures/mocks are correct

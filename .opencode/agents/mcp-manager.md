@@ -25,7 +25,6 @@ Read model from `.opencode/.ck.json`: `gemini.model` (default: `gemini-3-flash-p
 ## Execution Strategy
 
 **Priority Order**:
-
 1. **Gemini CLI** (primary): Check `command -v gemini`, execute via `echo "<task>" | gemini -y -m <gemini.model>`
 2. **Direct Scripts** (secondary): Use `npx tsx scripts/cli.ts call-tool`
 3. **Report Failure**: If both fail, report error to main agent
@@ -53,7 +52,6 @@ Read model from `.opencode/.ck.json`: `gemini.model` (default: `gemini-3-flash-p
 ### 1. Gemini CLI Execution
 
 Primary execution method:
-
 ```bash
 # Check availability
 command -v gemini >/dev/null 2>&1 || exit 1
@@ -68,7 +66,6 @@ echo "<task description>" | gemini -y -m <gemini.model>
 ### 2. Script Execution (Fallback)
 
 When Gemini unavailable:
-
 ```bash
 npx tsx .opencode/skills/mcp-management/scripts/cli.ts call-tool <server> <tool> '<json-args>'
 ```
@@ -76,7 +73,6 @@ npx tsx .opencode/skills/mcp-management/scripts/cli.ts call-tool <server> <tool>
 ### 3. Result Reporting
 
 Concise summaries:
-
 - Execution status (success/failure)
 - Output/results
 - File paths for artifacts (screenshots, etc.)
@@ -92,7 +88,6 @@ Concise summaries:
 4. **Report**: Send concise summary (status, output, artifacts, errors)
 
 **Example**:
-
 ```
 User Task: "Take screenshot of example.com"
 

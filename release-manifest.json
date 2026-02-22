@@ -1,6 +1,6 @@
 {
-  "version": "2.11.0",
-  "generatedAt": "2026-02-20T05:17:19.954Z",
+  "version": "2.11.3",
+  "generatedAt": "2026-02-21T16:26:38.617Z",
   "files": [
     {
       "path": ".gitignore",
@@ -574,9 +574,9 @@
     },
     {
       "path": "hooks/lib/__tests__/context-builder.test.cjs",
-      "checksum": "b12f086d82c841998f9346564e4b01fe1dd623646637424d53d510e6296a72b5",
-      "size": 15819,
-      "lastModified": "2026-02-02T14:44:35-05:00"
+      "checksum": "bd57ace8eeae0e5f19736bb80a45a47b675d7b1e7fdb3af8b424de520a218e28",
+      "size": 16799,
+      "lastModified": "2026-02-21T22:07:58+07:00"
     },
     {
       "path": "hooks/lib/__tests__/statusline-integration.test.cjs",
@@ -610,9 +610,15 @@
     },
     {
       "path": "hooks/lib/context-builder.cjs",
-      "checksum": "ba9328303692f96ea706c9e2fc97619cbc48add38b63a04eef7a60d3adeb4e3f",
-      "size": 23678,
-      "lastModified": "2026-02-04T09:35:49-05:00"
+      "checksum": "967bf0c303b9028f1193d8c3370f2d65000e1c793199efa6655fec131d5728cf",
+      "size": 24125,
+      "lastModified": "2026-02-21T22:07:58+07:00"
+    },
+    {
+      "path": "hooks/lib/git-info-cache.cjs",
+      "checksum": "74c5cd80a51e53b0870d173f64ed51604cc82c683cedecb331d5e12ff4e80532",
+      "size": 4269,
+      "lastModified": "2026-02-21T22:07:51+07:00"
     },
     {
       "path": "hooks/lib/hook-logger.cjs",
@@ -628,15 +634,15 @@
     },
     {
       "path": "hooks/lib/project-detector.cjs",
-      "checksum": "599ccb1f892d9f38f13aec35660d7e295f9f5d4f5416f82ee112999dc7b4ad4c",
-      "size": 15130,
-      "lastModified": "2026-01-11T23:12:28+07:00"
+      "checksum": "2affbd70861c163cb4b9992a5ee7a66e73254bf0a7b14d3ccc1a4c2e0395d6fe",
+      "size": 16547,
+      "lastModified": "2026-02-21T22:07:39+07:00"
     },
     {
       "path": "hooks/lib/scout-checker.cjs",
-      "checksum": "374d894ce89f439327024d6c1e89600c7bb35bcb3fc730c210c13578300bd2f1",
-      "size": 8009,
-      "lastModified": "2026-01-27T18:54:30-05:00"
+      "checksum": "dd8f25a378f41b31022e25b019ab08ae87aa2f01d9dad8e3036ceddd12e604c6",
+      "size": 11010,
+      "lastModified": "2026-02-21T22:08:10+07:00"
     },
     {
       "path": "hooks/lib/transcript-parser.cjs",
@@ -718,9 +724,9 @@
     },
     {
       "path": "hooks/post-edit-simplify-reminder.cjs",
-      "checksum": "de3214b09cd39b2be4abdfcdab34a420441122c341f6cc3698fa0c3083117caf",
-      "size": 4304,
-      "lastModified": "2026-02-20T12:03:45+07:00"
+      "checksum": "106c96b97f8d99f384f0aaa8827a7b40b8fb9e007c48102ff510f4c9b8f15c55",
+      "size": 4534,
+      "lastModified": "2026-02-21T22:07:51+07:00"
     },
     {
       "path": "hooks/privacy-block.cjs",
@@ -730,9 +736,9 @@
     },
     {
       "path": "hooks/scout-block/broad-pattern-detector.cjs",
-      "checksum": "98cd04aec4e86fcc2e7b7d4f22377a42565197cc59c53b7e3c52e3ca09402043",
-      "size": 7105,
-      "lastModified": "2026-01-26T13:07:27+07:00"
+      "checksum": "c3100b30aa6380d949856ca7cd4567a2ae1ee3fb8a0d728803bb0274788d49b6",
+      "size": 7285,
+      "lastModified": "2026-02-21T22:08:10+07:00"
     },
     {
       "path": "hooks/scout-block/error-formatter.cjs",
@@ -742,15 +748,15 @@
     },
     {
       "path": "hooks/scout-block/path-extractor.cjs",
-      "checksum": "683841800b9b8f736702c8e90f9714cd61feb8a60a341c3a934cc0e9497d05d3",
-      "size": 7867,
-      "lastModified": "2026-01-27T18:54:37-05:00"
+      "checksum": "98364a15c3eb00d66409647ecbdb380f3a10ee6d5227cb6f93b6af783a9a28bb",
+      "size": 10093,
+      "lastModified": "2026-02-21T22:08:10+07:00"
     },
     {
       "path": "hooks/scout-block/pattern-matcher.cjs",
-      "checksum": "ba47dbd6108a0d2c1c9bb842df4b5c2aeedadd020f1dc659c2ef0c7c112d3fa9",
-      "size": 5048,
-      "lastModified": "2026-01-06T21:10:05-05:00"
+      "checksum": "50e69a6a3e034388f4fff96c34ce11d637c0b423a14dc0f22f8afd0101b13dfe",
+      "size": 5462,
+      "lastModified": "2026-02-21T22:08:10+07:00"
     },
     {
       "path": "hooks/scout-block/tests/test-broad-pattern-detector.cjs",
@@ -808,9 +814,9 @@
     },
     {
       "path": "hooks/session-init.cjs",
-      "checksum": "42ae7101c1480776d8f5d3d2862fdce1cb7c1cd4e020805f6a55c6705715517d",
-      "size": 13653,
-      "lastModified": "2026-02-20T12:03:45+07:00"
+      "checksum": "5744867a90dfd37cc795ec971fb1baf9c72dc33ee3590b8ab6036fdd01baca82",
+      "size": 13638,
+      "lastModified": "2026-02-21T22:07:39+07:00"
     },
     {
       "path": "hooks/skill-dedup.cjs",
@@ -856,9 +862,9 @@
     },
     {
       "path": "metadata.json",
-      "checksum": "4feee5317c2d160928d0f441cac9ed3cd4b7c738c782c9b941d8ad863b0141f5",
+      "checksum": "a2be87260169cc6565aedc89bb4e6d8a1b17809bab8cc39a401ed6469fad3a0c",
       "size": 1200,
-      "lastModified": "2026-02-05T03:34:09Z"
+      "lastModified": "2026-02-21T15:37:18Z"
     },
     {
       "path": "output-styles/coding-level-0-eli5.md",
@@ -1030,9 +1036,9 @@
     },
     {
       "path": "settings.json",
-      "checksum": "22aed7a52ac3f90832ffe1db82b8b767b8a9f566a699233f6048690a0961a1ab",
-      "size": 2197,
-      "lastModified": "2026-02-03T14:40:40+07:00"
+      "checksum": "7c40bf098fd0ccdfa60b78b6461f7b613d2c74ca5c7a30b6178c776cb044ccc0",
+      "size": 2261,
+      "lastModified": "2026-02-21T22:07:51+07:00"
     },
     {
       "path": "skills/.gitignore",
@@ -6568,9 +6574,9 @@
     },
     {
       "path": "statusline.cjs",
-      "checksum": "855abebfc4f14e920e76380fd62041c055d4834b901b706ae2aad3a6f613d3a7",
-      "size": 20179,
-      "lastModified": "2026-01-26T22:14:09-05:00"
+      "checksum": "a847cf4d7605afca769fdb0833e440d999ebc56bb7e2a309371f1b40ced2a97f",
+      "size": 19209,
+      "lastModified": "2026-02-21T22:07:51+07:00"
     },
     {
       "path": "statusline.ps1",
@@ -6866,8 +6872,8 @@
     },
     {
       "path": ".opencode/plugin/lib/context-builder.cjs",
-      "checksum": "2cbc9b93ccd4652c0ccc96cb3a9160984fbb01f09867fb37c883a02f83c0d773",
-      "size": 23688,
+      "checksum": "f46e7e4b985f4ea28df72869e3da9d2ca056b670f7f50d7789b5966364ad9b56",
+      "size": 24135,
       "lastModified": "2026-01-25T17:53:40+07:00"
     },
     {
@@ -6878,14 +6884,14 @@
     },
     {
       "path": ".opencode/plugin/lib/project-detector.cjs",
-      "checksum": "599ccb1f892d9f38f13aec35660d7e295f9f5d4f5416f82ee112999dc7b4ad4c",
-      "size": 15130,
+      "checksum": "2affbd70861c163cb4b9992a5ee7a66e73254bf0a7b14d3ccc1a4c2e0395d6fe",
+      "size": 16547,
       "lastModified": "2026-01-25T17:53:40+07:00"
     },
     {
       "path": ".opencode/plugin/lib/scout-checker.cjs",
-      "checksum": "374d894ce89f439327024d6c1e89600c7bb35bcb3fc730c210c13578300bd2f1",
-      "size": 8009,
+      "checksum": "dd8f25a378f41b31022e25b019ab08ae87aa2f01d9dad8e3036ceddd12e604c6",
+      "size": 11010,
       "lastModified": "2026-01-25T17:53:40+07:00"
     },
     {
@@ -6896,8 +6902,8 @@
     },
     {
       "path": ".opencode/plugin/scout-block/broad-pattern-detector.cjs",
-      "checksum": "98cd04aec4e86fcc2e7b7d4f22377a42565197cc59c53b7e3c52e3ca09402043",
-      "size": 7105,
+      "checksum": "c3100b30aa6380d949856ca7cd4567a2ae1ee3fb8a0d728803bb0274788d49b6",
+      "size": 7285,
       "lastModified": "2026-01-25T17:53:40+07:00"
     },
     {
@@ -6908,14 +6914,14 @@
     },
     {
       "path": ".opencode/plugin/scout-block/path-extractor.cjs",
-      "checksum": "683841800b9b8f736702c8e90f9714cd61feb8a60a341c3a934cc0e9497d05d3",
-      "size": 7867,
+      "checksum": "98364a15c3eb00d66409647ecbdb380f3a10ee6d5227cb6f93b6af783a9a28bb",
+      "size": 10093,
       "lastModified": "2026-01-25T17:53:40+07:00"
     },
     {
       "path": ".opencode/plugin/scout-block/pattern-matcher.cjs",
-      "checksum": "ba47dbd6108a0d2c1c9bb842df4b5c2aeedadd020f1dc659c2ef0c7c112d3fa9",
-      "size": 5048,
+      "checksum": "50e69a6a3e034388f4fff96c34ce11d637c0b423a14dc0f22f8afd0101b13dfe",
+      "size": 5462,
       "lastModified": "2026-01-25T17:53:40+07:00"
     },
     {
@@ -11503,7 +11509,7 @@
     },
     {
       "path": "AGENTS.md",
-      "checksum": "4ed22a1312c6f7eb48a57ddf9320c0f1764cc2bc24f1afd7b8c0cd6fff058631",
+      "checksum": "f9b7c95180ed6c71fe0436bef1c0cd7df667b8fc8a87bdb5b78da59b4d6ce0a8",
       "size": 2192,
       "lastModified": "2026-01-18T09:18:05-05:00"
     }

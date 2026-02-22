@@ -3,8 +3,8 @@
  * Standalone module for plans-kanban skill
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Normalize status string to standard format
@@ -12,14 +12,14 @@ const path = require("path");
  * @returns {string} - Normalized status (completed, in-progress, pending)
  */
 function normalizeStatus(raw) {
-  const s = (raw || "").toLowerCase().trim();
-  if (s.includes("complete") || s.includes("done") || s.includes("✓") || s.includes("✅")) {
-    return "completed";
+  const s = (raw || '').toLowerCase().trim();
+  if (s.includes('complete') || s.includes('done') || s.includes('✓') || s.includes('✅')) {
+    return 'completed';
   }
-  if (s.includes("progress") || s.includes("active") || s.includes("wip") || s.includes("🔄")) {
-    return "in-progress";
+  if (s.includes('progress') || s.includes('active') || s.includes('wip') || s.includes('🔄')) {
+    return 'in-progress';
   }
-  return "pending";
+  return 'pending';
 }
 
 /**
@@ -29,7 +29,7 @@ function normalizeStatus(raw) {
  * @returns {Array<{phase: number, name: string, status: string, file: string}>}
  */
 function parsePlanTable(planFilePath) {
-  const content = fs.readFileSync(planFilePath, "utf8");
+  const content = fs.readFileSync(planFilePath, 'utf8');
   const dir = path.dirname(planFilePath);
   const phases = [];
   let match;
@@ -43,7 +43,7 @@ function parsePlanTable(planFilePath) {
       name: name.trim(),
       status: normalizeStatus(status),
       file: path.resolve(dir, linkPath),
-      linkText: linkText.trim(),
+      linkText: linkText.trim()
     });
   }
 
@@ -57,7 +57,7 @@ function parsePlanTable(planFilePath) {
         name: name.trim(),
         status: normalizeStatus(status),
         file: path.resolve(dir, linkPath),
-        linkText: `Phase ${phase}`,
+        linkText: `Phase ${phase}`
       });
     }
   }
@@ -72,7 +72,7 @@ function parsePlanTable(planFilePath) {
         name: name.trim(),
         status: normalizeStatus(status),
         file: path.resolve(dir, linkPath),
-        linkText: name.trim(),
+        linkText: name.trim()
       });
     }
   }
@@ -82,22 +82,21 @@ function parsePlanTable(planFilePath) {
     const simpleTblRegex = /\|\s*0?(\d+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g;
     while ((match = simpleTblRegex.exec(content)) !== null) {
       const [, phase, name, status] = match;
-      if (name.trim().toLowerCase() === "description" || name.trim().toLowerCase() === "name")
-        continue;
-      if (name.includes("---") || name.includes("===")) continue;
+      if (name.trim().toLowerCase() === 'description' || name.trim().toLowerCase() === 'name') continue;
+      if (name.includes('---') || name.includes('===')) continue;
       phases.push({
         phase: parseInt(phase, 10),
         name: name.trim(),
         status: normalizeStatus(status),
         file: planFilePath,
-        linkText: name.trim(),
+        linkText: name.trim()
       });
     }
   }
 
   // Format 3: Heading-based phases (### Phase X: Name)
   if (phases.length === 0) {
-    const contentLines = content.split("\n");
+    const contentLines = content.split('\n');
     let currentPhase = null;
 
     for (const line of contentLines) {
@@ -108,9 +107,9 @@ function parsePlanTable(planFilePath) {
         currentPhase = {
           phase: phaseNum,
           name: headingMatch[2].trim(),
-          status: "pending",
+          status: 'pending',
           file: planFilePath,
-          linkText: `Phase ${phaseNum}`,
+          linkText: `Phase ${phaseNum}`
         };
       }
       if (currentPhase) {
@@ -132,18 +131,18 @@ function parsePlanTable(planFilePath) {
       phaseMap.set(name.trim().toLowerCase(), {
         phase: parseInt(num, 10),
         name: name.trim(),
-        status: "pending",
+        status: 'pending',
         file: planFilePath,
-        linkText: name.trim(),
+        linkText: name.trim()
       });
     }
 
-    const checkboxRegex = /^-\s*\[(x| )\]\s*([^:]+)/gim;
+    const checkboxRegex = /^-\s*\[(x| )\]\s*([^:]+)/gmi;
     while ((match = checkboxRegex.exec(content)) !== null) {
       const [, checked, name] = match;
       const key = name.trim().toLowerCase();
       if (phaseMap.has(key)) {
-        phaseMap.get(key).status = checked.toLowerCase() === "x" ? "completed" : "pending";
+        phaseMap.get(key).status = checked.toLowerCase() === 'x' ? 'completed' : 'pending';
       }
     }
 
@@ -154,16 +153,15 @@ function parsePlanTable(planFilePath) {
 
   // Format 5: Checkbox list with bold links
   if (phases.length === 0) {
-    const checkboxLinkRegex =
-      /^-\s*\[(x| )\]\s*\*\*\[(?:Phase\s*)?(\d+)[:\s]*([^\]]*)\]\(([^)]+)\)\*\*/gim;
+    const checkboxLinkRegex = /^-\s*\[(x| )\]\s*\*\*\[(?:Phase\s*)?(\d+)[:\s]*([^\]]*)\]\(([^)]+)\)\*\*/gmi;
     while ((match = checkboxLinkRegex.exec(content)) !== null) {
       const [, checked, phase, name, linkPath] = match;
       phases.push({
         phase: parseInt(phase, 10),
         name: name.trim() || `Phase ${phase}`,
-        status: checked.toLowerCase() === "x" ? "completed" : "pending",
+        status: checked.toLowerCase() === 'x' ? 'completed' : 'pending',
         file: path.resolve(dir, linkPath),
-        linkText: name.trim() || `Phase ${phase}`,
+        linkText: name.trim() || `Phase ${phase}`
       });
     }
   }
@@ -173,5 +171,5 @@ function parsePlanTable(planFilePath) {
 
 module.exports = {
   parsePlanTable,
-  normalizeStatus,
+  normalizeStatus
 };

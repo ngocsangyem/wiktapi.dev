@@ -143,7 +143,6 @@ python .opencode/scripts/generate_catalogs.py --help
 ### Input Files
 
 Located in the same directory as the script:
-
 - `commands_data.yaml` - Source data for commands
 - `skills_data.yaml` - Source data for skills
 

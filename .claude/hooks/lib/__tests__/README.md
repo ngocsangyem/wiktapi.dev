@@ -11,7 +11,6 @@ Comprehensive tests for statusline implementation modules.
 ## Running Tests
 
 ### All Tests
-
 ```bash
 # From project root
 node .claude/hooks/lib/__tests__/statusline.test.cjs
@@ -19,7 +18,6 @@ node .claude/hooks/lib/__tests__/statusline-integration.test.cjs
 ```
 
 ### Run Specific Test Category
-
 ```bash
 # Extract the test name and search:
 grep -A5 "console.log.*TEST.*:" .claude/hooks/lib/__tests__/statusline.test.cjs
@@ -104,7 +102,6 @@ grep -A5 "console.log.*TEST.*:" .claude/hooks/lib/__tests__/statusline.test.cjs
 ## Test Results
 
 ### Latest Run
-
 - **Total:** 75 tests
 - **Passed:** 75
 - **Failed:** 0
@@ -114,7 +111,6 @@ grep -A5 "console.log.*TEST.*:" .claude/hooks/lib/__tests__/statusline.test.cjs
 ## Expected Output
 
 ### Successful Run
-
 ```
 ═══════════════════════════════════════════════════════
 TEST 1: Module Load Test
@@ -140,7 +136,6 @@ Failed: 0
 ## Key Test Data
 
 ### Sample JSONL Transcript
-
 ```jsonl
 {"timestamp":"2026-01-06T12:00:00Z","message":{"content":[{"type":"tool_use","id":"tool-1","name":"Read","input":{"file_path":"/home/user/file.txt"}}]}}
 {"timestamp":"2026-01-06T12:01:00Z","message":{"content":[{"type":"tool_result","tool_use_id":"tool-1","is_error":false}]}}
@@ -150,7 +145,6 @@ Failed: 0
 ```
 
 ### Sample Statusline Input (JSON)
-
 ```json
 {
   "model": { "display_name": "Claude-Opus" },
@@ -173,7 +167,6 @@ Failed: 0
 ```
 
 ### Expected Statusline Output
-
 ```
 [Claude-Opus] | ██████░░░░░░ 48% | 📁 ~/project | 📝 +42 -12 | 💵 $0.1234
 ```
@@ -181,17 +174,14 @@ Failed: 0
 ## Debugging
 
 ### Enable Verbose Output
-
 Edit test files to add console.log before test assertions:
-
 ```javascript
 const result = parseTranscript(tmpTranscript);
-console.log("Parsed result:", result); // Add this
-assertTrue(result.tools.length > 0, "Should track tools");
+console.log('Parsed result:', result);  // Add this
+assertTrue(result.tools.length > 0, 'Should track tools');
 ```
 
 ### Check Specific Module
-
 ```bash
 # Test only colors
 node -e "const c = require('./.claude/hooks/lib/colors.cjs'); console.log(c.coloredBar(50))"
@@ -223,13 +213,11 @@ node -e "const {countConfigs} = require('./.claude/hooks/lib/config-counter.cjs'
 When modifying statusline modules:
 
 1. Run unit tests first:
-
    ```bash
    node .claude/hooks/lib/__tests__/statusline.test.cjs
    ```
 
 2. Run integration tests:
-
    ```bash
    node .claude/hooks/lib/__tests__/statusline-integration.test.cjs
    ```

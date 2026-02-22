@@ -10,15 +10,15 @@ Create distinctive, production-grade frontend interfaces. Implement real working
 
 Choose workflow based on input type:
 
-| Input                            | Workflow                  | Reference                             |
-| -------------------------------- | ------------------------- | ------------------------------------- |
-| Screenshot                       | Replicate exactly         | `./references/workflow-screenshot.md` |
-| Video                            | Replicate with animations | `./references/workflow-video.md`      |
-| Screenshot/Video (describe only) | Document for devs         | `./references/workflow-describe.md`   |
-| 3D/WebGL request                 | Three.js immersive        | `./references/workflow-3d.md`         |
-| Quick task                       | Rapid implementation      | `./references/workflow-quick.md`      |
-| Complex/award-quality            | Full immersive            | `./references/workflow-immersive.md`  |
-| From scratch                     | Design Thinking below     | -                                     |
+| Input | Workflow | Reference |
+|-------|----------|-----------|
+| Screenshot | Replicate exactly | `./references/workflow-screenshot.md` |
+| Video | Replicate with animations | `./references/workflow-video.md` |
+| Screenshot/Video (describe only) | Document for devs | `./references/workflow-describe.md` |
+| 3D/WebGL request | Three.js immersive | `./references/workflow-3d.md` |
+| Quick task | Rapid implementation | `./references/workflow-quick.md` |
+| Complex/award-quality | Full immersive | `./references/workflow-immersive.md` |
+| From scratch | Design Thinking below | - |
 
 **All workflows**: Activate `ui-ux-pro-max` skill FIRST for design intelligence.
 
@@ -35,7 +35,6 @@ See specific workflow files for detailed steps.
 ## Design Thinking (From Scratch)
 
 Before coding, commit to a BOLD aesthetic direction:
-
 - **Purpose**: What problem does this interface solve? Who uses it?
 - **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
 - **Constraints**: Technical requirements (framework, performance, accessibility).
@@ -54,26 +53,24 @@ Before coding, commit to a BOLD aesthetic direction:
 
 ## Asset & Analysis References
 
-| Task               | Reference                                    |
-| ------------------ | -------------------------------------------- |
-| Generate assets    | `./references/asset-generation.md`           |
-| Analyze quality    | `./references/visual-analysis-overview.md`   |
+| Task | Reference |
+|------|-----------|
+| Generate assets | `./references/asset-generation.md` |
+| Analyze quality | `./references/visual-analysis-overview.md` |
 | Extract guidelines | `./references/design-extraction-overview.md` |
-| Optimization       | `./references/technical-overview.md`         |
-| Animations         | `./references/animejs.md`                    |
+| Optimization | `./references/technical-overview.md` |
+| Animations | `./references/animejs.md` |
 
 Quick start: `./references/ai-multimodal-overview.md`
 
 ## Anti-Patterns (AI Slop)
 
 NEVER use:
-
 - Overused fonts: Inter, Roboto, Arial, Space Grotesk
 - Cliched colors: purple gradients on white
 - Predictable layouts, cookie-cutter patterns
 
 DO:
-
 - Vary themes (light/dark), fonts, aesthetics per project
 - Match complexity to vision (maximalist = elaborate; minimalist = precise)
 - Make unexpected, context-specific choices

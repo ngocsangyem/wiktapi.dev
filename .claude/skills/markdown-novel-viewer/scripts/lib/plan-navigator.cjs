@@ -3,8 +3,8 @@
  * Enables sidebar navigation for multi-phase plans
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Detect if a file is part of a plan directory
@@ -13,7 +13,7 @@ const path = require("path");
  */
 function detectPlan(filePath) {
   const dir = path.dirname(filePath);
-  const planFile = path.join(dir, "plan.md");
+  const planFile = path.join(dir, 'plan.md');
 
   if (!fs.existsSync(planFile)) {
     return { isPlan: false };
@@ -22,11 +22,11 @@ function detectPlan(filePath) {
   // Find all phase files
   const files = fs.readdirSync(dir);
   const phases = files
-    .filter((f) => f.startsWith("phase-") && f.endsWith(".md"))
+    .filter(f => f.startsWith('phase-') && f.endsWith('.md'))
     .sort((a, b) => {
       // Sort by phase number
-      const numA = parseInt(a.match(/phase-(\d+)/)?.[1] || "0", 10);
-      const numB = parseInt(b.match(/phase-(\d+)/)?.[1] || "0", 10);
+      const numA = parseInt(a.match(/phase-(\d+)/)?.[1] || '0', 10);
+      const numB = parseInt(b.match(/phase-(\d+)/)?.[1] || '0', 10);
       return numA - numB;
     });
 
@@ -34,7 +34,7 @@ function detectPlan(filePath) {
     isPlan: true,
     planDir: dir,
     planFile,
-    phases: phases.map((f) => path.join(dir, f)),
+    phases: phases.map(f => path.join(dir, f))
   };
 }
 
@@ -44,16 +44,16 @@ function detectPlan(filePath) {
  * @returns {string} - Normalized status (completed, in-progress, pending)
  */
 function normalizeStatus(raw) {
-  const s = (raw || "").toLowerCase().trim();
+  const s = (raw || '').toLowerCase().trim();
   // Match various completed indicators
-  if (s.includes("complete") || s.includes("done") || s.includes("✓") || s.includes("✅")) {
-    return "completed";
+  if (s.includes('complete') || s.includes('done') || s.includes('✓') || s.includes('✅')) {
+    return 'completed';
   }
   // Match in-progress indicators
-  if (s.includes("progress") || s.includes("active") || s.includes("wip") || s.includes("🔄")) {
-    return "in-progress";
+  if (s.includes('progress') || s.includes('active') || s.includes('wip') || s.includes('🔄')) {
+    return 'in-progress';
   }
-  return "pending";
+  return 'pending';
 }
 
 /**
@@ -64,8 +64,8 @@ function normalizeStatus(raw) {
 function slugify(text) {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 /**
@@ -78,7 +78,7 @@ function slugify(text) {
  * @returns {Array<{phase: number, name: string, status: string, file: string, anchor: string}>}
  */
 function parsePlanTable(planFilePath) {
-  const content = fs.readFileSync(planFilePath, "utf8");
+  const content = fs.readFileSync(planFilePath, 'utf8');
   const dir = path.dirname(planFilePath);
   const phases = [];
 
@@ -92,7 +92,7 @@ function parsePlanTable(planFilePath) {
       name: name.trim(),
       status: normalizeStatus(status),
       file: path.resolve(dir, linkPath),
-      linkText: linkText.trim(),
+      linkText: linkText.trim()
     });
   }
 
@@ -107,7 +107,7 @@ function parsePlanTable(planFilePath) {
         name: name.trim(),
         status: normalizeStatus(status),
         file: path.resolve(dir, linkPath),
-        linkText: `Phase ${phase}`,
+        linkText: `Phase ${phase}`
       });
     }
   }
@@ -123,7 +123,7 @@ function parsePlanTable(planFilePath) {
         name: name.trim(),
         status: normalizeStatus(status),
         file: path.resolve(dir, linkPath),
-        linkText: name.trim(),
+        linkText: name.trim()
       });
     }
   }
@@ -135,9 +135,8 @@ function parsePlanTable(planFilePath) {
     while ((match = simpleTblRegex.exec(content)) !== null) {
       const [fullMatch, phase, name, status] = match;
       // Skip header rows and separator rows
-      if (name.trim().toLowerCase() === "description" || name.trim().toLowerCase() === "name")
-        continue;
-      if (name.includes("---") || name.includes("===")) continue;
+      if (name.trim().toLowerCase() === 'description' || name.trim().toLowerCase() === 'name') continue;
+      if (name.includes('---') || name.includes('===')) continue;
       const phaseNum = parseInt(phase, 10);
       phases.push({
         phase: phaseNum,
@@ -145,14 +144,14 @@ function parsePlanTable(planFilePath) {
         status: normalizeStatus(status),
         file: planFilePath,
         linkText: name.trim(),
-        anchor: `phase-${String(phaseNum).padStart(2, "0")}-${slugify(name.trim())}`,
+        anchor: `phase-${String(phaseNum).padStart(2, '0')}-${slugify(name.trim())}`
       });
     }
   }
 
   // Format 3: Heading-based phases (### Phase X: Name with - Status: XXX)
   if (phases.length === 0) {
-    const contentLines = content.split("\n");
+    const contentLines = content.split('\n');
     let currentPhase = null;
 
     for (let i = 0; i < contentLines.length; i++) {
@@ -165,10 +164,10 @@ function parsePlanTable(planFilePath) {
         currentPhase = {
           phase: phaseNum,
           name: phaseName,
-          status: "pending",
+          status: 'pending',
           file: planFilePath,
           linkText: `Phase ${phaseNum}`,
-          anchor: `phase-${String(phaseNum).padStart(2, "0")}-${slugify(phaseName)}`,
+          anchor: `phase-${String(phaseNum).padStart(2, '0')}-${slugify(phaseName)}`
         };
       }
       // Look for status in subsequent lines
@@ -189,7 +188,7 @@ function parsePlanTable(planFilePath) {
   //   - Completed: date
   // Check if content has this specific pattern before proceeding
   if (phases.length === 0 && /^-\s*Phase\s*\d+[:\s]/m.test(content)) {
-    const lines = content.split("\n");
+    const lines = content.split('\n');
     let currentPhase = null;
 
     for (let i = 0; i < lines.length; i++) {
@@ -202,16 +201,16 @@ function parsePlanTable(planFilePath) {
         if (currentPhase) phases.push(currentPhase);
 
         const phaseNum = parseInt(phaseMatch[1], 10);
-        const name = phaseMatch[2].trim().replace(/\s*\([^)]*\)\s*$/, ""); // Remove trailing (date)
+        const name = phaseMatch[2].trim().replace(/\s*\([^)]*\)\s*$/, ''); // Remove trailing (date)
         const hasCheckmark = /[✅✓]/.test(line);
 
         currentPhase = {
           phase: phaseNum,
           name: name,
-          status: hasCheckmark ? "completed" : "pending",
+          status: hasCheckmark ? 'completed' : 'pending',
           file: planFilePath, // Default to plan.md, will be updated if File: found
           linkText: name,
-          anchor: `phase-${String(phaseNum).padStart(2, "0")}-${slugify(name)}`,
+          anchor: `phase-${String(phaseNum).padStart(2, '0')}-${slugify(name)}`
         };
         continue;
       }
@@ -233,10 +232,7 @@ function parsePlanTable(planFilePath) {
         }
 
         // End current phase when we hit another top-level non-phase item or section header
-        if (
-          /^##/.test(line) ||
-          (/^-\s/.test(line) && !/^-\s*Phase/i.test(line) && !/^\s+-/.test(line))
-        ) {
+        if (/^##/.test(line) || (/^-\s/.test(line) && !/^-\s*Phase/i.test(line) && !/^\s+-/.test(line))) {
           phases.push(currentPhase);
           currentPhase = null;
         }
@@ -259,20 +255,20 @@ function parsePlanTable(planFilePath) {
       phaseMap.set(name.trim().toLowerCase(), {
         phase: phaseNum,
         name: name.trim(),
-        status: "pending",
+        status: 'pending',
         file: planFilePath,
         linkText: name.trim(),
-        anchor: `phase-${String(phaseNum).padStart(2, "0")}-${slugify(name.trim())}`,
+        anchor: `phase-${String(phaseNum).padStart(2, '0')}-${slugify(name.trim())}`
       });
     }
 
     // Second pass: find checkbox status like "- [x] Name:" or "- [ ] Name:"
-    const checkboxRegex = /^-\s*\[(x| )\]\s*([^:]+)/gim;
+    const checkboxRegex = /^-\s*\[(x| )\]\s*([^:]+)/gmi;
     while ((match = checkboxRegex.exec(content)) !== null) {
       const [, checked, name] = match;
       const key = name.trim().toLowerCase();
       if (phaseMap.has(key)) {
-        phaseMap.get(key).status = checked.toLowerCase() === "x" ? "completed" : "pending";
+        phaseMap.get(key).status = checked.toLowerCase() === 'x' ? 'completed' : 'pending';
       }
     }
 
@@ -285,16 +281,15 @@ function parsePlanTable(planFilePath) {
   // Format 6: Checkbox list with bold links
   // Matches: - [ ] **[Phase 1: Name](./phase-01-xxx.md)** or - [x] **[Phase 1](path)**
   if (phases.length === 0) {
-    const checkboxLinkRegex =
-      /^-\s*\[(x| )\]\s*\*\*\[(?:Phase\s*)?(\d+)[:\s]*([^\]]*)\]\(([^)]+)\)\*\*/gim;
+    const checkboxLinkRegex = /^-\s*\[(x| )\]\s*\*\*\[(?:Phase\s*)?(\d+)[:\s]*([^\]]*)\]\(([^)]+)\)\*\*/gmi;
     while ((match = checkboxLinkRegex.exec(content)) !== null) {
       const [, checked, phase, name, linkPath] = match;
       phases.push({
         phase: parseInt(phase, 10),
         name: name.trim() || `Phase ${phase}`,
-        status: checked.toLowerCase() === "x" ? "completed" : "pending",
+        status: checked.toLowerCase() === 'x' ? 'completed' : 'pending',
         file: path.resolve(dir, linkPath),
-        linkText: name.trim() || `Phase ${phase}`,
+        linkText: name.trim() || `Phase ${phase}`
       });
     }
   }
@@ -309,9 +304,9 @@ function parsePlanTable(planFilePath) {
       while ((linkMatch = linkRegex.exec(phaseFilesSection[0])) !== null) {
         const [, linkName, linkPath] = linkMatch;
         // Extract phase number from filename (phase-01-xxx.md -> 1)
-        const phaseNum = parseInt(linkName.match(/phase-0?(\d+)/i)?.[1] || "0", 10);
+        const phaseNum = parseInt(linkName.match(/phase-0?(\d+)/i)?.[1] || '0', 10);
         // Update corresponding phase's file path
-        const phase = phases.find((p) => p.phase === phaseNum);
+        const phase = phases.find(p => p.phase === phaseNum);
         if (phase && phase.file === planFilePath) {
           phase.file = path.resolve(dir, linkPath);
         }
@@ -321,7 +316,7 @@ function parsePlanTable(planFilePath) {
 
   // Filter out phases that only point to the plan.md itself (inline sections)
   // Only keep phases that have separate phase files
-  return phases.filter((p) => p.file !== planFilePath);
+  return phases.filter(p => p.file !== planFilePath);
 }
 
 /**
@@ -343,28 +338,29 @@ function getNavigationContext(filePath) {
   const allPhases = [
     {
       phase: 0,
-      name: "Plan Overview",
-      status: "overview",
-      file: planInfo.planFile,
+      name: 'Plan Overview',
+      status: 'overview',
+      file: planInfo.planFile
     },
-    ...phaseMeta,
+    ...phaseMeta
   ];
 
   // Find current file index
   const normalizedPath = path.normalize(filePath);
-  const currentIndex = allPhases.findIndex((p) => path.normalize(p.file) === normalizedPath);
+  const currentIndex = allPhases.findIndex(p => path.normalize(p.file) === normalizedPath);
 
   // Get prev/next
   const prev = currentIndex > 0 ? allPhases[currentIndex - 1] : null;
-  const next =
-    currentIndex < allPhases.length - 1 && currentIndex >= 0 ? allPhases[currentIndex + 1] : null;
+  const next = currentIndex < allPhases.length - 1 && currentIndex >= 0
+    ? allPhases[currentIndex + 1]
+    : null;
 
   return {
     planInfo,
     currentIndex,
     prev,
     next,
-    allPhases,
+    allPhases
   };
 }
 
@@ -374,8 +370,8 @@ function getNavigationContext(filePath) {
  * @returns {string} - Badge HTML
  */
 function getGroupBadge(phases) {
-  const completed = phases.filter((p) => p.status === "completed" || p.status === "done").length;
-  const inProgress = phases.filter((p) => p.status === "in-progress").length;
+  const completed = phases.filter(p => p.status === 'completed' || p.status === 'done').length;
+  const inProgress = phases.filter(p => p.status === 'in-progress').length;
 
   if (completed === phases.length) {
     return '<span class="phase-badge badge-done">✓</span>';
@@ -395,7 +391,7 @@ function generateNavSidebar(filePath) {
   const { planInfo, currentIndex, allPhases } = getNavigationContext(filePath);
 
   if (!planInfo.isPlan) {
-    return "";
+    return '';
   }
 
   const planName = path.basename(planInfo.planDir);
@@ -413,47 +409,39 @@ function generateNavSidebar(filePath) {
     currentGroup.push({ phase, index });
 
     // Group every 10 phases or when we hit phase 10, 20, 30, etc.
-    if (
-      currentGroup.length === 10 ||
-      index === allPhases.length - 1 ||
-      (phase.phase % 10 === 0 && phase.phase !== groupStart)
-    ) {
+    if (currentGroup.length === 10 || index === allPhases.length - 1 ||
+        (phase.phase % 10 === 0 && phase.phase !== groupStart)) {
       groups.push({
         start: groupStart,
         end: phase.phase,
-        phases: [...currentGroup],
+        phases: [...currentGroup]
       });
       currentGroup = [];
     }
   });
 
   // Generate accordion groups
-  const groupsHtml = groups
-    .map((group, groupIdx) => {
-      const groupId = `phase-group-${group.start}-${group.end}`;
-      const groupLabel =
-        group.start === 0
-          ? "Overview"
-          : group.start === group.end
-            ? `Phase ${group.start}`
-            : `Phases ${group.start}-${group.end}`;
+  const groupsHtml = groups.map((group, groupIdx) => {
+    const groupId = `phase-group-${group.start}-${group.end}`;
+    const groupLabel = group.start === 0 ? 'Overview' :
+                       group.start === group.end ? `Phase ${group.start}` :
+                       `Phases ${group.start}-${group.end}`;
 
-      const groupBadge = getGroupBadge(group.phases.map((p) => p.phase));
+    const groupBadge = getGroupBadge(group.phases.map(p => p.phase));
 
-      const phaseItems = group.phases
-        .map(({ phase, index }) => {
-          const isActive = index === currentIndex;
-          const statusClass = phase.status.replace(/\s+/g, "-");
-          const normalizedPhasePath = path.normalize(phase.file);
-          const isSameFile = normalizedPhasePath === normalizedCurrentPath;
+    const phaseItems = group.phases.map(({ phase, index }) => {
+      const isActive = index === currentIndex;
+      const statusClass = phase.status.replace(/\s+/g, '-');
+      const normalizedPhasePath = path.normalize(phase.file);
+      const isSameFile = normalizedPhasePath === normalizedCurrentPath;
 
-          // Check if phase file actually exists on disk
-          const fileExists = fs.existsSync(phase.file);
-          const unavailableClass = !fileExists ? "unavailable" : "";
+      // Check if phase file actually exists on disk
+      const fileExists = fs.existsSync(phase.file);
+      const unavailableClass = !fileExists ? 'unavailable' : '';
 
-          // If file doesn't exist, render as non-clickable span with tooltip
-          if (!fileExists) {
-            return `
+      // If file doesn't exist, render as non-clickable span with tooltip
+      if (!fileExists) {
+        return `
           <li class="phase-item ${unavailableClass}" data-status="${statusClass}" title="Phase planned but not yet implemented">
             <span class="phase-link-disabled">
               <span class="status-dot ${statusClass}"></span>
@@ -462,34 +450,34 @@ function generateNavSidebar(filePath) {
             </span>
           </li>
         `;
-          }
+      }
 
-          // Build href: use anchor for same-file phases, full URL for different files
-          let href;
-          let isInlineSection = false;
-          if (isSameFile && phase.anchor) {
-            // Same file with anchor - use hash fragment only for smooth scrolling
-            href = `#${phase.anchor}`;
-            isInlineSection = true;
-          } else if (phase.anchor) {
-            // Different file with anchor
-            href = `/view?file=${encodeURIComponent(phase.file)}#${phase.anchor}`;
-          } else {
-            // No anchor (separate phase file or plan overview)
-            href = `/view?file=${encodeURIComponent(phase.file)}`;
-          }
+      // Build href: use anchor for same-file phases, full URL for different files
+      let href;
+      let isInlineSection = false;
+      if (isSameFile && phase.anchor) {
+        // Same file with anchor - use hash fragment only for smooth scrolling
+        href = `#${phase.anchor}`;
+        isInlineSection = true;
+      } else if (phase.anchor) {
+        // Different file with anchor
+        href = `/view?file=${encodeURIComponent(phase.file)}#${phase.anchor}`;
+      } else {
+        // No anchor (separate phase file or plan overview)
+        href = `/view?file=${encodeURIComponent(phase.file)}`;
+      }
 
-          // Add data attributes for client-side section tracking
-          const dataAnchor = phase.anchor ? `data-anchor="${phase.anchor}"` : "";
-          const inlineSectionClass = isInlineSection ? "inline-section" : "";
+      // Add data attributes for client-side section tracking
+      const dataAnchor = phase.anchor ? `data-anchor="${phase.anchor}"` : '';
+      const inlineSectionClass = isInlineSection ? 'inline-section' : '';
 
-          // Type icon: hash/anchor for inline sections, file for separate docs
-          const typeIcon = isInlineSection
-            ? `<svg class="phase-type-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-.5 9.45a.75.75 0 01-1.06-1.06l-1.25 1.25a2 2 0 01-2.83-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25z"/></svg>`
-            : `<svg class="phase-type-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H3.75zM2 1.75C2 .784 2.784 0 3.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0112.25 16h-8.5A1.75 1.75 0 012 14.25V1.75z"/></svg>`;
+      // Type icon: hash/anchor for inline sections, file for separate docs
+      const typeIcon = isInlineSection
+        ? `<svg class="phase-type-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-.5 9.45a.75.75 0 01-1.06-1.06l-1.25 1.25a2 2 0 01-2.83-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25z"/></svg>`
+        : `<svg class="phase-type-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H3.75zM2 1.75C2 .784 2.784 0 3.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0112.25 16h-8.5A1.75 1.75 0 012 14.25V1.75z"/></svg>`;
 
-          return `
-        <li class="phase-item ${isActive ? "active" : ""} ${inlineSectionClass}" data-status="${statusClass}" ${dataAnchor}>
+      return `
+        <li class="phase-item ${isActive ? 'active' : ''} ${inlineSectionClass}" data-status="${statusClass}" ${dataAnchor}>
           <a href="${href}">
             ${typeIcon}
             <span class="status-dot ${statusClass}"></span>
@@ -497,10 +485,9 @@ function generateNavSidebar(filePath) {
           </a>
         </li>
       `;
-        })
-        .join("");
+    }).join('');
 
-      return `
+    return `
       <div class="phase-group" data-phase-id="${groupId}">
         <button class="phase-header" tabindex="0" aria-expanded="true" aria-controls="${groupId}-items">
           <span class="phase-chevron">▼</span>
@@ -512,8 +499,7 @@ function generateNavSidebar(filePath) {
         </ul>
       </div>
     `;
-    })
-    .join("");
+  }).join('');
 
   return `
     <nav class="plan-nav" id="plan-nav">
@@ -535,46 +521,38 @@ function generateNavFooter(filePath) {
   const { prev, next } = getNavigationContext(filePath);
 
   if (!prev && !next) {
-    return "";
+    return '';
   }
 
   // Check if prev/next files exist
   const prevExists = prev && fs.existsSync(prev.file);
   const nextExists = next && fs.existsSync(next.file);
 
-  const prevHtml = prev
-    ? prevExists
-      ? `
+  const prevHtml = prev ? (prevExists ? `
     <a href="/view?file=${encodeURIComponent(prev.file)}" class="nav-prev">
       <span class="nav-arrow">&larr;</span>
       <span class="nav-label">${prev.name}</span>
     </a>
-  `
-      : `
+  ` : `
     <span class="nav-prev nav-unavailable" title="Phase planned but not yet implemented">
       <span class="nav-arrow">&larr;</span>
       <span class="nav-label">${prev.name}</span>
       <span class="nav-badge">Planned</span>
     </span>
-  `
-    : "<span></span>";
+  `) : '<span></span>';
 
-  const nextHtml = next
-    ? nextExists
-      ? `
+  const nextHtml = next ? (nextExists ? `
     <a href="/view?file=${encodeURIComponent(next.file)}" class="nav-next">
       <span class="nav-label">${next.name}</span>
       <span class="nav-arrow">&rarr;</span>
     </a>
-  `
-      : `
+  ` : `
     <span class="nav-next nav-unavailable" title="Phase planned but not yet implemented">
       <span class="nav-label">${next.name}</span>
       <span class="nav-badge">Planned</span>
       <span class="nav-arrow">&rarr;</span>
     </span>
-  `
-    : "<span></span>";
+  `) : '<span></span>';
 
   return `
     <footer class="nav-footer">
@@ -589,5 +567,5 @@ module.exports = {
   parsePlanTable,
   getNavigationContext,
   generateNavSidebar,
-  generateNavFooter,
+  generateNavFooter
 };

@@ -7,7 +7,6 @@ Think harder.
 Activate `planning` skill.
 
 ## Your mission
-
 <task>
 $ARGUMENTS
 </task>
@@ -15,13 +14,11 @@ $ARGUMENTS
 ## Pre-Creation Check (Active vs Suggested Plan)
 
 Check the `## Plan Context` section in the injected context:
-
 - If "Plan:" shows a path → Active plan exists. Ask user: "Continue with this? [Y/n]"
 - If "Suggested:" shows a path → Branch-matched hint only. Ask if they want to activate or create new.
 - If "Plan: none" → Create new plan using naming from `## Naming` section.
 
 ## Workflow
-
 1. If creating new: Create directory using `Plan dir:` from `## Naming` section, then run `node .claude/scripts/set-active-plan.cjs {plan-dir}`
    If reusing: Use the active plan path from Plan Context.
    Make sure you pass the directory path to every subagent during the process.
@@ -39,11 +36,11 @@ After plan creation, offer validation interview to confirm decisions before impl
 
 **Check `## Plan Context` → `Validation: mode=X, questions=MIN-MAX`:**
 
-| Mode     | Behavior                                                                        |
-| -------- | ------------------------------------------------------------------------------- |
+| Mode | Behavior |
+|------|----------|
 | `prompt` | Ask user: "Validate this plan with a brief interview?" → Yes (Recommended) / No |
-| `auto`   | Automatically execute `/plan:validate {plan-path}`                              |
-| `off`    | Skip validation step entirely                                                   |
+| `auto` | Automatically execute `/plan:validate {plan-path}` |
+| `off` | Skip validation step entirely |
 
 **If mode is `prompt`:** Use `AskUserQuestion` tool with options above.
 **If user chooses validation or mode is `auto`:** Execute `/plan:validate {plan-path}` SlashCommand.
@@ -54,12 +51,10 @@ After plan creation, offer validation interview to confirm decisions before impl
 
 > **Best Practice:** Run `/clear` before implementing to start with fresh context.
 > Then run:
->
 > ```
 > /cook {ABSOLUTE_PATH_TO_PLAN_DIR}/plan.md
 > ```
->
-> _(Replace with actual absolute path, e.g., `/home/user/project/plans/260203-1234-feature/plan.md`)_
+> *(Replace with actual absolute path, e.g., `/home/user/project/plans/260203-1234-feature/plan.md`)*
 
 **Why no flag?** Thorough planning without validation needs interactive review gates.
 **Why absolute path?** After `/clear`, the new session loses context. Worktree paths won't be discoverable without the full path.
@@ -69,7 +64,6 @@ This reminder is **NON-NEGOTIABLE** when validation is skipped - always output w
 ## Output Requirements
 
 **Plan Directory Structure** (use `Plan dir:` from `## Naming` section)
-
 ```
 {plan-dir}/
 ├── research/
@@ -87,11 +81,9 @@ This reminder is **NON-NEGOTIABLE** when validation is skipped - always output w
 ```
 
 **Research Output Requirements**
-
 - Ensure every research markdown report remains concise (≤150 lines) while covering all requested topics and citations.
 
 **Plan File Specification**
-
 - Every `plan.md` MUST start with YAML frontmatter:
   ```yaml
   ---
@@ -99,17 +91,16 @@ This reminder is **NON-NEGOTIABLE** when validation is skipped - always output w
   description: "{One sentence for card preview}"
   status: pending
   priority: P2
-  effort: { sum of phases, e.g., 4h }
-  branch: { current git branch }
+  effort: {sum of phases, e.g., 4h}
+  branch: {current git branch}
   tags: [relevant, tags]
-  created: { YYYY-MM-DD }
+  created: {YYYY-MM-DD}
   ---
   ```
 - Save the overview access point at `{plan-dir}/plan.md`. Keep it generic, under 80 lines, and list each implementation phase with status and progress plus links to phase files.
 - For each phase, create `{plan-dir}/phase-XX-phase-name-here.md` containing the following sections in order: Context links (reference parent plan, dependencies, docs), Overview (date, description, priority, implementation status, review status), Key Insights, Requirements, Architecture, Related code files, Implementation Steps, Todo list, Success Criteria, Risk Assessment, Security Considerations, Next steps.
 
 ## Important Notes
-
 **IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.
 **IMPORTANT:** Ensure token efficiency while maintaining high quality.
 **IMPORTANT:** Sacrifice grammar for the sake of concision when writing reports.

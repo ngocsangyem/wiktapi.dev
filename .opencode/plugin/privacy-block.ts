@@ -15,17 +15,17 @@ export const PrivacyBlockPlugin: Plugin = async ({ directory }) => {
       const result = checkPrivacy({
         toolName: input.tool,
         toolInput: output.args,
-        options: { configDir: `${directory}/.opencode` },
+        options: { configDir: `${directory}/.opencode` }
       });
 
       if (result.blocked && !result.approved) {
         throw new Error(
           `[Privacy Block] Access to ${result.filePath} requires approval.\n` +
-            `File may contain sensitive data (API keys, passwords).\n` +
-            `Reason: ${result.reason}`,
+          `File may contain sensitive data (API keys, passwords).\n` +
+          `Reason: ${result.reason}`
         );
       }
-    },
+    }
   };
 };
 

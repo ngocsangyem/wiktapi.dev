@@ -1,8 +1,8 @@
 {
   "name": "mcp-management-scripts",
   "version": "1.0.0",
-  "description": "MCP client scripts for managing MCP servers",
   "type": "module",
+  "description": "MCP client scripts for managing MCP servers",
   "scripts": {
     "build": "tsc",
     "test": "node --loader ts-node/esm test.ts"
