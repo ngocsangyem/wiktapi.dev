@@ -2,7 +2,7 @@ import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
 
 export default defineConfig({
-  head: [["link", { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" }]],
+  head: [["link", { rel: "icon", href: "/favicon.png", type: "image/svg+xml" }]],
   vite: {
     plugins: [
       llmstxt({
@@ -13,7 +13,7 @@ export default defineConfig({
   title: "WordictApi",
   description: "Multilingual dictionary API built on Wiktionary",
   themeConfig: {
-    logo: "/favicon.svg",
+    logo: "/favicon.png",
     nav: [
       { text: "Quickstart", link: "/quickstart" },
       { text: "API Explorer", link: "https://api.wordictapi.dev/_scalar", target: "_blank" },

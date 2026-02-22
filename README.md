@@ -1,4 +1,4 @@
-<img src="packages/docs/public/favicon.svg" width="48" alt="Wordictapi logo">
+<img src="packages/docs/public/favicon.png" width="48" alt="Wordictapi logo">
 
 > This project was based on the [wiktapi.dev](https://github.com/TheAlexLichter/wiktapi.dev).
 

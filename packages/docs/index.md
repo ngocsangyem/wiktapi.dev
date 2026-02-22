@@ -4,7 +4,7 @@ hero:
   name: Wordictapi
   tagline: Multilingual dictionary API
   image:
-    src: /favicon.svg
+    src: /favicon.png
     alt: Wordictapi
   actions:
     - theme: brand

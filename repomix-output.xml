@@ -51,7 +51,7 @@ packages/
       db.ts
     public/
       favicon.ico
-      favicon.svg
+      favicon.png
     routes/
       v1/
         plans/
@@ -104,7 +104,7 @@ packages/
       updating-data.md
     public/
       favicon.ico
-      favicon.svg
+      favicon.png
     about.md
     index.md
     package.json
@@ -1188,7 +1188,7 @@ export default definePlugin((nitroApp) => {
 });
 </file>
 
-<file path="packages/api/public/favicon.svg">
+<file path="packages/api/public/favicon.png">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="7" fill="#3575D4"/>
   <polyline
@@ -2140,7 +2140,7 @@ curl http://localhost:3000/v1/languages
 ```
 </file>
 
-<file path="packages/docs/public/favicon.svg">
+<file path="packages/docs/public/favicon.png">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="7" fill="#3575D4"/>
   <polyline
@@ -2182,7 +2182,7 @@ hero:
   name: Wiktapi
   tagline: Multilingual dictionary API
   image:
-    src: /favicon.svg
+    src: /favicon.png
     alt: Wiktapi
   actions:
     - theme: brand
@@ -14904,7 +14904,7 @@ peerDependencyRules:
 </file>
 
 <file path="README.md">
-<img src="packages/docs/public/favicon.svg" width="48" alt="Wiktapi logo">
+<img src="packages/docs/public/favicon.png" width="48" alt="Wiktapi logo">
 
 # WiktAPI.dev
 
@@ -15048,7 +15048,7 @@ import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
 
 export default defineConfig({
-  head: [["link", { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" }]],
+  head: [["link", { rel: "icon", href: "/favicon.png", type: "image/svg+xml" }]],
   vite: {
     plugins: [
       llmstxt({
@@ -15059,7 +15059,7 @@ export default defineConfig({
   title: "WiktApi",
   description: "Multilingual dictionary API built on Wiktionary",
   themeConfig: {
-    logo: "/favicon.svg",
+    logo: "/favicon.png",
     nav: [
       { text: "Quickstart", link: "/quickstart" },
       { text: "API Explorer", link: "https://api.wiktapi.dev/_scalar", target: "_blank" },
