@@ -8,7 +8,7 @@ export default defineConfig({
   },
   openAPI: {
     meta: {
-      title: "Wiktapi",
+      title: "Wordictapi",
       description: "Multilingual dictionary REST API built on Wiktionary data",
       version: "1",
     },

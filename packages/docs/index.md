@@ -1,18 +1,18 @@
 ---
 layout: home
 hero:
-  name: Wiktapi
+  name: Wordictapi
   tagline: Multilingual dictionary API
   image:
     src: /favicon.svg
-    alt: Wiktapi
+    alt: Wordictapi
   actions:
     - theme: brand
       text: Quickstart
       link: /quickstart
     - theme: alt
       text: API Explorer
-      link: https://api.wiktapi.dev/_scalar
+      link: https://api.wordictapi.dev/_scalar
 features:
   - title: 100+ Languages
     details: Access entries from multiple Wiktionary editions. Each word includes an edition field identifying its source language (e.g., "en", "fr", "de"). Combine editions in a single database.
@@ -22,11 +22,11 @@ features:
     details: Run your own instance with a single SQLite file. Including the import scripts to build it from scratch on any Wiktionary edition.
 ---
 
-## Why Wiktapi?
+## Why Wordictapi?
 
 The only official Wiktionary API ([`en.wiktionary.org/api/rest_v1/`](https://en.wiktionary.org/api/rest_v1/)) returns HTML fragments. Getting glosses, examples, pronunciations, or translations out means parsing HTML. It's fragile and painful.
 
-Wiktapi gives you **structured JSON** with normalized fields for every word:
+Wordictapi gives you **structured JSON** with normalized fields for every word:
 
 - Phonetics (IPA + audio)
 - Meanings organized by part of speech

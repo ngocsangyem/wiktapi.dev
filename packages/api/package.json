@@ -1,5 +1,5 @@
 {
-  "name": "@wiktapi/api",
+  "name": "@wordictapi/api",
   "license": "MIT",
   "type": "module",
   "scripts": {

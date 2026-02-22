@@ -6,17 +6,17 @@ export default defineConfig({
   vite: {
     plugins: [
       llmstxt({
-        customLLMsTxtTemplate: `# {title}\n\n> {description}\n\n{details}\n\n{toc}\n\n## Optional\n\n- [OpenAPI spec](https://api.wiktapi.dev/_openapi.json): Machine-readable OpenAPI 3.x spec with all endpoints, parameters, and response schemas.\n- [Interactive API explorer](https://api.wiktapi.dev/_scalar): Scalar UI for browsing and trying all endpoints.`,
+        customLLMsTxtTemplate: `# {title}\n\n> {description}\n\n{details}\n\n{toc}\n\n## Optional\n\n- [OpenAPI spec](https://api.wordictapi.dev/_openapi.json): Machine-readable OpenAPI 3.x spec with all endpoints, parameters, and response schemas.\n- [Interactive API explorer](https://api.wordictapi.dev/_scalar): Scalar UI for browsing and trying all endpoints.`,
       }),
     ],
   },
-  title: "WiktApi",
+  title: "WordictApi",
   description: "Multilingual dictionary API built on Wiktionary",
   themeConfig: {
     logo: "/favicon.svg",
     nav: [
       { text: "Quickstart", link: "/quickstart" },
-      { text: "API Explorer", link: "https://api.wiktapi.dev/_scalar", target: "_blank" },
+      { text: "API Explorer", link: "https://api.wordictapi.dev/_scalar", target: "_blank" },
       { text: "About", link: "/about" },
     ],
     sidebar: [

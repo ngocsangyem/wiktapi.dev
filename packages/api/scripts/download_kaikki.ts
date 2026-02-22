@@ -5,10 +5,10 @@
  * Source: https://kaikki.org/dictionary/rawdata.html
  *
  * Usage:
- *   vp run @wiktapi/api#download                          # downloads en (English Wiktionary, all languages)
- *   vp run @wiktapi/api#download -- --all                 # downloads all available editions (~20)
- *   vp run @wiktapi/api#download -- --editions en,fr,de
- *   vp run @wiktapi/api#download -- --all --force         # re-download even if already present
+ *   vp run @wordictapi/api#download                          # downloads en (English Wiktionary, all languages)
+ *   vp run @wordictapi/api#download -- --all                 # downloads all available editions (~20)
+ *   vp run @wordictapi/api#download -- --editions en,fr,de
+ *   vp run @wordictapi/api#download -- --all --force         # re-download even if already present
  */
 
 import { Effect, Console } from "effect";

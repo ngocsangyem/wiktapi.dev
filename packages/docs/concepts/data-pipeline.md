@@ -1,6 +1,6 @@
 # Data Pipeline
 
-Wiktapi is powered by [kaikki.org](https://kaikki.org/dictionary/rawdata.html), which publishes pre-processed JSONL dumps of every Wiktionary edition. No Python toolchain or wikitext parsing required.
+Wordictapi is powered by [kaikki.org](https://kaikki.org/dictionary/rawdata.html), which publishes pre-processed JSONL dumps of every Wiktionary edition. No Python toolchain or wikitext parsing required.
 
 ## Overview
 

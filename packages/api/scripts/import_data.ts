@@ -2,11 +2,11 @@
  * Import wiktextract JSONL files into the SQLite database.
  *
  * Usage:
- *   vp run @wiktapi/api#import                                                  # imports all data/jsonl/*.jsonl
- *   vp run @wiktapi/api#import -- --edition en                                  # imports only data/jsonl/en.jsonl
- *   vp run @wiktapi/api#import -- --edition en --fresh                          # drops and recreates the table first
- *   vp run @wiktapi/api#import -- --output data/wiktionary.db.new               # write to a staging file
- *   vp run @wiktapi/api#import -- --output data/wiktionary.db.new --skip-indexes # skip index build (run separately)
+ *   vp run @wordictapi/api#import                                                  # imports all data/jsonl/*.jsonl
+ *   vp run @wordictapi/api#import -- --edition en                                  # imports only data/jsonl/en.jsonl
+ *   vp run @wordictapi/api#import -- --edition en --fresh                          # drops and recreates the table first
+ *   vp run @wordictapi/api#import -- --output data/wiktionary.db.new               # write to a staging file
+ *   vp run @wordictapi/api#import -- --output data/wiktionary.db.new --skip-indexes # skip index build (run separately)
  */
 
 import { Effect, Console } from "effect";
@@ -314,7 +314,7 @@ const main: Effect.Effect<void, Error> = Effect.scoped(
 
     if (files.length === 0) {
       yield* Effect.fail(
-        new Error("No JSONL files found. Run `vp run @wiktapi/api#download` first."),
+        new Error("No JSONL files found. Run `vp run @wordictapi/api#download` first."),
       );
     }
 
@@ -333,7 +333,7 @@ const main: Effect.Effect<void, Error> = Effect.scoped(
     );
 
     if (skipIndexes) {
-      yield* Console.log("\nSkipping indexes (run `vp run @wiktapi/api#index` separately).");
+      yield* Console.log("\nSkipping indexes (run `vp run @wordictapi/api#index` separately).");
     } else {
       yield* Console.log("\nBuilding indexes …");
       db.exec(WORDS_INDEXES_DDL);

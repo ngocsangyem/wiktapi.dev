@@ -56,7 +56,7 @@ const navItems = [
               <BookOpen class="size-5 shrink-0" />
               <Transition name="sidebar-text">
                 <span v-if="state === 'expanded'" class="font-semibold whitespace-nowrap ml-2"
-                  >Wiktapi</span
+                  >Wordictapi</span
                 >
               </Transition>
             </RouterLink>

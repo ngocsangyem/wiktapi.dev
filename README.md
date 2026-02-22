@@ -1,6 +1,8 @@
-<img src="packages/docs/public/favicon.svg" width="48" alt="Wiktapi logo">
+<img src="packages/docs/public/favicon.svg" width="48" alt="Wordictapi logo">
 
-# WiktAPI.dev
+> This project was based on the [wiktapi.dev](https://github.com/TheAlexLichter/wiktapi.dev).
+
+# WordictAPI.dev
 
 A multilingual REST API for structured dictionary data, built on [kaikki.org](https://kaikki.org/dictionary/rawdata.html)'s pre-processed Wiktionary JSONL exports.
 
@@ -10,13 +12,13 @@ The existing `en.wiktionary.org/api/rest_v1/` is English-only and returns HTML b
 
 ---
 
-## Breaking Changes (Schema Migration v2)
+## Breaking Changes (Schema)
 
-**Version 2.0 introduces a major schema migration from `entries` table to `words` table with normalized structure.**
+**New schema introduces a major schema migration from `entries` table to `words` table with normalized structure.**
 
 ### What changed
 
-| Aspect                  | v1                          | v2                       |
+| Aspect                  | v1                          |                          |
 | ----------------------- | --------------------------- | ------------------------ |
 | **Table**               | `entries`                   | `words`                  |
 | **URL structure**       | `/v1/{edition}/word/{word}` | `/v1/word/{word}`        |
@@ -33,7 +35,7 @@ For clients upgrading from v1:
 1. Remove edition from URL: `/v1/en/word/chat` → `/v1/word/chat`
 2. Replace `?lang={code}` with `?category={name}` (see [categories docs](/docs/concepts/editions.md))
 3. Update response parsing: access fields directly instead of unpacking from `entries[0]`
-4. See [Quickstart](/docs/quickstart.md) and [API Explorer](https://api.wiktapi.dev/_scalar) for new response shapes
+4. See [Quickstart](/docs/quickstart.md) and [API Explorer](https://api.wordictapi.dev/_scalar) for new response shapes
 
 ---
 
@@ -45,8 +47,8 @@ For clients upgrading from v1:
 
 ```
 packages/
-├── api/    # Nitro server — api.wiktapi.dev
-└── docs/   # VitePress docs site — wiktapi.dev
+├── api/    # Nitro server — api.wordictapi.dev
+└── docs/   # VitePress docs site — wordictapi.dev
 ```
 
 ---
@@ -60,8 +62,8 @@ vp install
 ### API
 
 ```bash
-vp run @wiktapi/api#dev      # http://localhost:3000
-vp run @wiktapi/api#build
+vp run @wordictapi/api#dev      # http://localhost:3000
+vp run @wordictapi/api#build
 ```
 
 Interactive API explorer (Scalar) and raw OpenAPI spec are available at `/_scalar` and `/_openapi.json` in dev and production.
@@ -69,8 +71,8 @@ Interactive API explorer (Scalar) and raw OpenAPI spec are available at `/_scala
 ### Docs
 
 ```bash
-vp run @wiktapi/docs#dev     # http://localhost:5173
-vp run @wiktapi/docs#build
+vp run @wordictapi/docs#dev     # http://localhost:5173
+vp run @wordictapi/docs#build
 ```
 
 ---
@@ -81,13 +83,13 @@ Data is downloaded from kaikki.org (~monthly) and imported into a local SQLite d
 
 ```bash
 # 1. Download pre-processed JSONL from kaikki.org
-vp run @wiktapi/api#download                          # English Wiktionary (~2.3 GB compressed)
-vp run @wiktapi/api#download -- --editions en,fr,de   # multiple editions
+vp run @wordictapi/api#download                          # English Wiktionary (~2.3 GB compressed)
+vp run @wordictapi/api#download -- --editions en,fr,de   # multiple editions
 
 # 2. Import into SQLite
-vp run @wiktapi/api#import                            # all data/jsonl/*.jsonl files
-vp run @wiktapi/api#import -- --edition en            # single edition
-vp run @wiktapi/api#import -- --edition en --fresh    # drop and recreate table first
+vp run @wordictapi/api#import                            # all data/jsonl/*.jsonl files
+vp run @wordictapi/api#import -- --edition en            # single edition
+vp run @wordictapi/api#import -- --edition en --fresh    # drop and recreate table first
 ```
 
 The database is written to `packages/api/data/wiktionary.db`. Override with the `DATA_PATH` env var.
@@ -96,7 +98,7 @@ The database is written to `packages/api/data/wiktionary.db`. Override with the 
 
 ## API overview
 
-All routes are under `/v1/`. See the [interactive explorer](https://api.wiktapi.dev/_scalar) for full request/response documentation.
+All routes are under `/v1/`. See the [interactive explorer](https://api.wordictapi.dev/_scalar) for full request/response documentation.
 
 ### Word lookup
 
@@ -138,13 +140,13 @@ DATA_PATH=/var/data/wiktionary.db node .output/server/index.mjs
 Build the image (from the repo root):
 
 ```bash
-docker build -t wiktapi .
+docker build -t wordictapi .
 ```
 
 Run, mounting a directory that contains `wiktionary.db`:
 
 ```bash
-docker run -p 3000:3000 -v /path/to/data:/data wiktapi
+docker run -p 3000:3000 -v /path/to/data:/data wordictapi
 ```
 
 The container expects the database at `/data/wiktionary.db` by default. Override with `-e DATA_PATH=...` if your file is named or located differently.

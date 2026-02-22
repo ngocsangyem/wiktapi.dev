@@ -1,6 +1,6 @@
 # Word Categories
 
-Wiktapi organizes words by **category** rather than Wiktionary editions. This provides a more intuitive way to explore and filter vocabulary across multiple domains.
+Wordictapi organizes words by **category** rather than Wiktionary editions. This provides a more intuitive way to explore and filter vocabulary across multiple domains.
 
 ## What is a category?
 
@@ -23,7 +23,7 @@ When a word doesn't have domain-specific classification, it defaults to `general
 To see which categories are available in your instance:
 
 ```bash
-curl https://api.wiktapi.dev/v1/categories
+curl https://api.wordictapi.dev/v1/categories
 # { "categories": ["art", "business", "education", ... "technology"] }
 ```
 

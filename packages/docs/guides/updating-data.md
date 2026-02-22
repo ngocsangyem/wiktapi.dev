@@ -66,7 +66,7 @@ The database is too large to store as a GitHub Actions artifact (the English edi
 ### Cron job on the server
 
 ```bash
-# /etc/cron.d/wiktapi — runs at 03:00 on the first of each month
+# /etc/cron.d/wordictapi — runs at 03:00 on the first of each month
 0 3 1 * * deploy  cd /srv/wiktionary-api/packages/api \
   && pnpm download -- --force \
   && pnpm import:staging \

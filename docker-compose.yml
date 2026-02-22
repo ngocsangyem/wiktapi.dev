@@ -3,7 +3,7 @@ services:
     build:
       context: .
       target: runtime
-    image: ${API_IMAGE:-wiktapi-api}
+    image: ${API_IMAGE:-wordictapi-api}
     volumes:
       - data:/data
     ports:
@@ -14,7 +14,7 @@ services:
     build:
       context: .
       target: worker
-    image: ${WORKER_IMAGE:-wiktapi-worker}
+    image: ${WORKER_IMAGE:-wordictapi-worker}
     volumes:
       - data:/app/packages/api/data
     profiles:

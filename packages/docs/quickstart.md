@@ -1,13 +1,13 @@
 # Quickstart
 
-Get your first response from Wiktapi in under a minute. No API key required.
+Get your first response from Wordictapi in under a minute. No API key required.
 
 ## Make your first request
 
 Fetch a word entry:
 
 ```bash
-curl "https://api.wiktapi.dev/v1/word/chat"
+curl "https://api.wordictapi.dev/v1/word/chat"
 ```
 
 ```json
@@ -41,7 +41,7 @@ curl "https://api.wiktapi.dev/v1/word/chat"
 Use the `/definitions` sub-resource to get only definitions by part of speech:
 
 ```bash
-curl "https://api.wiktapi.dev/v1/word/run/definitions"
+curl "https://api.wordictapi.dev/v1/word/run/definitions"
 ```
 
 ## Search for words
@@ -49,7 +49,7 @@ curl "https://api.wiktapi.dev/v1/word/run/definitions"
 Prefix search returns up to 50 matches:
 
 ```bash
-curl "https://api.wiktapi.dev/v1/search?q=chat"
+curl "https://api.wordictapi.dev/v1/search?q=chat"
 ```
 
 ## Filter by category
@@ -57,7 +57,7 @@ curl "https://api.wiktapi.dev/v1/search?q=chat"
 All endpoints support optional category filtering:
 
 ```bash
-curl "https://api.wiktapi.dev/v1/search?q=sport&category=sports"
+curl "https://api.wordictapi.dev/v1/search?q=sport&category=sports"
 ```
 
 Available categories: `technology`, `business`, `travel`, `music`, `movies`, `sports`, `food`, `art`, `science`, `health`, `fashion`, `gaming`, `books`, `nature`, `photography`, `education`, `history`, `politics`, `automotive`, `pets`, `general`.
@@ -78,5 +78,5 @@ All word endpoints accept an optional `?category={name}` query parameter to filt
 
 ## Next steps
 
-- Browse all endpoints in the [API Explorer](https://api.wiktapi.dev/_scalar)
+- Browse all endpoints in the [API Explorer](https://api.wordictapi.dev/_scalar)
 - [Self-host your own instance](/guides/self-hosting)

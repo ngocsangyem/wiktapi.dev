@@ -2,7 +2,7 @@
 
 ## Objective
 
-Migrate the entire `@wiktapi/api` package from the old Wiktionary-centric `entries` schema to a new vocabulary-focused `words` schema based on the TypeScript types defined below. Every layer of the stack — DDL, import script, query utilities, API routes, OpenAPI specs, and tests — must be updated atomically.
+Migrate the entire `@wordictapi/api` package from the old Wiktionary-centric `entries` schema to a new vocabulary-focused `words` schema based on the TypeScript types defined below. Every layer of the stack — DDL, import script, query utilities, API routes, OpenAPI specs, and tests — must be updated atomically.
 
 ---
 
@@ -323,7 +323,7 @@ Follow this order to avoid breaking intermediate states:
 5. **API Routes** — all files in `routes/v1/` (new handlers + OpenAPI specs)
 6. **Test Fixtures** — `tests/global-setup.ts` (new sample data)
 7. **Test Cases** — all files in `tests/routes/` (new assertions)
-8. **Verify** — run `vp run @wiktapi/api#test` to confirm everything passes
+8. **Verify** — run `vp run @wordictapi/api#test` to confirm everything passes
 
 ---
 

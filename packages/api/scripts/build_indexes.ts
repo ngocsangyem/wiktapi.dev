@@ -2,8 +2,8 @@
  * Build indexes on the SQLite database.
  *
  * Usage:
- *   vp run @wiktapi/api#index                                    # indexes data/wiktionary.db
- *   vp run @wiktapi/api#index -- --output data/wiktionary.db.new # indexes a staging file
+ *   vp run @wordictapi/api#index                                    # indexes data/wiktionary.db
+ *   vp run @wordictapi/api#index -- --output data/wiktionary.db.new # indexes a staging file
  */
 
 import { Effect, Console } from "effect";
