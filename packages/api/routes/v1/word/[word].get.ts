@@ -52,9 +52,16 @@ defineRouteMeta({
 
 export default defineHandler((event) => {
   const word = getRouterParam(event, "word")!;
+  // Decode URL-encoded word, handle already-decoded
+  let decodedWord = word;
+  try {
+    decodedWord = decodeURIComponent(word);
+  } catch {
+    // Already decoded or invalid, use as-is
+  }
   const { category } = getQuery(event) as { category?: string };
 
-  const record = fetchWord(word, category);
+  const record = fetchWord(decodedWord, category);
   return {
     word: record.word,
     edition: record.edition,

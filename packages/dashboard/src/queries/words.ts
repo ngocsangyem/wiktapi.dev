@@ -34,11 +34,16 @@ export function useWordsQuery(page: Ref<number>, limit: Ref<number>) {
   });
 }
 
-export function useSearchQuery(q: Ref<string>) {
+export function useSearchQuery(q: Ref<string>, useRegex: Ref<boolean>) {
   const filters = useFiltersStore();
   return useQuery({
-    key: computed(() => ["search", q.value, filters.selectedCategory ?? ""]),
-    query: () => searchWords(q.value, filters.selectedCategory ?? undefined),
+    key: () => {
+      const search = q.value;
+      const regex = useRegex.value;
+      const category = filters.selectedCategory ?? "";
+      return ["search", search, String(regex), category];
+    },
+    query: () => searchWords(q.value, filters.selectedCategory ?? undefined, useRegex.value),
     enabled: computed(() => q.value.length >= 2),
   });
 }
@@ -92,7 +97,7 @@ export function useBulkDeleteWordsMutation() {
     mutation: (words: string[]) => bulkDeleteWords(words),
     onSettled: () => {
       void queryCache.invalidateQueries({ key: ["words"] });
-      void queryCache.invalidateQueries({ key: ["search"] });
+      // Don't invalidate search - it causes unnecessary refetch with empty q
     },
   });
 }

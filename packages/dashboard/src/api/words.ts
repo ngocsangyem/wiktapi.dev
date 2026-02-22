@@ -16,10 +16,16 @@ export function fetchWords(params: {
   return apiFetch(`/words?${qs}`, { signal: params.signal });
 }
 
-export function searchWords(q: string, category?: string): Promise<SearchResponse> {
-  const qs = new URLSearchParams({ q });
-  if (category) qs.set("category", category);
-  return apiFetch(`/search?${qs}`);
+export function searchWords(
+  q: string,
+  category?: string,
+  useRegex?: boolean,
+): Promise<SearchResponse> {
+  const params = new URLSearchParams();
+  params.set("q", q);
+  if (category) params.set("category", category);
+  if (useRegex) params.set("regex", "true");
+  return apiFetch(`/search?${params.toString()}`);
 }
 
 export function fetchWord(word: string, category?: string): Promise<WordRecord> {

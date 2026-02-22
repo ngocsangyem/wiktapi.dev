@@ -40,8 +40,15 @@ defineRouteMeta({
 
 export default defineHandler((event) => {
   const word = getRouterParam(event, "word")!;
+  // Decode URL-encoded word (e.g., ŋ -> %C5%8B), handle already-decoded
+  let decodedWord = word;
+  try {
+    decodedWord = decodeURIComponent(word);
+  } catch {
+    // Already decoded or invalid, use as-is
+  }
   const { edition, category } = getQuery(event) as { edition?: string; category?: string };
-  deleteWord(word, edition, category);
+  deleteWord(decodedWord, edition, category);
   setResponseStatus(event, 204);
   return null;
 });

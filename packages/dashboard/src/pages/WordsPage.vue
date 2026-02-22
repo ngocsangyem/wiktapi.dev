@@ -28,12 +28,15 @@ import type { WordListItem } from "@/types/word";
 const page = ref(1);
 const limit = ref(50);
 const searchTerm = ref("");
+const useRegex = ref(false);
 const pendingDelete = ref<string | null>(null);
 const selectedWords = ref<string[]>([]);
+const isDeleting = ref(false);
+const isDialogOpen = ref(false);
 
 const filters = useFiltersStore();
 const { data: wordsData, status: wordsStatus } = useWordsQuery(page, limit);
-const { data: searchData, status: searchStatus } = useSearchQuery(searchTerm);
+const { data: searchData, status: searchStatus } = useSearchQuery(searchTerm, useRegex);
 const deleteMutation = useDeleteWordMutation();
 const bulkDeleteMutation = useBulkDeleteWordsMutation();
 
@@ -61,19 +64,29 @@ watch([() => filters.selectedCategory, () => filters.selectedEdition, searchTerm
 });
 
 async function handleDelete() {
-  if (!pendingDelete.value) return;
-  await deleteMutation.mutateAsync({ word: pendingDelete.value });
-  pendingDelete.value = null;
+  // Capture the value before dialog closes (AlertDialogAction auto-closes)
+  const toDelete = pendingDelete.value;
+
+  if (!toDelete || isDeleting.value) return;
+  isDeleting.value = true;
+
+  try {
+    if (toDelete === "bulk") {
+      if (!selectedWords.value.length) return;
+      await bulkDeleteMutation.mutateAsync(selectedWords.value);
+      selectedWords.value = [];
+    } else {
+      await deleteMutation.mutateAsync({ word: toDelete });
+    }
+  } finally {
+    pendingDelete.value = null;
+    isDeleting.value = false;
+  }
 }
 
-async function handleBulkDelete() {
-  if (!selectedWords.value.length) return;
-  await bulkDeleteMutation.mutateAsync(selectedWords.value);
-  selectedWords.value = [];
-}
-
-function handleSelectionUpdate(words: string[]) {
-  selectedWords.value = words;
+function handleOpenAlertDialog(type: string) {
+  pendingDelete.value = type;
+  isDialogOpen.value = true;
 }
 </script>
 
@@ -85,7 +98,7 @@ function handleSelectionUpdate(words: string[]) {
         <Button
           v-if="selectedWords.length > 0"
           variant="destructive"
-          @click="pendingDelete = 'bulk'"
+          @click="handleOpenAlertDialog('bulk')"
         >
           <Trash2 class="size-4 mr-2" />
           Delete ({{ selectedWords.length }})
@@ -99,13 +112,13 @@ function handleSelectionUpdate(words: string[]) {
       </div>
     </div>
 
-    <WordsSearch v-model:search="searchTerm" />
+    <WordsSearch v-model:search="searchTerm" v-model:use-regex="useRegex" />
 
     <WordsTable
       :words="tableWords"
       :loading="isLoading"
       v-model:selected="selectedWords"
-      @delete="(word) => (pendingDelete = word)"
+      @delete="handleOpenAlertDialog($event)"
     />
 
     <WordsPagination
@@ -124,7 +137,7 @@ function handleSelectionUpdate(words: string[]) {
   </div>
 
   <!-- Delete confirmation dialog -->
-  <AlertDialog :open="!!pendingDelete" @update:open="(v) => !v && (pendingDelete = null)">
+  <AlertDialog v-model:open="isDialogOpen">
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle>
@@ -146,7 +159,8 @@ function handleSelectionUpdate(words: string[]) {
         <AlertDialogCancel>Cancel</AlertDialogCancel>
         <AlertDialogAction
           class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          @click="pendingDelete === 'bulk' ? handleBulkDelete() : handleDelete()"
+          :disabled="isDeleting"
+          @click="handleDelete"
         >
           Delete
         </AlertDialogAction>

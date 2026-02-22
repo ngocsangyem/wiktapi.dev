@@ -5,16 +5,16 @@ import { searchWords } from "../../utils/queries";
 defineRouteMeta({
   openAPI: {
     tags: ["Search"],
-    summary: "Prefix search",
+    summary: "Search words",
     description:
-      "Returns up to 50 words that start with the given prefix, optionally filtered by category.",
+      "Returns up to 50 words matching the query, optionally filtered by category. Use regex=true for regex matching.",
     parameters: [
       {
         in: "query",
         name: "q",
         required: true,
         schema: { type: "string" },
-        description: "Search prefix.",
+        description: "Search query (prefix or regex pattern).",
       },
       {
         in: "query",
@@ -22,6 +22,13 @@ defineRouteMeta({
         required: false,
         schema: { type: "string" },
         description: "Filter by category (e.g. `sports`, `technology`).",
+      },
+      {
+        in: "query",
+        name: "regex",
+        required: false,
+        schema: { type: "boolean" },
+        description: "Enable regex matching (default: false for prefix search).",
       },
     ],
     responses: {
@@ -54,11 +61,27 @@ defineRouteMeta({
 });
 
 export default defineHandler((event) => {
-  const { q, category } = getQuery(event) as { q?: string; category?: string };
+  const { q, category, regex } = getQuery(event) as {
+    q?: string;
+    category?: string;
+    regex?: string;
+  };
 
   if (!q?.trim()) {
     throw createError({ statusCode: 400, message: "Missing required query param: q" });
   }
 
-  return { results: searchWords(q.trim(), category) };
+  const isRegex = regex === "true" || regex === "1";
+
+  // Decode q for regex mode (URLSearchParams encodes special chars)
+  let query = q;
+  if (isRegex) {
+    try {
+      query = decodeURIComponent(q);
+    } catch {
+      // Use original if decode fails (already decoded or invalid)
+      query = q;
+    }
+  }
+  return { results: searchWords(query.trim(), category, isRegex) };
 });

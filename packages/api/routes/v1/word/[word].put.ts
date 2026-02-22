@@ -41,7 +41,14 @@ defineRouteMeta({
 
 export default defineHandler(async (event) => {
   const word = getRouterParam(event, "word")!;
+  // Decode URL-encoded word, handle already-decoded
+  let decodedWord = word;
+  try {
+    decodedWord = decodeURIComponent(word);
+  } catch {
+    // Already decoded or invalid, use as-is
+  }
   const { edition, category } = getQuery(event) as { edition?: string; category?: string };
   const body = await readBody(event);
-  return updateWord(word, body, edition, category);
+  return updateWord(decodedWord, body, edition, category);
 });

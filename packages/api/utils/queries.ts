@@ -83,15 +83,52 @@ export function fetchWord(word: string, category?: string): WordRecord {
 }
 
 /**
- * Prefix search — returns up to 50 results with word, category, and phonetic.
+ * Search words — returns up to 50 results with word, category, and phonetic.
+ * Supports prefix search (default) or regex matching.
  */
 export function searchWords(
-  prefix: string,
+  query: string,
   category?: string,
+  useRegex?: boolean,
 ): { word: string; category: string; phonetic: string | null }[] {
-  const escaped = prefix.toLowerCase().replace(/[%_]/g, "\\$&") + "%";
-
   type Row = { word: string; category: string; phonetic: string | null };
+
+  // For regex mode, fetch more results and filter in JavaScript
+  if (useRegex) {
+    // Validate regex before using
+    try {
+      new RegExp(query);
+    } catch {
+      // Invalid regex, return empty
+      return [];
+    }
+
+    // Fetch more results for regex filtering
+    const rows = (
+      category
+        ? db
+            .prepare(
+              `SELECT word, category, MAX(phonetic) AS phonetic FROM words
+             WHERE category = ?
+             GROUP BY word, category
+             ORDER BY word LIMIT 200`,
+            )
+            .all(category)
+        : db
+            .prepare(
+              `SELECT word, category, MAX(phonetic) AS phonetic FROM words
+             GROUP BY word, category
+             ORDER BY word LIMIT 200`,
+            )
+            .all()
+    ) as Row[];
+
+    const regex = new RegExp(query, "i");
+    return rows.filter((row) => regex.test(row.word)).slice(0, 50);
+  }
+
+  // Prefix search (default)
+  const escaped = query.toLowerCase().replace(/[%_]/g, "\\$&") + "%";
 
   // GROUP BY word+category so multi-POS words appear once; MAX(phonetic) picks
   // the non-null value when rows differ (SQLite MAX ignores NULLs).
