@@ -22,10 +22,11 @@ describe("GET /v1/words", () => {
     const result = wordsHandler(event);
 
     const item = result.words[0];
+    expect(item).toBeDefined();
     expect(typeof item?.word).toBe("string");
     expect(typeof item?.edition).toBe("string");
     expect(typeof item?.category).toBe("string");
-    expect("phonetic" in item).toBe(true);
+    expect(item && "phonetic" in item).toBe(true);
   });
 
   it("filters by category", () => {

@@ -8,8 +8,10 @@
     "prepare": "lefthook install",
     "ready": "vite fmt && vite lint --type-aware && vite run test -r && vite run build -r",
     "dev:api": "vp run @wiktapi/api#dev",
+    "dev:dashboard": "vp run @wiktapi/dashboard#dev",
     "dev:docs": "vp run @wiktapi/docs#dev",
     "build:api": "vp run @wiktapi/api#build",
+    "build:dashboard": "vp run @wiktapi/dashboard#build",
     "build:docs": "vp run @wiktapi/docs#build"
   },
   "devDependencies": {

@@ -9,7 +9,7 @@ import type {
   WordRecord,
 } from "./types.ts";
 
-interface WordRow {
+export interface WordRow {
   id: string;
   word: string;
   edition: string;
@@ -41,7 +41,7 @@ function safeParseJson<T>(json: string, context: string): T {
  * (one POS per row). This is guaranteed by the import script, which writes
  * identical scalar fields for every row of the same word.
  */
-function mergeRows(rows: WordRow[]): WordRecord {
+export function mergeRows(rows: WordRow[]): WordRecord {
   const first = rows[0]!;
   const allMeanings = rows.flatMap((r) => safeParseJson<Meaning[]>(r.meanings, "meanings"));
 
