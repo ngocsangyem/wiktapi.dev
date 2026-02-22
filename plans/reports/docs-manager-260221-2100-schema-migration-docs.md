@@ -8,7 +8,7 @@
 
 ## Summary
 
-Updated 6 core documentation files to reflect the major schema migration from a Wiktionary-edition-based API to a category-based, normalized vocabulary schema. All changes align with the implemented code changes in the `@wiktapi/api` package.
+Updated 6 core documentation files to reflect the major schema migration from a Wiktionary-edition-based API to a category-based, normalized vocabulary schema. All changes align with the implemented code changes in the `@wordictapi/api` package.
 
 ---
 
@@ -112,7 +112,7 @@ Updated 6 core documentation files to reflect the major schema migration from a 
 
 - Removed "English-only" complaint (multi-edition data is now available)
 - Updated feature description
-- Reorganized "Why Wiktapi?" section to highlight:
+- Reorganized "Why Wordictapi?" section to highlight:
   - Structured JSON (not HTML)
   - Normalized fields (phonetics, meanings, translations, tenses, categories)
   - Multi-edition support via data merging

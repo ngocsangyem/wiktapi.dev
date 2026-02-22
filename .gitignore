@@ -36,3 +36,6 @@ packages/api/data/
 # Vitepress
 
 packages/docs/.vitepress/cache/
+
+plans/*
+docs/*
