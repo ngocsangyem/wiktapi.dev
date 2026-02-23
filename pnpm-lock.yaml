@@ -29,7 +29,7 @@ catalogs:
       version: 4.15.1
     vite-plus:
       specifier: latest
-      version: 0.0.0-b1666489.20260220-0254
+      version: 0.0.0-3262bda4.20260210-0221
     zod:
       specifier: ^4.3.6
       version: 4.3.6

@@ -9,7 +9,7 @@ const route = useRoute();
 const title = computed(() => {
   if (route.name === "words") return "Words";
   if (route.name === "word-create") return "Add Word";
-  if (route.name === "word-detail") return `Edit: ${route.params.word}`;
+  if (route.name === "word-detail") return `Edit: ${route.params.id}`;
   return "Dashboard";
 });
 </script>

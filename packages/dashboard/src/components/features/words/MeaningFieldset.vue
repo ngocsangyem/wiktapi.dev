@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { Plus, X } from "lucide-vue-next";
+import { computed, ref } from "vue";
+import { Plus, X, ChevronDown, ChevronUp } from "lucide-vue-next";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import type { WordMeaning, WordDefinition } from "@/types/word";
 
@@ -13,6 +14,8 @@ const emit = defineEmits<{
   "update:modelValue": [value: WordMeaning];
   remove: [];
 }>();
+
+const isOpen = ref(false);
 
 const meaning = computed(() => props.modelValue);
 
@@ -51,77 +54,111 @@ function updateList(field: "synonyms" | "antonyms", csv: string) {
 </script>
 
 <template>
-  <div class="rounded-md border p-4 space-y-4">
-    <div class="flex items-center justify-between">
-      <h4 class="font-medium text-sm">Meaning {{ index + 1 }}</h4>
-      <Button type="button" variant="ghost" size="icon" @click="emit('remove')">
-        <X class="size-4" />
+  <div class="rounded-md border">
+    <!-- Header row -->
+    <div class="flex items-center gap-2 px-3 py-2">
+      <button
+        type="button"
+        class="flex flex-1 items-center gap-2 text-left"
+        @click="isOpen = !isOpen"
+      >
+        <component
+          :is="isOpen ? ChevronUp : ChevronDown"
+          class="size-4 shrink-0 text-muted-foreground"
+        />
+        <span class="text-sm font-medium">Meaning {{ index + 1 }}</span>
+        <Badge v-if="meaning.partOfSpeech" variant="secondary" class="text-xs">
+          {{ meaning.partOfSpeech }}
+        </Badge>
+        <span class="text-xs text-muted-foreground ml-auto">
+          {{ meaning.definitions.length }} definition{{
+            meaning.definitions.length !== 1 ? "s" : ""
+          }}
+        </span>
+      </button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        class="shrink-0 size-7"
+        @click="emit('remove')"
+      >
+        <X class="size-3" />
       </Button>
     </div>
 
-    <div class="space-y-1">
-      <Label>Part of speech</Label>
-      <Input
-        :model-value="meaning.partOfSpeech"
-        placeholder="noun, verb, adjective..."
-        @input="updateField('partOfSpeech', ($event.target as HTMLInputElement).value)"
-      />
-    </div>
-
-    <Separator />
-
-    <div class="space-y-2">
-      <div class="flex items-center justify-between">
-        <Label>Definitions</Label>
-        <Button type="button" variant="outline" size="sm" @click="addDefinition">
-          <Plus class="size-3 mr-1" /> Add
-        </Button>
+    <!-- Body (collapsible) -->
+    <div v-show="isOpen" class="border-t px-3 pb-3 pt-3 space-y-4">
+      <div class="space-y-1">
+        <Label>Part of speech</Label>
+        <Input
+          :model-value="meaning.partOfSpeech"
+          placeholder="noun, verb, adjective..."
+          @input="updateField('partOfSpeech', ($event.target as HTMLInputElement).value)"
+        />
       </div>
-      <div v-for="(def, i) in meaning.definitions" :key="i" class="rounded-md border p-3 space-y-2">
-        <div class="flex items-start gap-2">
-          <Textarea
-            :model-value="def.definition"
-            placeholder="Definition..."
-            class="flex-1 min-h-[60px]"
-            @input="updateDefinition(i, 'definition', ($event.target as HTMLTextAreaElement).value)"
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            class="shrink-0 mt-1"
-            :disabled="meaning.definitions.length <= 1"
-            @click="removeDefinition(i)"
-          >
-            <X class="size-3" />
+
+      <Separator />
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <Label>Definitions</Label>
+          <Button type="button" variant="outline" size="sm" @click="addDefinition">
+            <Plus class="size-3 mr-1" /> Add
           </Button>
         </div>
-        <Input
-          :model-value="def.example ?? ''"
-          placeholder="Example sentence... (optional)"
-          @input="updateDefinition(i, 'example', ($event.target as HTMLInputElement).value)"
-        />
+        <div
+          v-for="(def, i) in meaning.definitions"
+          :key="i"
+          class="rounded-md border p-3 space-y-2"
+        >
+          <div class="flex items-start gap-2">
+            <Textarea
+              :model-value="def.definition"
+              placeholder="Definition..."
+              class="flex-1 min-h-[60px]"
+              @input="
+                updateDefinition(i, 'definition', ($event.target as HTMLTextAreaElement).value)
+              "
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              class="shrink-0 mt-1"
+              :disabled="meaning.definitions.length <= 1"
+              @click="removeDefinition(i)"
+            >
+              <X class="size-3" />
+            </Button>
+          </div>
+          <Input
+            :model-value="def.example ?? ''"
+            placeholder="Example sentence... (optional)"
+            @input="updateDefinition(i, 'example', ($event.target as HTMLInputElement).value)"
+          />
+        </div>
       </div>
-    </div>
 
-    <Separator />
+      <Separator />
 
-    <div class="grid grid-cols-2 gap-3">
-      <div class="space-y-1">
-        <Label>Synonyms <span class="text-muted-foreground">(comma-separated)</span></Label>
-        <Input
-          :model-value="(meaning.synonyms ?? []).join(', ')"
-          placeholder="happy, joyful"
-          @input="updateList('synonyms', ($event.target as HTMLInputElement).value)"
-        />
-      </div>
-      <div class="space-y-1">
-        <Label>Antonyms <span class="text-muted-foreground">(comma-separated)</span></Label>
-        <Input
-          :model-value="(meaning.antonyms ?? []).join(', ')"
-          placeholder="sad, unhappy"
-          @input="updateList('antonyms', ($event.target as HTMLInputElement).value)"
-        />
+      <div class="grid grid-cols-2 gap-3">
+        <div class="space-y-1">
+          <Label>Synonyms <span class="text-muted-foreground">(comma-separated)</span></Label>
+          <Input
+            :model-value="(meaning.synonyms ?? []).join(', ')"
+            placeholder="happy, joyful"
+            @input="updateList('synonyms', ($event.target as HTMLInputElement).value)"
+          />
+        </div>
+        <div class="space-y-1">
+          <Label>Antonyms <span class="text-muted-foreground">(comma-separated)</span></Label>
+          <Input
+            :model-value="(meaning.antonyms ?? []).join(', ')"
+            placeholder="sad, unhappy"
+            @input="updateList('antonyms', ($event.target as HTMLInputElement).value)"
+          />
+        </div>
       </div>
     </div>
   </div>

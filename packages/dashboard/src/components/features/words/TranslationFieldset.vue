@@ -2,7 +2,6 @@
 import { computed } from "vue";
 import { X } from "lucide-vue-next";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { WordTranslationItem } from "@/types/word";
 
@@ -17,54 +16,47 @@ const item = computed(() => props.modelValue);
 function update(field: keyof WordTranslationItem, value: string) {
   emit("update:modelValue", { ...item.value, [field]: value });
 }
+
+// Keep `code` in sync with `lang_code` since they are redundant
+function updateLangCode(value: string) {
+  emit("update:modelValue", { ...item.value, lang_code: value, code: value });
+}
 </script>
 
 <template>
-  <div class="grid grid-cols-2 gap-3 rounded-md border p-3">
-    <div class="space-y-1">
-      <Label>Language</Label>
-      <Input
-        :model-value="item.lang"
-        placeholder="English"
-        @input="update('lang', ($event.target as HTMLInputElement).value)"
-      />
-    </div>
-    <div class="space-y-1">
-      <Label>Lang code</Label>
-      <Input
-        :model-value="item.lang_code"
-        placeholder="en"
-        @input="update('lang_code', ($event.target as HTMLInputElement).value)"
-      />
-    </div>
-    <div class="space-y-1">
-      <Label>Code</Label>
-      <Input
-        :model-value="item.code"
-        placeholder="en"
-        @input="update('code', ($event.target as HTMLInputElement).value)"
-      />
-    </div>
-    <div class="space-y-1">
-      <Label>Word</Label>
-      <Input
-        :model-value="item.word"
-        placeholder="translation"
-        @input="update('word', ($event.target as HTMLInputElement).value)"
-      />
-    </div>
-    <div class="col-span-2 flex items-end gap-2">
-      <div class="flex-1 space-y-1">
-        <Label>Part of speech</Label>
-        <Input
-          :model-value="item.partOfSpeech"
-          placeholder="noun"
-          @input="update('partOfSpeech', ($event.target as HTMLInputElement).value)"
-        />
-      </div>
-      <Button type="button" variant="ghost" size="icon" class="shrink-0" @click="emit('remove')">
-        <X class="size-4" />
-      </Button>
-    </div>
+  <div class="flex items-center gap-2">
+    <Input
+      :model-value="item.lang_code"
+      placeholder="en"
+      class="h-8 text-xs w-16 shrink-0"
+      @input="updateLangCode(($event.target as HTMLInputElement).value)"
+    />
+    <Input
+      :model-value="item.lang"
+      placeholder="Language"
+      class="h-8 text-xs w-28 shrink-0"
+      @input="update('lang', ($event.target as HTMLInputElement).value)"
+    />
+    <Input
+      :model-value="item.word"
+      placeholder="Translation"
+      class="h-8 text-xs flex-1"
+      @input="update('word', ($event.target as HTMLInputElement).value)"
+    />
+    <Input
+      :model-value="item.partOfSpeech"
+      placeholder="POS"
+      class="h-8 text-xs w-20 shrink-0"
+      @input="update('partOfSpeech', ($event.target as HTMLInputElement).value)"
+    />
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      class="size-7 shrink-0"
+      @click="emit('remove')"
+    >
+      <X class="size-3" />
+    </Button>
   </div>
 </template>
