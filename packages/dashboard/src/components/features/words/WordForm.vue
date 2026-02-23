@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { reactive, ref, computed } from "vue";
-import { useRouter } from "vue-router";
 import { Plus, Loader2 } from "lucide-vue-next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,88 +15,26 @@ import MeaningFieldset from "./MeaningFieldset.vue";
 import PhoneticFieldset from "./PhoneticFieldset.vue";
 import TranslationFieldset from "./TranslationFieldset.vue";
 import TensesFieldset from "./TensesFieldset.vue";
-import { useCreateWordMutation, useUpdateWordMutation } from "@/queries/words";
-import { wordDataSchema } from "@/schemas/word";
 import { WORD_CATEGORIES } from "@/types/word";
-import type { WordData, Meaning, PhoneticItem, TranslationItem } from "@/types/word";
+import type { WordData, WordMeaning, WordPhoneticItem, WordTranslationItem } from "@/types/word";
+import { useWordForm } from "./composables/useWordForm";
 
 const props = defineProps<{ initialData?: WordData; mode: "create" | "edit"; wordId?: string }>();
-const router = useRouter();
-const createMutation = useCreateWordMutation();
-const updateMutation = useUpdateWordMutation();
-
-const defaultMeaning: Meaning = {
-  partOfSpeech: "",
-  definitions: [{ definition: "" }],
-  translations: [],
-  synonyms: [],
-  antonyms: [],
-};
-
-const form = reactive<WordData>({
-  word: props.initialData?.word ?? "",
-  edition: props.initialData?.edition ?? "en",
-  category: props.initialData?.category ?? "general",
-  phonetic: props.initialData?.phonetic ?? null,
-  phonetics: props.initialData?.phonetics ? [...props.initialData.phonetics] : [],
-  meanings: props.initialData?.meanings?.length
-    ? [...props.initialData.meanings]
-    : [{ ...defaultMeaning }],
-  translations: props.initialData?.translations ? [...props.initialData.translations] : [],
-  tenses: props.initialData?.tenses,
-});
-
-const tensesEnabled = ref(!!props.initialData?.tenses);
-const validationErrors = ref<string[]>([]);
-const submitError = ref<string | null>(null);
-
-const isLoading = computed(
-  () =>
-    createMutation.asyncStatus.value === "loading" ||
-    updateMutation.asyncStatus.value === "loading",
-);
-
-function addMeaning() {
-  form.meanings.push({ ...defaultMeaning });
-}
-function removeMeaning(i: number) {
-  if (form.meanings.length > 1) form.meanings.splice(i, 1);
-}
-function addPhonetic() {
-  form.phonetics.push({ type: "us", text: "" });
-}
-function removePhonetic(i: number) {
-  form.phonetics.splice(i, 1);
-}
-function addTranslation() {
-  form.translations.push({ lang: "", lang_code: "", code: "", word: "", partOfSpeech: "" });
-}
-function removeTranslation(i: number) {
-  form.translations.splice(i, 1);
-}
-
-async function handleSubmit() {
-  validationErrors.value = [];
-  submitError.value = null;
-
-  const result = wordDataSchema.safeParse(form);
-  if (!result.success) {
-    validationErrors.value = result.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`);
-    return;
-  }
-
-  try {
-    if (props.mode === "create") {
-      await createMutation.mutateAsync(result.data as WordData);
-      router.push("/words");
-    } else {
-      await updateMutation.mutateAsync({ word: form.word, data: result.data as WordData });
-      router.push(`/words/${props.wordId}`);
-    }
-  } catch (e) {
-    submitError.value = e instanceof Error ? e.message : "An unexpected error occurred";
-  }
-}
+const {
+  form,
+  tensesEnabled,
+  validationErrors,
+  submitError,
+  isLoading,
+  addMeaning,
+  removeMeaning,
+  addPhonetic,
+  removePhonetic,
+  addTranslation,
+  removeTranslation,
+  handleSubmit,
+  router,
+} = useWordForm(props);
 </script>
 
 <template>
@@ -149,7 +85,7 @@ async function handleSubmit() {
         <PhoneticFieldset
           v-for="(p, i) in form.phonetics"
           :key="i"
-          :model-value="p as PhoneticItem"
+          :model-value="p as WordPhoneticItem"
           :index="i"
           @update:model-value="(v) => (form.phonetics[i] = v)"
           @remove="removePhonetic(i)"
@@ -172,7 +108,7 @@ async function handleSubmit() {
         <MeaningFieldset
           v-for="(m, i) in form.meanings"
           :key="i"
-          :model-value="m as Meaning"
+          :model-value="m as WordMeaning"
           :index="i"
           @update:model-value="(v) => (form.meanings[i] = v)"
           @remove="removeMeaning(i)"
@@ -192,7 +128,7 @@ async function handleSubmit() {
         <TranslationFieldset
           v-for="(t, i) in form.translations"
           :key="i"
-          :model-value="t as TranslationItem"
+          :model-value="t"
           :index="i"
           @update:model-value="(v) => (form.translations[i] = v)"
           @remove="removeTranslation(i)"

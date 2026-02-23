@@ -6,21 +6,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import type { Meaning, Definition } from "@/types/word";
+import type { WordMeaning, WordDefinition } from "@/types/word";
 
-const props = defineProps<{ modelValue: Meaning; index: number }>();
+const props = defineProps<{ modelValue: WordMeaning; index: number }>();
 const emit = defineEmits<{
-  "update:modelValue": [value: Meaning];
+  "update:modelValue": [value: WordMeaning];
   remove: [];
 }>();
 
 const meaning = computed(() => props.modelValue);
 
-function updateField<K extends keyof Meaning>(field: K, value: Meaning[K]) {
+function updateField<K extends keyof WordMeaning>(field: K, value: WordMeaning[K]) {
   emit("update:modelValue", { ...meaning.value, [field]: value });
 }
 
-function updateDefinition(i: number, field: keyof Definition, value: string) {
+function updateDefinition(i: number, field: keyof WordDefinition, value: string) {
   const defs = [...meaning.value.definitions];
   defs[i] = { ...defs[i]!, [field]: value };
   updateField("definitions", defs);

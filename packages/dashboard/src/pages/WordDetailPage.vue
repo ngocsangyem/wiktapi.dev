@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
-import WordForm from "@/components/features/words/WordForm.vue";
-import DeleteWordDialog from "@/components/features/words/DeleteWordDialog.vue";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWordByIdQuery } from "@/queries/words";
 import type { WordData } from "@/types/word";
+
+const WordForm = defineAsyncComponent(() => import("@/components/features/words/WordForm.vue"));
+const DeleteWordDialog = defineAsyncComponent(
+  () => import("@/components/features/words/DeleteWordDialog.vue"),
+);
 
 const route = useRoute();
 const id = computed(() => route.params.id as string);

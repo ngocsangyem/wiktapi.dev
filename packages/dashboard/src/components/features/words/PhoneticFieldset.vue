@@ -11,17 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { PhoneticItem } from "@/types/word";
+import type { WordPhoneticItem } from "@/types/word";
 
-const props = defineProps<{ modelValue: PhoneticItem; index: number }>();
+const props = defineProps<{ modelValue: WordPhoneticItem; index: number }>();
 const emit = defineEmits<{
-  "update:modelValue": [value: PhoneticItem];
+  "update:modelValue": [value: WordPhoneticItem];
   remove: [];
 }>();
 
 const item = computed(() => props.modelValue);
 
-function update(field: keyof PhoneticItem, value: string) {
+function update(field: keyof WordPhoneticItem, value: string) {
   emit("update:modelValue", { ...item.value, [field]: value || null });
 }
 </script>

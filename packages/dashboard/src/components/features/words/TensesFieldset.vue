@@ -2,18 +2,18 @@
 import { computed } from "vue";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { Tenses } from "@/types/word";
+import type { WordTenses } from "@/types/word";
 
-const props = defineProps<{ modelValue: Tenses | undefined; enabled: boolean }>();
+const props = defineProps<{ modelValue: WordTenses | undefined; enabled: boolean }>();
 const emit = defineEmits<{
-  "update:modelValue": [value: Tenses | undefined];
+  "update:modelValue": [value: WordTenses | undefined];
   "update:enabled": [value: boolean];
 }>();
 
-const defaultTenses: Tenses = { base: "", past: "", present: "", singular: "", plural: "" };
+const defaultTenses: WordTenses = { base: "", past: "", present: "", singular: "", plural: "" };
 const tenses = computed(() => props.modelValue ?? defaultTenses);
 
-function update(field: keyof Tenses, value: string) {
+function update(field: keyof WordTenses, value: string) {
   emit("update:modelValue", { ...tenses.value, [field]: value || undefined });
 }
 
@@ -44,7 +44,7 @@ function toggle(checked: boolean) {
           'future',
           'singular',
           'plural',
-        ] as (keyof Tenses)[]"
+        ] as (keyof WordTenses)[]"
         :key="field"
       >
         <Label class="capitalize">

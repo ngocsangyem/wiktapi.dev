@@ -23,7 +23,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  delete: [data: { id: string; word: string }];
+  "delete-requested": [data: { id: string; word: string }];
   "update:selected": [words: string[]];
 }>();
 
@@ -98,7 +98,8 @@ const columns: ColumnDef<WordListItem>[] = [
             variant: "ghost",
             size: "sm",
             class: "text-destructive hover:text-destructive",
-            onClick: () => emit("delete", { id: row.original.id, word: row.original.word }),
+            onClick: () =>
+              emit("delete-requested", { id: row.original.id, word: row.original.word }),
           },
           () => "Delete",
         ),

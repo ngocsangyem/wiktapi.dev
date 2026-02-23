@@ -1,0 +1,25 @@
+export const WORD_CATEGORIES = [
+  "technology",
+  "business",
+  "travel",
+  "music",
+  "movies",
+  "sports",
+  "food",
+  "art",
+  "science",
+  "health",
+  "fashion",
+  "gaming",
+  "books",
+  "nature",
+  "photography",
+  "education",
+  "history",
+  "politics",
+  "automotive",
+  "pets",
+  "general",
+] as const;
+
+export type WordCategory = (typeof WORD_CATEGORIES)[number];

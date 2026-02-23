@@ -6,7 +6,7 @@ import {
   fetchWord,
   fetchWordById,
   createWord,
-  updateWord,
+  updateWordById,
   deleteWord,
   bulkDeleteWords,
 } from "@/api/words";
@@ -76,10 +76,10 @@ export function useCreateWordMutation() {
 export function useUpdateWordMutation() {
   const queryCache = useQueryCache();
   return useMutation({
-    mutation: ({ word, data }: { word: string; data: WordData }) => updateWord(word, data),
-    onSettled: ({ vars }: { vars: { word: string; data: WordData } }) => {
+    mutation: ({ id, data }: { id: string; data: WordData }) => updateWordById(id, data),
+    onSettled: ({ vars }: { vars: { id: string; data: WordData } }) => {
       void queryCache.invalidateQueries({ key: ["words"] });
-      void queryCache.invalidateQueries({ key: ["word", vars.word] });
+      void queryCache.invalidateQueries({ key: ["word", "by-id", vars.id] });
     },
   });
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { useDebounceFn } from "@vueuse/core";
 import { Search, Regex } from "lucide-vue-next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,11 +13,11 @@ const emit = defineEmits<{
 
 const localValue = ref(props.search);
 const localRegex = ref(props.useRegex ?? false);
-let debounceTimer: ReturnType<typeof setTimeout>;
+
+const emitSearch = useDebounceFn((val: string) => emit("update:search", val), 300);
 
 watch(localValue, (val) => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => emit("update:search", val), 300);
+  emitSearch(val);
 });
 
 watch(localRegex, (val) => {

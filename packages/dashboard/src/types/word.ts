@@ -1,118 +1,47 @@
-export interface PhoneticItem {
-  text: string;
-  type: "uk" | "us";
-  audioUrl?: string | null;
-}
+import type { z } from "zod";
+import type {
+  wordPhoneticItemSchema,
+  wordDefinitionSchema,
+  wordTranslationItemSchema,
+  wordMeaningSchema,
+  wordTensesSchema,
+  wordDataSchema,
+} from "@/schemas/word";
+import { WORD_CATEGORIES, type WordCategory } from "@/types/constants";
 
-export interface Definition {
-  definition: string;
-  example?: string;
-  definitionTranslate?: string;
-}
+export type WordPhoneticItem = z.infer<typeof wordPhoneticItemSchema>;
 
-export interface TranslationItem {
-  partOfSpeech: string;
-  lang_code: string;
-  code: string;
-  lang: string;
-  word: string;
-}
+export type WordDefinition = z.infer<typeof wordDefinitionSchema>;
 
-export interface Meaning {
-  partOfSpeech: string;
-  definitions: Definition[];
-  translations: TranslationItem[];
-  synonyms?: string[];
-  antonyms?: string[];
-}
+export type WordTranslationItem = z.infer<typeof wordTranslationItemSchema>;
 
-export interface Tenses {
-  base: string;
-  past: string;
-  present: string;
-  future?: string;
-  singular: string;
-  plural: string;
-}
+export type WordMeaning = z.infer<typeof wordMeaningSchema>;
 
-export type WordCategory =
-  | "technology"
-  | "business"
-  | "travel"
-  | "music"
-  | "movies"
-  | "sports"
-  | "food"
-  | "art"
-  | "science"
-  | "health"
-  | "fashion"
-  | "gaming"
-  | "books"
-  | "nature"
-  | "photography"
-  | "education"
-  | "history"
-  | "politics"
-  | "automotive"
-  | "pets"
-  | "general";
+export type WordTenses = z.infer<typeof wordTensesSchema>;
 
-export const WORD_CATEGORIES: readonly WordCategory[] = [
-  "technology",
-  "business",
-  "travel",
-  "music",
-  "movies",
-  "sports",
-  "food",
-  "art",
-  "science",
-  "health",
-  "fashion",
-  "gaming",
-  "books",
-  "nature",
-  "photography",
-  "education",
-  "history",
-  "politics",
-  "automotive",
-  "pets",
-  "general",
-] as const;
+export type WordData = z.infer<typeof wordDataSchema>;
 
-export interface WordData {
-  word: string;
-  edition: string;
-  phonetic: string | null;
-  phonetics: PhoneticItem[];
-  meanings: Meaning[];
-  category: WordCategory;
-  translations: TranslationItem[];
-  tenses?: Tenses;
-}
+export type WordRecord = WordData & { id: string; createdAt: string };
 
-export interface WordRecord extends WordData {
-  id: string;
-  createdAt: string;
-}
-
-export interface WordListItem {
+export type WordListItem = {
   id: string;
   word: string;
   edition: string;
   category: string;
   phonetic: string | null;
-}
+};
 
-export interface WordsListResponse {
+export type WordsListResponse = {
   page: number;
   limit: number;
   total: number;
   words: WordListItem[];
-}
+};
 
-export interface SearchResponse {
+export type SearchResponse = {
   results: { id: string; word: string; category: string; phonetic: string | null }[];
-}
+};
+
+// Re-export from constants for backwards compatibility
+export { WORD_CATEGORIES };
+export type { WordCategory };

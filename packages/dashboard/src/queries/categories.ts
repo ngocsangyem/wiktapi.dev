@@ -1,9 +1,9 @@
 import { useQuery } from "@pinia/colada";
-import { apiFetch } from "@/api/client";
+import { fetchCategories } from "@/api/categories";
 
 export function useCategoriesQuery() {
   return useQuery({
     key: ["categories"],
-    query: () => apiFetch<{ categories: string[] }>("/categories"),
+    query: fetchCategories,
   });
 }

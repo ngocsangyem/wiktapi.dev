@@ -4,17 +4,17 @@ import { X } from "lucide-vue-next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import type { TranslationItem } from "@/types/word";
+import type { WordTranslationItem } from "@/types/word";
 
-const props = defineProps<{ modelValue: TranslationItem; index: number }>();
+const props = defineProps<{ modelValue: WordTranslationItem; index: number }>();
 const emit = defineEmits<{
-  "update:modelValue": [value: TranslationItem];
+  "update:modelValue": [value: WordTranslationItem];
   remove: [];
 }>();
 
 const item = computed(() => props.modelValue);
 
-function update(field: keyof TranslationItem, value: string) {
+function update(field: keyof WordTranslationItem, value: string) {
   emit("update:modelValue", { ...item.value, [field]: value });
 }
 </script>

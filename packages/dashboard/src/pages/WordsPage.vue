@@ -123,7 +123,7 @@ function handleOpenAlertDialog(data: { id: string; word: string } | "bulk") {
       :words="tableWords"
       :loading="isLoading"
       v-model:selected="selectedWords"
-      @delete="handleOpenAlertDialog($event)"
+      @delete-requested="handleOpenAlertDialog($event)"
     />
 
     <WordsPagination
