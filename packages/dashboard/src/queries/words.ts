@@ -17,18 +17,11 @@ export function useWordsQuery(page: Ref<number>, limit: Ref<number>) {
   const filters = useFiltersStore();
 
   return useQuery({
-    key: computed(() => [
-      "words",
-      page.value,
-      limit.value,
-      filters.selectedCategory ?? "",
-      filters.selectedEdition ?? "",
-    ]),
+    key: computed(() => ["words", page.value, limit.value, filters.selectedEdition ?? ""]),
     query: ({ signal }: { signal?: AbortSignal }) =>
       fetchWords({
         page: page.value,
         limit: limit.value,
-        category: filters.selectedCategory ?? undefined,
         edition: filters.selectedEdition ?? undefined,
         signal,
       }),
@@ -36,15 +29,9 @@ export function useWordsQuery(page: Ref<number>, limit: Ref<number>) {
 }
 
 export function useSearchQuery(q: Ref<string>, useRegex: Ref<boolean>) {
-  const filters = useFiltersStore();
   return useQuery({
-    key: () => {
-      const search = q.value;
-      const regex = useRegex.value;
-      const category = filters.selectedCategory ?? "";
-      return ["search", search, String(regex), category];
-    },
-    query: () => searchWords(q.value, filters.selectedCategory ?? undefined, useRegex.value),
+    key: () => ["search", q.value, String(useRegex.value)],
+    query: () => searchWords(q.value, useRegex.value),
     enabled: computed(() => q.value.length >= 2),
   });
 }
@@ -87,8 +74,7 @@ export function useUpdateWordMutation() {
 export function useDeleteWordMutation() {
   const queryCache = useQueryCache();
   return useMutation({
-    mutation: ({ id, edition, category }: { id: string; edition?: string; category?: string }) =>
-      deleteWord(id, edition, category),
+    mutation: ({ id, edition }: { id: string; edition?: string }) => deleteWord(id, edition),
     onSettled: () => queryCache.invalidateQueries({ key: ["words"] }),
   });
 }
@@ -99,7 +85,6 @@ export function useBulkDeleteWordsMutation() {
     mutation: (words: string[]) => bulkDeleteWords(words),
     onSettled: () => {
       void queryCache.invalidateQueries({ key: ["words"] });
-      // Don't invalidate search - it causes unnecessary refetch with empty q
     },
   });
 }

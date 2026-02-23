@@ -17,3 +17,6 @@ db.pragma("mmap_size = 268435456"); // 256MB memory-mapped I/O (safe for 2GB ser
 export const dbWrite: BetterSqliteDB = new Database(dbPath);
 dbWrite.pragma("journal_mode = WAL"); // safe concurrent reads + writes
 dbWrite.pragma("busy_timeout = 5000");
+dbWrite.pragma("foreign_keys = ON");
+
+db.pragma("foreign_keys = ON");

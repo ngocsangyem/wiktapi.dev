@@ -48,7 +48,6 @@ const tableWords = computed<WordListItem[]>(() => {
       id: r.id,
       word: r.word,
       edition: "",
-      category: r.category,
       phonetic: r.phonetic,
     }));
   }
@@ -60,7 +59,7 @@ const isLoading = computed(() =>
 );
 
 // Reset page when filters or search change
-watch([() => filters.selectedCategory, () => filters.selectedEdition, searchTerm], () => {
+watch([() => filters.selectedEdition, searchTerm], () => {
   page.value = 1;
 });
 

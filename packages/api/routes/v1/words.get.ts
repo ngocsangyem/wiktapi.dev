@@ -7,7 +7,7 @@ defineRouteMeta({
     tags: ["Words"],
     summary: "List words",
     description:
-      "Returns a paginated list of words in the database, optionally filtered by category or edition.",
+      "Returns a paginated list of words in the database, optionally filtered by edition.",
     parameters: [
       {
         in: "query",
@@ -22,13 +22,6 @@ defineRouteMeta({
         required: false,
         schema: { type: "integer", default: 50, maximum: 200 },
         description: "Number of results per page (max 200).",
-      },
-      {
-        in: "query",
-        name: "category",
-        required: false,
-        schema: { type: "string" },
-        description: "Filter by category (e.g. `sports`, `technology`).",
       },
       {
         in: "query",
@@ -54,9 +47,9 @@ defineRouteMeta({
                   items: {
                     type: "object",
                     properties: {
+                      id: { type: "string" },
                       word: { type: "string" },
                       edition: { type: "string", example: "en" },
-                      category: { type: "string" },
                       phonetic: { type: "string", nullable: true },
                     },
                   },
@@ -74,7 +67,6 @@ export default defineHandler((event) => {
   const query = getQuery(event) as {
     page?: string;
     limit?: string;
-    category?: string;
     edition?: string;
   };
 
@@ -82,14 +74,9 @@ export default defineHandler((event) => {
   const limit = Math.min(200, Math.max(1, parseInt(query.limit ?? "50", 10) || 50));
   const offset = (page - 1) * limit;
 
-  // Build WHERE clause from optional filters
   const conditions: string[] = [];
   const params: unknown[] = [];
 
-  if (query.category) {
-    conditions.push("category = ?");
-    params.push(query.category);
-  }
   if (query.edition) {
     conditions.push("edition = ?");
     params.push(query.edition);
@@ -97,29 +84,20 @@ export default defineHandler((event) => {
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  type Row = {
-    id: string;
-    word: string;
-    edition: string;
-    category: string;
-    phonetic: string | null;
-  };
+  type Row = { id: string; word: string; edition: string; phonetic: string | null };
 
   const words = db
     .prepare(
-      `SELECT id, word, edition, category, MAX(phonetic) AS phonetic FROM words
+      `SELECT id, word, edition, phonetic FROM words
        ${where}
-       GROUP BY id, word, edition, category
        ORDER BY word
        LIMIT ? OFFSET ?`,
     )
     .all(...params, limit, offset) as Row[];
 
-  const { total } = db
-    .prepare(
-      `SELECT COUNT(DISTINCT word || '|' || edition || '|' || category) AS total FROM words ${where}`,
-    )
-    .get(...params) as { total: number };
+  const { total } = db.prepare(`SELECT COUNT(*) AS total FROM words ${where}`).get(...params) as {
+    total: number;
+  };
 
   return { page, limit, total, words };
 });

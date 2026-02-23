@@ -1,15 +1,22 @@
 import Database from "better-sqlite3";
 import { mkdirSync, rmSync } from "node:fs";
-import { WORDS_TABLE_DDL, WORDS_INDEXES_DDL, WORDS_INSERT_SQL } from "../utils/schema.ts";
+import {
+  WORDS_TABLE_DDL,
+  MEANINGS_TABLE_DDL,
+  WORDS_INDEXES_DDL,
+  MEANINGS_INDEXES_DDL,
+  WORDS_INSERT_SQL,
+  MEANINGS_INSERT_SQL,
+} from "../utils/schema.ts";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 export const TEST_DB_PATH = resolve(dir, "../data/test.db");
 
-const SAMPLE_WORDS = [
+const SAMPLE_WORD_ROWS = [
   {
-    id: "test-1",
+    id: "test-chat",
     word: "chat",
     edition: "en",
     phonetic: "/tʃæt/",
@@ -17,48 +24,12 @@ const SAMPLE_WORDS = [
       { text: "/tʃæt/", type: "us", audioUrl: null },
       { text: "/tʃæt/", type: "uk", audioUrl: null },
     ]),
-    meanings: JSON.stringify([
-      {
-        partOfSpeech: "noun",
-        definitions: [
-          { definition: "an informal conversation" },
-          { definition: "a small songbird of the Old World" },
-        ],
-        translations: [],
-        synonyms: ["talk", "conversation"],
-        antonyms: [],
-      },
-    ]),
-    category: "general",
     translations: JSON.stringify([]),
     tenses: null,
     createdAt: "2026-01-01T00:00:00.000Z",
   },
   {
-    id: "test-2",
-    word: "chat",
-    edition: "en",
-    phonetic: "/tʃæt/",
-    phonetics: JSON.stringify([
-      { text: "/tʃæt/", type: "us", audioUrl: null },
-      { text: "/tʃæt/", type: "uk", audioUrl: null },
-    ]),
-    meanings: JSON.stringify([
-      {
-        partOfSpeech: "verb",
-        definitions: [{ definition: "to converse casually", example: "They chat online." }],
-        translations: [],
-        synonyms: [],
-        antonyms: [],
-      },
-    ]),
-    category: "general",
-    translations: JSON.stringify([]),
-    tenses: null,
-    createdAt: "2026-01-01T00:00:00.000Z",
-  },
-  {
-    id: "test-3",
+    id: "test-run",
     word: "run",
     edition: "en",
     phonetic: "/ɹʌn/",
@@ -66,46 +37,6 @@ const SAMPLE_WORDS = [
       { text: "/ɹʌn/", type: "us", audioUrl: null },
       { text: "/ɹʌn/", type: "uk", audioUrl: null },
     ]),
-    meanings: JSON.stringify([
-      {
-        partOfSpeech: "noun",
-        definitions: [{ definition: "an act of running" }],
-        translations: [],
-        synonyms: ["sprint", "dash"],
-        antonyms: [],
-      },
-    ]),
-    category: "sports",
-    translations: JSON.stringify([]),
-    tenses: JSON.stringify({
-      base: "run",
-      past: "ran",
-      present: "running",
-      future: "",
-      singular: "runs",
-      plural: "run",
-    }),
-    createdAt: "2026-01-01T00:00:00.000Z",
-  },
-  {
-    id: "test-4",
-    word: "run",
-    edition: "en",
-    phonetic: "/ɹʌn/",
-    phonetics: JSON.stringify([
-      { text: "/ɹʌn/", type: "us", audioUrl: null },
-      { text: "/ɹʌn/", type: "uk", audioUrl: null },
-    ]),
-    meanings: JSON.stringify([
-      {
-        partOfSpeech: "verb",
-        definitions: [{ definition: "to move quickly on foot", example: "I run every day." }],
-        translations: [],
-        synonyms: [],
-        antonyms: [],
-      },
-    ]),
-    category: "sports",
     translations: JSON.stringify([
       { partOfSpeech: "verb", lang_code: "fr", code: "fr", lang: "French", word: "courir" },
       { partOfSpeech: "verb", lang_code: "vi", code: "vi", lang: "Vietnamese", word: "chạy" },
@@ -121,7 +52,7 @@ const SAMPLE_WORDS = [
     createdAt: "2026-01-01T00:00:00.000Z",
   },
   {
-    id: "test-5",
+    id: "test-tech",
     word: "technology",
     edition: "en",
     phonetic: "/tɛkˈnɒlədʒi/",
@@ -129,21 +60,74 @@ const SAMPLE_WORDS = [
       { text: "/tɛkˈnɒlədʒi/", type: "uk", audioUrl: null },
       { text: "/tɛkˈnɑːlədʒi/", type: "us", audioUrl: null },
     ]),
-    meanings: JSON.stringify([
-      {
-        partOfSpeech: "noun",
-        definitions: [
-          { definition: "the application of scientific knowledge for practical purposes" },
-        ],
-        translations: [],
-        synonyms: ["tech", "innovation"],
-        antonyms: [],
-      },
-    ]),
-    category: "technology",
     translations: JSON.stringify([]),
     tenses: null,
     createdAt: "2026-01-01T00:00:00.000Z",
+  },
+];
+
+const SAMPLE_MEANING_ROWS = [
+  {
+    id: "meaning-1",
+    word_id: "test-chat",
+    partOfSpeech: "noun",
+    definitions: JSON.stringify([
+      { definition: "an informal conversation" },
+      { definition: "a small songbird of the Old World" },
+    ]),
+    translations: JSON.stringify([]),
+    synonyms: JSON.stringify(["talk", "conversation"]),
+    antonyms: null,
+    sort_order: 0,
+  },
+  {
+    id: "meaning-2",
+    word_id: "test-chat",
+    partOfSpeech: "verb",
+    definitions: JSON.stringify([
+      { definition: "to converse casually", example: "They chat online." },
+    ]),
+    translations: JSON.stringify([]),
+    synonyms: null,
+    antonyms: null,
+    sort_order: 1,
+  },
+  {
+    id: "meaning-3",
+    word_id: "test-run",
+    partOfSpeech: "noun",
+    definitions: JSON.stringify([{ definition: "an act of running" }]),
+    translations: JSON.stringify([]),
+    synonyms: JSON.stringify(["sprint", "dash"]),
+    antonyms: null,
+    sort_order: 0,
+  },
+  {
+    id: "meaning-4",
+    word_id: "test-run",
+    partOfSpeech: "verb",
+    definitions: JSON.stringify([
+      { definition: "to move quickly on foot", example: "I run every day." },
+    ]),
+    translations: JSON.stringify([
+      { partOfSpeech: "verb", lang_code: "fr", code: "fr", lang: "French", word: "courir" },
+      { partOfSpeech: "verb", lang_code: "vi", code: "vi", lang: "Vietnamese", word: "chạy" },
+    ]),
+    synonyms: null,
+    antonyms: null,
+    sort_order: 1,
+  },
+  {
+    id: "meaning-5",
+    word_id: "test-tech",
+    partOfSpeech: "noun",
+    definitions: JSON.stringify([
+      { definition: "the application of scientific knowledge for practical purposes" },
+    ]),
+    translations: JSON.stringify([]),
+    synonyms: JSON.stringify(["tech", "innovation"]),
+    antonyms: null,
+    sort_order: 0,
   },
 ];
 
@@ -151,17 +135,25 @@ export function setup() {
   mkdirSync(resolve(dir, "../data"), { recursive: true });
 
   const db = new Database(TEST_DB_PATH);
-  // Drop first so stale tables from interrupted previous runs don't cause silent fixture reuse
+  db.pragma("foreign_keys = ON");
+
+  // Drop in FK-safe order to avoid stale tables from interrupted previous runs
+  db.exec("DROP TABLE IF EXISTS meanings;");
   db.exec("DROP TABLE IF EXISTS words;");
+
   db.exec(WORDS_TABLE_DDL);
+  db.exec(MEANINGS_TABLE_DDL);
   db.exec(WORDS_INDEXES_DDL);
+  db.exec(MEANINGS_INDEXES_DDL);
 
-  const insert = db.prepare(WORDS_INSERT_SQL);
-  const insertMany = db.transaction((rows: typeof SAMPLE_WORDS) => {
-    for (const row of rows) insert.run(row);
-  });
+  const insertWord = db.prepare(WORDS_INSERT_SQL);
+  const insertMeaning = db.prepare(MEANINGS_INSERT_SQL);
 
-  insertMany(SAMPLE_WORDS);
+  db.transaction(() => {
+    for (const row of SAMPLE_WORD_ROWS) insertWord.run(row);
+    for (const row of SAMPLE_MEANING_ROWS) insertMeaning.run(row);
+  })();
+
   db.close();
 }
 

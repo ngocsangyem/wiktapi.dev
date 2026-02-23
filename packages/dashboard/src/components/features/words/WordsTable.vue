@@ -72,11 +72,6 @@ const columns: ColumnDef<WordListItem>[] = [
     cell: ({ row }) => h(Badge, { variant: "secondary" }, () => row.original.edition),
   },
   {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => h(Badge, { variant: "outline" }, () => row.original.category),
-  },
-  {
     accessorKey: "phonetic",
     header: "Phonetic",
     cell: ({ row }) =>
@@ -160,7 +155,7 @@ watch(
       <TableBody>
         <template v-if="loading">
           <TableRow v-for="i in 5" :key="i">
-            <TableCell v-for="j in 6" :key="j">
+            <TableCell v-for="j in 5" :key="j">
               <Skeleton class="h-4 w-full" />
             </TableCell>
           </TableRow>

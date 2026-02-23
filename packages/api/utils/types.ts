@@ -40,60 +40,12 @@ export interface ConfusableWord {
   meanings: Meaning[];
 }
 
-export type WordCategory =
-  | "technology"
-  | "business"
-  | "travel"
-  | "music"
-  | "movies"
-  | "sports"
-  | "food"
-  | "art"
-  | "science"
-  | "health"
-  | "fashion"
-  | "gaming"
-  | "books"
-  | "nature"
-  | "photography"
-  | "education"
-  | "history"
-  | "politics"
-  | "automotive"
-  | "pets"
-  | "general";
-
-export const WORD_CATEGORIES: readonly WordCategory[] = [
-  "technology",
-  "business",
-  "travel",
-  "music",
-  "movies",
-  "sports",
-  "food",
-  "art",
-  "science",
-  "health",
-  "fashion",
-  "gaming",
-  "books",
-  "nature",
-  "photography",
-  "education",
-  "history",
-  "politics",
-  "automotive",
-  "pets",
-  "general",
-] as const;
-
 export interface WordData {
   word: string;
   edition: string;
   phonetic: string | null;
   phonetics: PhoneticItem[];
   meanings: Meaning[];
-  category: WordCategory;
   translations: TranslationItem[];
   tenses?: Tenses;
   // confusable?: ConfusableWord[];  // reserved for future use
@@ -102,4 +54,28 @@ export interface WordData {
 export interface WordRecord extends WordData {
   id: string;
   createdAt: string;
+}
+
+// Internal DB row types — not part of public API contract
+
+export interface WordRow {
+  id: string;
+  word: string;
+  edition: string;
+  phonetic: string | null;
+  phonetics: string; // JSON: PhoneticItem[]
+  translations: string; // JSON: TranslationItem[] (word-level aggregate)
+  tenses: string | null; // JSON: Tenses | null
+  createdAt: string;
+}
+
+export interface MeaningRow {
+  id: string;
+  word_id: string;
+  partOfSpeech: string;
+  definitions: string; // JSON: Definition[]
+  translations: string; // JSON: TranslationItem[]
+  synonyms: string | null;
+  antonyms: string | null;
+  sort_order: number;
 }

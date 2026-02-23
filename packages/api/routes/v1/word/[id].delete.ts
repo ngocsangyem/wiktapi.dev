@@ -1,5 +1,5 @@
 import { defineRouteMeta } from "nitro";
-import { defineHandler, getRouterParam, getQuery, setResponseStatus } from "nitro/h3";
+import { defineHandler, getRouterParam, setResponseStatus } from "nitro/h3";
 import { deleteWordById } from "../../../utils/mutations";
 
 defineRouteMeta({
@@ -23,8 +23,7 @@ defineRouteMeta({
 
 export default defineHandler((event) => {
   const id = getRouterParam(event, "id")!;
-  const { edition, category } = getQuery(event) as { edition?: string; category?: string };
-  deleteWordById(id, edition, category);
+  deleteWordById(id);
   setResponseStatus(event, 204);
   return null;
 });

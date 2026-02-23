@@ -17,23 +17,16 @@ describe("GET /v1/words", () => {
     expect(result.page).toBe(1);
   });
 
-  it("each word entry has word, edition, category, phonetic fields", () => {
+  it("each word entry has id, word, edition, and phonetic fields", () => {
     const event = createTestEvent();
     const result = wordsHandler(event);
 
     const item = result.words[0];
     expect(item).toBeDefined();
+    expect(typeof item?.id).toBe("string");
     expect(typeof item?.word).toBe("string");
     expect(typeof item?.edition).toBe("string");
-    expect(typeof item?.category).toBe("string");
     expect(item && "phonetic" in item).toBe(true);
-  });
-
-  it("filters by category", () => {
-    const event = createTestEvent({}, { category: "sports" });
-    const result = wordsHandler(event);
-
-    expect(result.words.every((w: { category: string }) => w.category === "sports")).toBe(true);
   });
 
   it("filters by edition", () => {

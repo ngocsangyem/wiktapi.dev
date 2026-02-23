@@ -12,7 +12,10 @@
     "import:staging": "node scripts/import_data.ts --output data/wiktionary.db.new --fresh --skip-indexes",
     "index": "node scripts/build_indexes.ts",
     "index:staging": "node scripts/build_indexes.ts --output data/wiktionary.db.new",
-    "swap": "mv data/wiktionary.db.new data/wiktionary.db"
+    "swap": "mv data/wiktionary.db.new data/wiktionary.db",
+    "migrate": "tsx scripts/migrate_schema.ts",
+    "cleanup": "node scripts/cleanup_words.ts",
+    "cleanup:execute": "node scripts/cleanup_words.ts --execute"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",

@@ -10,15 +10,14 @@ import synonymsAntonymsHandler from "../../routes/v1/word/[word]/synonyms-antony
 // ── /word/{word} ─────────────────────────────────────────────────────────────
 
 describe("GET /v1/word/{word}", () => {
-  it("returns merged WordData for a word with multiple POS rows", async () => {
+  it("returns WordRecord for a word with multiple POS meanings", async () => {
     const event = createTestEvent({ word: "run" });
     const result = wordHandler(event);
 
     expect(result.word).toBe("run");
     expect(result.edition).toBe("en");
-    expect(result.category).toBe("sports");
     expect(result.phonetic).toBe("/ɹʌn/");
-    // two rows (noun + verb) → two meanings merged
+    // two meanings (noun + verb) from meanings table
     expect(result.meanings).toHaveLength(2);
   });
 
@@ -30,13 +29,6 @@ describe("GET /v1/word/{word}", () => {
     const types = result.phonetics.map((p: { type: string }) => p.type);
     expect(types).toContain("us");
     expect(types).toContain("uk");
-  });
-
-  it("filters by category when ?category= is provided", async () => {
-    const event = createTestEvent({ word: "run" }, { category: "sports" });
-    const result = wordHandler(event);
-
-    expect(result.category).toBe("sports");
   });
 
   it("returns 404 for unknown word", async () => {

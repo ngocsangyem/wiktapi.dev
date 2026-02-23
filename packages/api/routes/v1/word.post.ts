@@ -14,11 +14,10 @@ defineRouteMeta({
         "application/json": {
           schema: {
             type: "object",
-            required: ["word", "edition", "category", "meanings", "phonetics", "translations"],
+            required: ["word", "edition", "meanings", "phonetics", "translations"],
             properties: {
               word: { type: "string" },
               edition: { type: "string", example: "en" },
-              category: { type: "string" },
               phonetic: { type: "string", nullable: true },
               phonetics: { type: "array", items: { type: "object" } },
               meanings: { type: "array", items: { type: "object" } },

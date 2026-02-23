@@ -11,21 +11,14 @@ describe("GET /v1/search", () => {
     expect(words).toContain("chat");
   });
 
-  it("returns word, category, and phonetic in each result", async () => {
+  it("returns id, word, and phonetic in each result", async () => {
     const event = createTestEvent({}, { q: "ch" });
     const result = searchHandler(event);
 
     const item = result.results[0];
+    expect(typeof item?.id).toBe("string");
     expect(typeof item?.word).toBe("string");
-    expect(typeof item?.category).toBe("string");
-  });
-
-  it("filters by category when ?category= is provided", async () => {
-    const event = createTestEvent({}, { q: "r", category: "sports" });
-    const result = searchHandler(event);
-
-    expect(result.results.length).toBeGreaterThan(0);
-    expect(result.results.every((r: { category: string }) => r.category === "sports")).toBe(true);
+    expect(item && "phonetic" in item).toBe(true);
   });
 
   it("returns 400 when q is missing", async () => {

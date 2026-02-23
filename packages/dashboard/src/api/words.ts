@@ -4,38 +4,29 @@ import type { WordData, WordRecord, WordsListResponse, SearchResponse } from "@/
 export function fetchWords(params: {
   page?: number;
   limit?: number;
-  category?: string;
   edition?: string;
   signal?: AbortSignal;
 }): Promise<WordsListResponse> {
   const qs = new URLSearchParams();
   if (params.page) qs.set("page", String(params.page));
   if (params.limit) qs.set("limit", String(params.limit));
-  if (params.category) qs.set("category", params.category);
   if (params.edition) qs.set("edition", params.edition);
   return apiFetch(`/words?${qs}`, { signal: params.signal });
 }
 
-export function searchWords(
-  q: string,
-  category?: string,
-  useRegex?: boolean,
-): Promise<SearchResponse> {
+export function searchWords(q: string, useRegex?: boolean): Promise<SearchResponse> {
   const params = new URLSearchParams();
   params.set("q", q);
-  if (category) params.set("category", category);
   if (useRegex) params.set("regex", "true");
   return apiFetch(`/search?${params.toString()}`);
 }
 
-export function fetchWord(word: string, category?: string): Promise<WordRecord> {
-  const qs = category ? `?category=${encodeURIComponent(category)}` : "";
-  return apiFetch(`/word/${encodeURIComponent(word)}${qs}`);
+export function fetchWord(word: string): Promise<WordRecord> {
+  return apiFetch(`/word/${encodeURIComponent(word)}`);
 }
 
-export function fetchWordById(id: string, category?: string): Promise<WordRecord> {
-  const qs = category ? `?category=${encodeURIComponent(category)}` : "";
-  return apiFetch(`/word/${encodeURIComponent(id)}${qs}`);
+export function fetchWordById(id: string): Promise<WordRecord> {
+  return apiFetch(`/word/${encodeURIComponent(id)}`);
 }
 
 export function createWord(data: WordData): Promise<WordRecord> {
@@ -56,10 +47,9 @@ export function updateWordById(id: string, data: WordData): Promise<WordRecord> 
   });
 }
 
-export function deleteWord(id: string, edition?: string, category?: string): Promise<void> {
+export function deleteWord(id: string, edition?: string): Promise<void> {
   const qs = new URLSearchParams();
   if (edition) qs.set("edition", edition);
-  if (category) qs.set("category", category);
   const query = qs.toString() ? `?${qs}` : "";
   return apiFetch(`/word/${encodeURIComponent(id)}${query}`, { method: "DELETE" });
 }

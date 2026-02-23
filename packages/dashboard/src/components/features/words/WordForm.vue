@@ -4,18 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import MeaningFieldset from "./MeaningFieldset.vue";
 import PhoneticFieldset from "./PhoneticFieldset.vue";
 import TranslationFieldset from "./TranslationFieldset.vue";
 import TensesFieldset from "./TensesFieldset.vue";
-import { WORD_CATEGORIES } from "@/types/word";
 import type { WordData, WordMeaning, WordPhoneticItem, WordTranslationItem } from "@/types/word";
 import { useWordForm } from "./composables/useWordForm";
 
@@ -52,17 +44,6 @@ const {
           <Input v-model="form.edition" placeholder="en" />
         </div>
         <div class="space-y-1">
-          <Label>Category <span class="text-destructive">*</span></Label>
-          <Select v-model="form.category">
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="cat in WORD_CATEGORIES" :key="cat" :value="cat">{{
-                cat
-              }}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div class="space-y-1">
           <Label>Phonetic <span class="text-muted-foreground">(optional)</span></Label>
           <Input
             :model-value="form.phonetic ?? ''"
@@ -85,7 +66,7 @@ const {
         <PhoneticFieldset
           v-for="(p, i) in form.phonetics"
           :key="i"
-          :model-value="p as WordPhoneticItem"
+          :model-value="p"
           :index="i"
           @update:model-value="(v) => (form.phonetics[i] = v)"
           @remove="removePhonetic(i)"
@@ -108,7 +89,7 @@ const {
         <MeaningFieldset
           v-for="(m, i) in form.meanings"
           :key="i"
-          :model-value="m as WordMeaning"
+          :model-value="m"
           :index="i"
           @update:model-value="(v) => (form.meanings[i] = v)"
           @remove="removeMeaning(i)"

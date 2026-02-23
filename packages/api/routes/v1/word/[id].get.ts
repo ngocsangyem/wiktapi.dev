@@ -1,5 +1,5 @@
 import { defineRouteMeta } from "nitro";
-import { defineHandler, getRouterParam, getQuery } from "nitro/h3";
+import { defineHandler, getRouterParam } from "nitro/h3";
 import { fetchWordById } from "../../../utils/queries";
 
 defineRouteMeta({
@@ -19,15 +19,14 @@ defineRouteMeta({
 
 export default defineHandler((event) => {
   const id = getRouterParam(event, "id")!;
-  const { category } = getQuery(event) as { category?: string };
-
-  const record = fetchWordById(id, category);
+  const record = fetchWordById(id);
   return {
     word: record.word,
     edition: record.edition,
     phonetic: record.phonetic,
     phonetics: record.phonetics,
     meanings: record.meanings,
-    category: record.category,
+    translations: record.translations,
+    tenses: record.tenses ?? null,
   };
 });

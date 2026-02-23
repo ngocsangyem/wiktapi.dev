@@ -26,7 +26,6 @@ export function useWordForm(props: WordFormProps) {
   const form = reactive<WordData>({
     word: props.initialData?.word ?? "",
     edition: props.initialData?.edition ?? "en",
-    category: props.initialData?.category ?? "general",
     phonetic: props.initialData?.phonetic ?? null,
     phonetics: props.initialData?.phonetics ? [...props.initialData.phonetics] : [],
     meanings: props.initialData?.meanings?.length
@@ -94,14 +93,11 @@ export function useWordForm(props: WordFormProps) {
   }
 
   return {
-    // State
     form,
     tensesEnabled,
     validationErrors,
     submitError,
-    // Computed
     isLoading,
-    // Methods
     addMeaning,
     removeMeaning,
     addPhonetic,
@@ -109,7 +105,6 @@ export function useWordForm(props: WordFormProps) {
     addTranslation,
     removeTranslation,
     handleSubmit,
-    // For template usage
     router,
   };
 }

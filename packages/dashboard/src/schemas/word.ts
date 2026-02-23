@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { WORD_CATEGORIES } from "@/types/constants";
 
 const phoneticItemSchema = z.object({
   text: z.string().min(1, "Phonetic text is required"),
@@ -51,7 +50,6 @@ export const wordTensesSchema = tensesSchema;
 export const wordDataSchema = z.object({
   word: z.string().min(1, "Word is required"),
   edition: z.string().min(1, "Edition is required"),
-  category: z.enum(WORD_CATEGORIES),
   phonetic: z.string().nullable(),
   phonetics: z.array(phoneticItemSchema),
   meanings: z.array(meaningSchema).min(1, "At least one meaning is required"),

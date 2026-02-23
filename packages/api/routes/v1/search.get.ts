@@ -6,8 +6,7 @@ defineRouteMeta({
   openAPI: {
     tags: ["Search"],
     summary: "Search words",
-    description:
-      "Returns up to 50 words matching the query, optionally filtered by category. Use regex=true for regex matching.",
+    description: "Returns up to 50 words matching the query. Use regex=true for regex matching.",
     parameters: [
       {
         in: "query",
@@ -15,13 +14,6 @@ defineRouteMeta({
         required: true,
         schema: { type: "string" },
         description: "Search query (prefix or regex pattern).",
-      },
-      {
-        in: "query",
-        name: "category",
-        required: false,
-        schema: { type: "string" },
-        description: "Filter by category (e.g. `sports`, `technology`).",
       },
       {
         in: "query",
@@ -44,8 +36,8 @@ defineRouteMeta({
                   items: {
                     type: "object",
                     properties: {
+                      id: { type: "string" },
                       word: { type: "string" },
-                      category: { type: "string" },
                       phonetic: { type: "string", nullable: true },
                     },
                   },
@@ -61,11 +53,7 @@ defineRouteMeta({
 });
 
 export default defineHandler((event) => {
-  const { q, category, regex } = getQuery(event) as {
-    q?: string;
-    category?: string;
-    regex?: string;
-  };
+  const { q, regex } = getQuery(event) as { q?: string; regex?: string };
 
   if (!q?.trim()) {
     throw createError({ statusCode: 400, message: "Missing required query param: q" });
@@ -73,15 +61,13 @@ export default defineHandler((event) => {
 
   const isRegex = regex === "true" || regex === "1";
 
-  // Decode q for regex mode (URLSearchParams encodes special chars)
   let query = q;
   if (isRegex) {
     try {
       query = decodeURIComponent(q);
     } catch {
-      // Use original if decode fails (already decoded or invalid)
       query = q;
     }
   }
-  return { results: searchWords(query.trim(), category, isRegex) };
+  return { results: searchWords(query.trim(), isRegex) };
 });

@@ -1,12 +1,11 @@
 import { defineRouteMeta } from "nitro";
 import { defineHandler } from "nitro/h3";
-import { db } from "../../utils/db";
 
 defineRouteMeta({
   openAPI: {
     tags: ["Meta"],
     summary: "List categories",
-    description: "Returns all word categories available in the database.",
+    description: "Deprecated — categories have been removed. Returns an empty array.",
     responses: {
       200: {
         description: "OK",
@@ -15,11 +14,7 @@ defineRouteMeta({
             schema: {
               type: "object",
               properties: {
-                categories: {
-                  type: "array",
-                  items: { type: "string" },
-                  example: ["general", "technology", "sports"],
-                },
+                categories: { type: "array", items: { type: "string" } },
               },
             },
           },
@@ -30,9 +25,5 @@ defineRouteMeta({
 });
 
 export default defineHandler(() => {
-  const rows = db.prepare("SELECT DISTINCT category FROM words ORDER BY category").all() as {
-    category: string;
-  }[];
-
-  return { categories: rows.map((r) => r.category) };
+  return { categories: [] };
 });

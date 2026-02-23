@@ -1,26 +1,15 @@
 import { HTTPError } from "nitro/h3";
 import { db } from "./db.ts";
 import type {
+  Definition,
   Meaning,
+  MeaningRow,
   PhoneticItem,
   Tenses,
   TranslationItem,
-  WordCategory,
   WordRecord,
+  WordRow,
 } from "./types.ts";
-
-export interface WordRow {
-  id: string;
-  word: string;
-  edition: string;
-  phonetic: string | null;
-  phonetics: string;
-  meanings: string;
-  category: string;
-  translations: string; // JSON: TranslationItem[]
-  tenses: string | null;
-  createdAt: string;
-}
 
 function safeParseJson<T>(json: string, context: string): T {
   try {
@@ -33,140 +22,96 @@ function safeParseJson<T>(json: string, context: string): T {
   }
 }
 
-/**
- * Merges multiple rows for the same word into a single WordRecord.
- *
- * Invariant: all rows must share the same word, category, translate, phonetic,
- * phonetics, tenses, and createdAt values — only `meanings` differs per row
- * (one POS per row). This is guaranteed by the import script, which writes
- * identical scalar fields for every row of the same word.
- */
-export function mergeRows(rows: WordRow[]): WordRecord {
-  const first = rows[0]!;
-  const allMeanings = rows.flatMap((r) => safeParseJson<Meaning[]>(r.meanings, "meanings"));
-
-  // Pick phonetics from the first row that actually has them; fall back to first row
-  const phoneticRow = rows.find((r) => r.phonetic !== null) ?? first;
-
+function assembleWordRecord(wordRow: WordRow, meaningRows: MeaningRow[]): WordRecord {
   return {
-    id: first.id,
-    word: first.word,
-    edition: first.edition,
-    phonetic: phoneticRow.phonetic,
-    phonetics: safeParseJson<PhoneticItem[]>(phoneticRow.phonetics, "phonetics"),
-    meanings: allMeanings,
-    category: first.category as WordCategory,
-    translations: rows.flatMap((r) =>
-      safeParseJson<TranslationItem[]>(r.translations, "translations"),
-    ),
-    tenses: first.tenses ? safeParseJson<Tenses>(first.tenses, "tenses") : undefined,
-    createdAt: first.createdAt,
+    id: wordRow.id,
+    word: wordRow.word,
+    edition: wordRow.edition,
+    phonetic: wordRow.phonetic,
+    phonetics: safeParseJson<PhoneticItem[]>(wordRow.phonetics, "phonetics"),
+    meanings: meaningRows
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((m) => ({
+        partOfSpeech: m.partOfSpeech,
+        definitions: safeParseJson<Definition[]>(m.definitions, "definitions"),
+        translations: safeParseJson<TranslationItem[]>(m.translations, "translations"),
+        synonyms: m.synonyms ? safeParseJson<string[]>(m.synonyms, "synonyms") : [],
+        antonyms: m.antonyms ? safeParseJson<string[]>(m.antonyms, "antonyms") : [],
+      })) as Meaning[],
+    translations: safeParseJson<TranslationItem[]>(wordRow.translations, "translations"),
+    tenses: wordRow.tenses ? safeParseJson<Tenses>(wordRow.tenses, "tenses") : undefined,
+    createdAt: wordRow.createdAt,
   };
 }
 
 /**
- * Fetch all rows for a word, merge their meanings into a single WordRecord.
- * Throws 404 if no rows found.
+ * Fetch a word by its string value.
+ * Throws 404 if not found.
  */
-export function fetchWord(word: string, category?: string): WordRecord {
-  const rows = (
-    category
-      ? db.prepare(`SELECT * FROM words WHERE word = ? AND category = ?`).all(word, category)
-      : db.prepare(`SELECT * FROM words WHERE word = ?`).all(word)
-  ) as WordRow[];
+export function fetchWord(word: string): WordRecord {
+  const wordRow = db.prepare("SELECT * FROM words WHERE word = ?").get(word) as WordRow | undefined;
 
-  if (rows.length === 0) {
+  if (!wordRow) {
     throw new HTTPError({ statusCode: 404, message: `No entry found for "${word}"` });
   }
 
-  return mergeRows(rows);
+  const meaningRows = db
+    .prepare("SELECT * FROM meanings WHERE word_id = ? ORDER BY sort_order")
+    .all(wordRow.id) as MeaningRow[];
+
+  return assembleWordRecord(wordRow, meaningRows);
 }
 
 /**
- * Fetch a word by its ID.
+ * Fetch a word by its UUID.
  * Throws 404 if not found.
  */
-export function fetchWordById(id: string, category?: string): WordRecord {
-  const rows = (
-    category
-      ? db.prepare(`SELECT * FROM words WHERE id = ? AND category = ?`).all(id, category)
-      : db.prepare(`SELECT * FROM words WHERE id = ?`).all(id)
-  ) as WordRow[];
+export function fetchWordById(id: string): WordRecord {
+  const wordRow = db.prepare("SELECT * FROM words WHERE id = ?").get(id) as WordRow | undefined;
 
-  if (rows.length === 0) {
+  if (!wordRow) {
     throw new HTTPError({ statusCode: 404, message: `No entry found for id "${id}"` });
   }
 
-  return mergeRows(rows);
+  const meaningRows = db
+    .prepare("SELECT * FROM meanings WHERE word_id = ? ORDER BY sort_order")
+    .all(id) as MeaningRow[];
+
+  return assembleWordRecord(wordRow, meaningRows);
 }
 
 /**
- * Search words — returns up to 50 results with word, category, and phonetic.
+ * Search words — returns up to 50 results with word and phonetic.
  * Supports prefix search (default) or regex matching.
  */
 export function searchWords(
   query: string,
-  category?: string,
   useRegex?: boolean,
-): { word: string; category: string; phonetic: string | null }[] {
-  type Row = { id: string; word: string; category: string; phonetic: string | null };
+): { id: string; word: string; phonetic: string | null }[] {
+  type Row = { id: string; word: string; phonetic: string | null };
 
-  // For regex mode, fetch more results and filter in JavaScript
   if (useRegex) {
-    // Validate regex before using
     try {
       new RegExp(query);
     } catch {
-      // Invalid regex, return empty
       return [];
     }
 
-    // Fetch more results for regex filtering
-    const rows = (
-      category
-        ? db
-            .prepare(
-              `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
-             WHERE category = ?
-             GROUP BY id, word, category
-             ORDER BY word LIMIT 200`,
-            )
-            .all(category)
-        : db
-            .prepare(
-              `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
-             GROUP BY id, word, category
-             ORDER BY word LIMIT 200`,
-            )
-            .all()
-    ) as Row[];
+    const rows = db
+      .prepare("SELECT id, word, phonetic FROM words ORDER BY word LIMIT 200")
+      .all() as Row[];
 
     const regex = new RegExp(query, "i");
     return rows.filter((row) => regex.test(row.word)).slice(0, 50);
   }
 
-  // Prefix search (default)
   const escaped = query.toLowerCase().replace(/[%_]/g, "\\$&") + "%";
 
-  // GROUP BY word+category so multi-POS words appear once; MAX(phonetic) picks
-  // the non-null value when rows differ (SQLite MAX ignores NULLs).
-  return (
-    category
-      ? db
-          .prepare(
-            `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
-             WHERE lower(word) LIKE ? ESCAPE '\\' AND category = ?
-             GROUP BY id, word, category
-             ORDER BY word LIMIT 50`,
-          )
-          .all(escaped, category)
-      : db
-          .prepare(
-            `SELECT id, word, category, MAX(phonetic) AS phonetic FROM words
-             WHERE lower(word) LIKE ? ESCAPE '\\'
-             GROUP BY id, word, category
-             ORDER BY word LIMIT 50`,
-          )
-          .all(escaped)
-  ) as Row[];
+  return db
+    .prepare(
+      `SELECT id, word, phonetic FROM words
+       WHERE lower(word) LIKE ? ESCAPE '\\'
+       ORDER BY word LIMIT 50`,
+    )
+    .all(escaped) as Row[];
 }

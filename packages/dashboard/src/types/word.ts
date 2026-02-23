@@ -7,7 +7,6 @@ import type {
   wordTensesSchema,
   wordDataSchema,
 } from "@/schemas/word";
-import { WORD_CATEGORIES, type WordCategory } from "@/types/constants";
 
 export type WordPhoneticItem = z.infer<typeof wordPhoneticItemSchema>;
 
@@ -27,7 +26,6 @@ export type WordListItem = {
   id: string;
   word: string;
   edition: string;
-  category: string;
   phonetic: string | null;
 };
 
@@ -39,9 +37,5 @@ export type WordsListResponse = {
 };
 
 export type SearchResponse = {
-  results: { id: string; word: string; category: string; phonetic: string | null }[];
+  results: { id: string; word: string; phonetic: string | null }[];
 };
-
-// Re-export from constants for backwards compatibility
-export { WORD_CATEGORIES };
-export type { WordCategory };
