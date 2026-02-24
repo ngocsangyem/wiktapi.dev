@@ -19,6 +19,14 @@ const BASE_WORD: WordData = {
       antonyms: ["exception"],
     },
   ],
+  tenses: {
+    base: "example",
+    past: "exampled",
+    present: "examples",
+    future: "will example",
+    singular: "example",
+    plural: "examples",
+  },
   translations: [],
 };
 
@@ -122,5 +130,34 @@ describe("detectMissingData", () => {
     const form: WordData = { ...BASE_WORD, phonetic: null };
     const tasks = detectMissingData(form);
     expect(tasks.every((t) => t.status === "idle")).toBe(true);
+  });
+
+  it("detects missing translation for each target language", () => {
+    const langs = [
+      { lang_code: "vi", lang: "Vietnamese" },
+      { lang_code: "fr", lang: "French" },
+    ];
+    const tasks = detectMissingData(BASE_WORD, langs);
+    const translationTasks = tasks.filter((t) => t.type === "generate-translation");
+    expect(translationTasks).toHaveLength(2);
+    expect(translationTasks[0].id).toBe("translation-vi");
+    expect(translationTasks[1].id).toBe("translation-fr");
+  });
+
+  it("skips translation task when translation already exists for that language", () => {
+    const form: WordData = {
+      ...BASE_WORD,
+      translations: [
+        { lang_code: "vi", code: "vi", lang: "Vietnamese", word: "ví dụ", partOfSpeech: "danh từ" },
+      ],
+    };
+    const langs = [{ lang_code: "vi", lang: "Vietnamese" }];
+    const tasks = detectMissingData(form, langs);
+    expect(tasks.some((t) => t.type === "generate-translation")).toBe(false);
+  });
+
+  it("no translation tasks when targetLanguages is empty", () => {
+    const tasks = detectMissingData(BASE_WORD);
+    expect(tasks.some((t) => t.type === "generate-translation")).toBe(false);
   });
 });

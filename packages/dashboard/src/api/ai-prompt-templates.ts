@@ -67,5 +67,13 @@ Fields:
 Example for "run": {"base": "run", "past": "ran", "present": "runs", "future": "will run", "singular": "run", "plural": "runs"}`,
       };
     }
+
+    case "generate-translation": {
+      const posNote = c.partOfSpeech ? ` (${c.partOfSpeech})` : "";
+      return {
+        system: SYSTEM_PROMPT,
+        user: `Translate the English word "${c.word}"${posNote} into ${c.targetLang}. Return exactly: {"lang_code": "${c.targetLangCode}", "code": "${c.targetLangCode}", "lang": "${c.targetLang}", "word": "...", "partOfSpeech": "..."}\nFill "word" with the ${c.targetLang} translation and "partOfSpeech" with the ${c.targetLang} part of speech label.\nExample for "example" -> Vietnamese: {"lang_code": "vi", "code": "vi", "lang": "Vietnamese", "word": "ví dụ", "partOfSpeech": "danh từ"}`,
+      };
+    }
   }
 }

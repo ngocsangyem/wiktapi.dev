@@ -167,6 +167,36 @@ export function useAiGenerate(
         };
         break;
       }
+
+      case "generate-translation": {
+        const t = result as {
+          lang_code?: string;
+          code?: string;
+          lang?: string;
+          word?: string;
+          partOfSpeech?: string;
+        };
+        if (
+          typeof t.lang_code === "string" &&
+          typeof t.word === "string" &&
+          typeof t.partOfSpeech === "string"
+        ) {
+          const item = {
+            lang_code: t.lang_code,
+            code: t.code ?? t.lang_code,
+            lang: t.lang ?? t.lang_code,
+            word: t.word,
+            partOfSpeech: t.partOfSpeech,
+          };
+          const idx = form.translations.findIndex((tr) => tr.lang_code === t.lang_code);
+          if (idx >= 0) {
+            form.translations[idx] = item;
+          } else {
+            form.translations.push(item);
+          }
+        }
+        break;
+      }
     }
   }
 

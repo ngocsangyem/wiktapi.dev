@@ -1,5 +1,6 @@
 import { computed, ref } from "vue";
 import type { WordData } from "@/types/word";
+import { useAiConfigStore } from "@/stores/ai-config-store";
 
 export type AiTaskType =
   | "generate-ipa"
@@ -8,7 +9,8 @@ export type AiTaskType =
   | "generate-example"
   | "generate-synonyms"
   | "generate-antonyms"
-  | "generate-tenses";
+  | "generate-tenses"
+  | "generate-translation";
 
 export type AiTaskStatus = "idle" | "loading" | "success" | "error";
 
@@ -22,7 +24,10 @@ export interface AiTask {
   error?: string;
 }
 
-export function detectMissingData(form: WordData): AiTask[] {
+export function detectMissingData(
+  form: WordData,
+  targetLanguages: { lang_code: string; lang: string }[] = [],
+): AiTask[] {
   const tasks: AiTask[] = [];
   const word = form.word || "unknown";
 
@@ -116,17 +121,38 @@ export function detectMissingData(form: WordData): AiTask[] {
     });
   }
 
+  // Translation tasks — one per configured target language that is missing
+  const firstPOS = form.meanings[0]?.partOfSpeech || "";
+  for (const lang of targetLanguages) {
+    const hasTranslation = form.translations.some((t) => t.lang_code === lang.lang_code);
+    if (!hasTranslation) {
+      tasks.push({
+        id: `translation-${lang.lang_code}`,
+        type: "generate-translation",
+        label: `Translation (${lang.lang})`,
+        context: {
+          word,
+          targetLang: lang.lang,
+          targetLangCode: lang.lang_code,
+          partOfSpeech: firstPOS,
+        },
+        status: "idle",
+      });
+    }
+  }
+
   return tasks;
 }
 
 export function useAiTasks(form: WordData) {
-  const tasks = ref<AiTask[]>(detectMissingData(form));
+  const config = useAiConfigStore();
+  const tasks = ref<AiTask[]>(detectMissingData(form, config.targetLanguages));
   const taskCount = computed(() => tasks.value.length);
 
   function refreshTasks() {
     // Preserve status/result for existing tasks by ID
     const existing = new Map(tasks.value.map((t) => [t.id, t]));
-    const fresh = detectMissingData(form);
+    const fresh = detectMissingData(form, config.targetLanguages);
     tasks.value = fresh.map((t) => existing.get(t.id) ?? t);
   }
 
