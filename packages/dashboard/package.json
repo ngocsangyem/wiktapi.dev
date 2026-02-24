@@ -10,6 +10,7 @@
     "lint": "vp lint"
   },
   "dependencies": {
+    "@openrouter/sdk": "catalog:",
     "@pinia/colada": "^0.9",
     "@tanstack/vue-table": "^8",
     "@vee-validate/zod": "catalog:",

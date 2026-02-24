@@ -120,7 +120,7 @@ function onRetry(taskId: string) {
         @update:open="showAiConfig = $event"
       />
 
-      <WordForm ref="wordFormRef" mode="edit" :word-id="id" :initial-data="data as WordData" />
+      <WordForm ref="wordFormRef" mode="edit" :word-id="id" :initial-data="data" />
     </template>
 
     <div v-else class="text-muted-foreground">Word not found.</div>

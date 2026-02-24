@@ -54,7 +54,7 @@ export const wordDataSchema = z.object({
   phonetics: z.array(phoneticItemSchema),
   meanings: z.array(meaningSchema).min(1, "At least one meaning is required"),
   translations: z.array(translationItemSchema),
-  tenses: tensesSchema.optional(),
+  tenses: tensesSchema.nullable(),
 });
 
 export type WordFormData = z.infer<typeof wordDataSchema>;

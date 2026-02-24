@@ -112,26 +112,19 @@ export function useAiGenerate(
         break;
 
       case "generate-phonetic-us":
-        if (typeof result.text === "string") {
-          const existing = form.phonetics.findIndex((p) => p.type === "us");
-          if (existing >= 0) {
-            form.phonetics[existing].text = result.text;
+      case "generate-phonetic-uk": {
+        // AI returns the full WordPhoneticItem: { type: "us"|"uk", text: "/.../" }
+        const pt = result as { type?: string; text?: unknown };
+        if (typeof pt.type === "string" && typeof pt.text === "string") {
+          const idx = form.phonetics.findIndex((p) => p.type === pt.type);
+          if (idx >= 0) {
+            form.phonetics[idx].text = pt.text;
           } else {
-            form.phonetics.push({ type: "us", text: result.text });
+            form.phonetics.push({ type: pt.type as "us" | "uk", text: pt.text });
           }
         }
         break;
-
-      case "generate-phonetic-uk":
-        if (typeof result.text === "string") {
-          const existing = form.phonetics.findIndex((p) => p.type === "uk");
-          if (existing >= 0) {
-            form.phonetics[existing].text = result.text;
-          } else {
-            form.phonetics.push({ type: "uk", text: result.text });
-          }
-        }
-        break;
+      }
 
       case "generate-example": {
         const mi = Number(parts[1]);
@@ -158,6 +151,20 @@ export function useAiGenerate(
         if (Array.isArray(result.antonyms) && form.meanings[mi] !== undefined) {
           form.meanings[mi].antonyms = result.antonyms as string[];
         }
+        break;
+      }
+
+      case "generate-tenses": {
+        // AI returns full WordTenses object; merge with existing to preserve any already-set fields
+        const t = result as Record<string, unknown>;
+        form.tenses = {
+          base: typeof t.base === "string" ? t.base : (form.tenses?.base ?? ""),
+          past: typeof t.past === "string" ? t.past : (form.tenses?.past ?? ""),
+          present: typeof t.present === "string" ? t.present : (form.tenses?.present ?? ""),
+          future: typeof t.future === "string" ? t.future : form.tenses?.future,
+          singular: typeof t.singular === "string" ? t.singular : (form.tenses?.singular ?? ""),
+          plural: typeof t.plural === "string" ? t.plural : (form.tenses?.plural ?? ""),
+        };
         break;
       }
     }

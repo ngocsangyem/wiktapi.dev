@@ -32,7 +32,7 @@ export function useWordForm(props: WordFormProps) {
       ? [...props.initialData.meanings]
       : [{ ...DEFAULT_MEANING }],
     translations: props.initialData?.translations ? [...props.initialData.translations] : [],
-    tenses: props.initialData?.tenses,
+    tenses: props.initialData?.tenses ?? null,
   });
 
   const tensesEnabled = ref(!!props.initialData?.tenses);

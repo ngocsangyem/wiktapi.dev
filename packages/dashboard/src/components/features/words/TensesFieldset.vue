@@ -6,12 +6,12 @@ import { Switch } from "@/components/ui/switch";
 import type { WordTenses } from "@/types/word";
 
 const props = defineProps<{
-  modelValue: WordTenses | undefined;
+  modelValue?: WordTenses | null;
   enabled: boolean;
   hideToggle?: boolean;
 }>();
 const emit = defineEmits<{
-  "update:modelValue": [value: WordTenses | undefined];
+  "update:modelValue": [value: WordTenses | null];
   "update:enabled": [value: boolean];
 }>();
 

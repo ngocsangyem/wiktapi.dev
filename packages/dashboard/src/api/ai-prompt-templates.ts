@@ -21,13 +21,13 @@ export function buildPrompt(task: AiTask): PromptMessages {
     case "generate-phonetic-us":
       return {
         system: SYSTEM_PROMPT,
-        user: `Provide the ${c.type} English IPA pronunciation for the word "${c.word}". Return exactly: {"text": "/.../"}\nExample for "example" (US): {"text": "/ɪɡˈzæmpəl/"}`,
+        user: `Provide the US English IPA pronunciation for the word "${c.word}". Return exactly the phonetic entry object: {"type": "us", "text": "/.../"}\nExample for "example": {"type": "us", "text": "/ɪɡˈzæmpəl/"}`,
       };
 
     case "generate-phonetic-uk":
       return {
         system: SYSTEM_PROMPT,
-        user: `Provide the ${c.type} English IPA pronunciation for the word "${c.word}". Return exactly: {"text": "/.../"}\nExample for "example" (UK): {"text": "/ɪɡˈzɑːmpəl/"}`,
+        user: `Provide the UK English IPA pronunciation for the word "${c.word}". Return exactly the phonetic entry object: {"type": "uk", "text": "/.../"}\nExample for "example": {"type": "uk", "text": "/ɪɡˈzɑːmpəl/"}`,
       };
 
     case "generate-example":
@@ -47,5 +47,25 @@ export function buildPrompt(task: AiTask): PromptMessages {
         system: SYSTEM_PROMPT,
         user: `List 3-5 antonyms for the word "${c.word}" when used as ${c.partOfSpeech}. Return exactly: {"antonyms": ["...", "..."]}\nExample: {"antonyms": ["counterexample", "exception"]}`,
       };
+
+    case "generate-tenses": {
+      const existingNote = c.existing
+        ? `\nExisting values (keep them, only fill missing fields): ${c.existing}`
+        : "";
+      return {
+        system: SYSTEM_PROMPT,
+        user: `Generate all tenses and grammatical forms for the word "${c.word}".${existingNote}
+Return exactly the WordTenses object:
+{"base": "...", "past": "...", "present": "...", "future": "...", "singular": "...", "plural": "..."}
+Fields:
+- base: base/infinitive form (e.g. "run", "child")
+- past: simple past (e.g. "ran"; for nouns repeat base)
+- present: 3rd person singular present (e.g. "runs"; for nouns repeat singular)
+- future: future tense (e.g. "will run"; use null if not applicable)
+- singular: singular form (e.g. "run", "child")
+- plural: plural form (e.g. "runs", "children")
+Example for "run": {"base": "run", "past": "ran", "present": "runs", "future": "will run", "singular": "run", "plural": "runs"}`,
+      };
+    }
   }
 }

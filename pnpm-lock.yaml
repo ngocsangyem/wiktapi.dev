@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   default:
+    '@openrouter/sdk':
+      specifier: ^0.9.11
+      version: 0.9.11
     '@types/node':
       specifier: ^24
       version: 24.10.13
@@ -82,6 +85,9 @@ importers:
 
   packages/dashboard:
     dependencies:
+      '@openrouter/sdk':
+        specifier: 'catalog:'
+        version: 0.9.11
       '@pinia/colada':
         specifier: ^0.9
         version: 0.9.1
@@ -622,6 +628,9 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
+  '@openrouter/sdk@0.9.11':
+    resolution: {integrity: sha512-BgFu6NcIJO4a9aVjr04y3kZ8pyM71j15I+bzfVAGEvxnj+KQNIkBYQGgwrG3D+aT1QpDKLki8btcQmpaxUas6A==}
+
   '@oxc-minify/binding-android-arm-eabi@0.110.0':
     resolution: {integrity: sha512-43fMTO8/5bMlqfOiNSZNKUzIqeLIYuB9Hr1Ohyf58B1wU11S2dPGibTXOGNaWsfgHy99eeZ1bSgeIHy/fEYqbw==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -753,11 +762,18 @@ packages:
     resolution: {integrity: sha512-4vYtWXMnXM6EaweCxbJ6bISAhkNHeN33SihvuX3wrpqaSJA4ZEoW35i9mSvE74+GDf1yTeVE+aEHA+WBpjDk/g==}
     engines: {node: ^20.19.0 || >=22.12.0}
 
+  '@oxc-project/runtime@0.114.0':
+    resolution: {integrity: sha512-mVGQvr/uFJGQ3hsvgQ1sJfh79t5owyZZZtw+VaH+WhtvsmtgjT6imznB9sz2Q67Q0/4obM9mOOtQscU4aJteSg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+
   '@oxc-project/types@0.112.0':
     resolution: {integrity: sha512-m6RebKHIRsax2iCwVpYW2ErQwa4ywHJrE4sCK3/8JK8ZZAWOKXaRJFl/uP51gaVyyXlaS4+chU1nSCdzYf6QqQ==}
 
   '@oxc-project/types@0.113.0':
     resolution: {integrity: sha512-Tp3XmgxwNQ9pEN9vxgJBAqdRamHibi76iowQ38O2I4PMpcvNRQNVsU2n1x1nv9yh0XoTrGFzf7cZSGxmixxrhA==}
+
+  '@oxc-project/types@0.114.0':
+    resolution: {integrity: sha512-//nBfbzHQHvJs8oFIjv6coZ6uxQ4alLfiPe6D5vit6c4pmxATHHlVwgB1k+Hv4yoAMyncdxgRBF5K4BYWUCzvA==}
 
   '@oxc-transform/binding-android-arm-eabi@0.110.0':
     resolution: {integrity: sha512-sE9dxvqqAax1YYJ3t7j+h5ZSI9jl6dYuDfngl6ieZUrIy5P89/8JKVgAzgp8o3wQSo7ndpJvYsi1K4ZqrmbP7w==}
@@ -1509,6 +1525,63 @@ packages:
       '@arethetypeswrong/core': ^0.18.1
       '@types/node': ^20.19.0 || >=22.12.0
       '@vitejs/devtools': ^0.0.0-alpha.24
+      esbuild: ^0.27.0
+      jiti: '>=1.21.0'
+      less: ^4.0.0
+      publint: ^0.3.0
+      sass: ^1.70.0
+      sass-embedded: ^1.70.0
+      stylus: '>=0.54.8'
+      sugarss: ^5.0.0
+      terser: ^5.16.0
+      tsx: ^4.8.1
+      typescript: ^5.0.0
+      unplugin-lightningcss: ^0.4.0
+      unplugin-unused: ^0.5.0
+      yaml: ^2.4.2
+    peerDependenciesMeta:
+      '@arethetypeswrong/core':
+        optional: true
+      '@types/node':
+        optional: true
+      '@vitejs/devtools':
+        optional: true
+      esbuild:
+        optional: true
+      jiti:
+        optional: true
+      less:
+        optional: true
+      publint:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+      tsx:
+        optional: true
+      typescript:
+        optional: true
+      unplugin-lightningcss:
+        optional: true
+      unplugin-unused:
+        optional: true
+      yaml:
+        optional: true
+
+  '@voidzero-dev/vite-plus-core@0.0.0-e32b32e5.20260224-0706':
+    resolution: {integrity: sha512-MH6GdWcslL7loNUzD6YU/uWUUA59DwA+BMCgXPVSR+5HyftQUO/LccvDrHsL+V2D28ITeY1yyuqKDTFMwXO3KA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    peerDependencies:
+      '@arethetypeswrong/core': ^0.18.1
+      '@types/node': ^20.19.0 || >=22.12.0
+      '@vitejs/devtools': ^0.0.0-alpha.31
       esbuild: ^0.27.0
       jiti: '>=1.21.0'
       less: ^4.0.0
@@ -4716,6 +4789,10 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
+  '@openrouter/sdk@0.9.11':
+    dependencies:
+      zod: 4.3.6
+
   '@oxc-minify/binding-android-arm-eabi@0.110.0':
     optional: true
 
@@ -4780,9 +4857,13 @@ snapshots:
 
   '@oxc-project/runtime@0.112.0': {}
 
+  '@oxc-project/runtime@0.114.0': {}
+
   '@oxc-project/types@0.112.0': {}
 
   '@oxc-project/types@0.113.0': {}
+
+  '@oxc-project/types@0.114.0': {}
 
   '@oxc-transform/binding-android-arm-eabi@0.110.0':
     optional: true
@@ -5218,10 +5299,10 @@ snapshots:
       vite: 6.4.1(@types/node@24.10.13)(jiti@1.21.7)(lightningcss@1.31.1)(stylus@0.57.0)(yaml@2.8.2)
       vue: 3.5.28(typescript@5.9.3)
 
-  '@vitejs/plugin-vue@6.0.4(@voidzero-dev/vite-plus-core@0.0.0-b1666489.20260220-0254(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2))(vue@3.5.28(typescript@5.9.3))':
+  '@vitejs/plugin-vue@6.0.4(@voidzero-dev/vite-plus-core@0.0.0-e32b32e5.20260224-0706(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2))(vue@3.5.28(typescript@5.9.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.2
-      vite: '@voidzero-dev/vite-plus-core@0.0.0-b1666489.20260220-0254(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2)'
+      vite: '@voidzero-dev/vite-plus-core@0.0.0-e32b32e5.20260224-0706(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2)'
       vue: 3.5.28(typescript@5.9.3)
 
   '@voidzero-dev/vite-plus-core@0.0.0-3262bda4.20260210-0221(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2)':
@@ -5252,10 +5333,10 @@ snapshots:
       typescript: 5.9.3
       yaml: 2.8.2
 
-  '@voidzero-dev/vite-plus-core@0.0.0-b1666489.20260220-0254(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2)':
+  '@voidzero-dev/vite-plus-core@0.0.0-e32b32e5.20260224-0706(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2)':
     dependencies:
-      '@oxc-project/runtime': 0.112.0
-      '@oxc-project/types': 0.112.0
+      '@oxc-project/runtime': 0.114.0
+      '@oxc-project/types': 0.114.0
       lightningcss: 1.31.1
       postcss: 8.5.6
     optionalDependencies:
@@ -8084,7 +8165,7 @@ snapshots:
       '@shikijs/transformers': 3.22.0
       '@shikijs/types': 3.22.0
       '@types/markdown-it': 14.1.2
-      '@vitejs/plugin-vue': 6.0.4(@voidzero-dev/vite-plus-core@0.0.0-b1666489.20260220-0254(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2))(vue@3.5.28(typescript@5.9.3))
+      '@vitejs/plugin-vue': 6.0.4(@voidzero-dev/vite-plus-core@0.0.0-e32b32e5.20260224-0706(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2))(vue@3.5.28(typescript@5.9.3))
       '@vue/devtools-api': 8.0.6
       '@vue/shared': 3.5.28
       '@vueuse/core': 14.2.1(vue@3.5.28(typescript@5.9.3))
@@ -8093,7 +8174,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 3.22.0
-      vite: '@voidzero-dev/vite-plus-core@0.0.0-b1666489.20260220-0254(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2)'
+      vite: '@voidzero-dev/vite-plus-core@0.0.0-e32b32e5.20260224-0706(@types/node@25.2.3)(jiti@2.6.1)(stylus@0.57.0)(typescript@5.9.3)(yaml@2.8.2)'
       vue: 3.5.28(typescript@5.9.3)
     optionalDependencies:
       oxc-minify: 0.110.0

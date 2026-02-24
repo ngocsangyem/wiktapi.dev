@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { X } from "lucide-vue-next";
+import { ref } from "vue";
+import { X, Plus } from "lucide-vue-next";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +18,18 @@ const emit = defineEmits<{
   "update:open": [value: boolean];
 }>();
 
+const customModelInput = ref("");
+
 function addModel(model: string) {
-  if (!props.config.models.includes(model)) {
-    props.config.models.push(model);
+  const trimmed = model.trim();
+  if (trimmed && !props.config.models.includes(trimmed)) {
+    props.config.models.push(trimmed);
   }
+}
+
+function addCustomModel() {
+  addModel(customModelInput.value);
+  customModelInput.value = "";
 }
 
 function removeModel(index: number) {
@@ -73,8 +82,30 @@ function removeModel(index: number) {
             </div>
           </div>
 
+          <!-- Custom model input -->
+          <div class="flex gap-1 mt-2">
+            <Input
+              v-model="customModelInput"
+              placeholder="org/model-name"
+              class="text-xs h-7"
+              @keydown.enter.prevent="addCustomModel"
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              class="h-7 px-2 shrink-0"
+              :disabled="
+                !customModelInput.trim() || props.config.models.includes(customModelInput.trim())
+              "
+              @click="addCustomModel"
+            >
+              <Plus class="size-3" />
+            </Button>
+          </div>
+
           <!-- Add preset -->
-          <p class="text-xs text-muted-foreground mt-1">Add preset:</p>
+          <p class="text-xs text-muted-foreground mt-2">Add preset:</p>
           <div class="flex flex-wrap gap-1">
             <button
               v-for="m in DEFAULT_MODELS"
