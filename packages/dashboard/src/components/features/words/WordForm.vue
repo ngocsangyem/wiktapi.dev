@@ -30,6 +30,8 @@ const {
 } = useWordForm(props);
 
 const activeTab = ref("basic");
+
+defineExpose({ form });
 </script>
 
 <template>

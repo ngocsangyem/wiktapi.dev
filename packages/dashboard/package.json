@@ -17,6 +17,7 @@
     "class-variance-authority": "^0.7",
     "clsx": "^2",
     "lucide-vue-next": "^0.474",
+    "p-limit": "catalog:",
     "pinia": "^2",
     "reka-ui": "catalog:",
     "tailwind-merge": "^2",
