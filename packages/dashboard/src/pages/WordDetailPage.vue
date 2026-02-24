@@ -50,9 +50,9 @@ watch(wordFormRef, async (formComponent) => {
 });
 
 // Unwrap inner refs so template receives plain values (Pinia/ref auto-unwrap only goes one level)
-const panelTasks = computed(() => aiTasks.value?.tasks.value ?? []);
-const panelIsRunning = computed(() => aiGenerate.value?.isRunning.value ?? false);
-const panelCompletedCount = computed(() => aiGenerate.value?.completedCount.value ?? 0);
+const panelTasks = computed(() => aiTasks.value?.tasks ?? []);
+const panelIsRunning = computed(() => aiGenerate.value?.isRunning ?? false);
+const panelCompletedCount = computed(() => aiGenerate.value?.completedCount ?? 0);
 
 function onGenerateAll() {
   aiGenerate.value?.generateAll();
