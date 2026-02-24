@@ -31,7 +31,7 @@ const {
 
 const activeTab = ref("basic");
 
-defineExpose({ form });
+defineExpose({ form, handleSubmit });
 </script>
 
 <template>

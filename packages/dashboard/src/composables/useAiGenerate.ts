@@ -11,25 +11,29 @@ export function useAiGenerate(
   config: AiConfigState,
   tasks: Ref<AiTask[]>,
   form: WordData | undefined,
+  onSave?: () => void,
 ) {
   const isRunning = ref(false);
   const completedCount = ref(0);
   let abortController: AbortController | null = null;
 
-  function getAiConfig() {
-    return {
-      endpoint: config.endpoint,
-      apiKey: config.apiKey,
-      model: config.model,
-    };
+  function getBaseConfig() {
+    return { endpoint: config.endpoint, apiKey: config.apiKey };
   }
 
-  async function runTask(task: AiTask, signal: AbortSignal) {
+  /** Pick model for a task using round-robin across configured models */
+  function pickModel(taskIndex: number): string {
+    const models = config.models;
+    if (!models || models.length === 0) return "meta-llama/llama-3.3-70b-instruct:free";
+    return models[taskIndex % models.length];
+  }
+
+  async function runTask(task: AiTask, signal: AbortSignal, model: string) {
     task.status = "loading";
     const { system, user } = buildPrompt(task);
     try {
       const result = await chatCompletion(
-        getAiConfig(),
+        { ...getBaseConfig(), model },
         [
           { role: "system", content: system },
           { role: "user", content: user },
@@ -62,8 +66,18 @@ export function useAiGenerate(
 
     const pendingTasks = tasks.value?.filter((t) => t.status === "idle" || t.status === "error");
 
-    await Promise.allSettled(pendingTasks.map((t) => limit(() => runTask(t, signal))));
+    // Assign model per task via round-robin to spread load across models
+    await Promise.allSettled(
+      pendingTasks.map((t, i) => limit(() => runTask(t, signal, pickModel(i)))),
+    );
+
     isRunning.value = false;
+
+    // Auto-import: apply all results and trigger save if enabled and all tasks succeeded
+    if (config.autoImport && tasks.value.every((t) => t.status === "success")) {
+      applyAll();
+      onSave?.();
+    }
   }
 
   async function retryTask(taskId: string) {
@@ -75,7 +89,8 @@ export function useAiGenerate(
     task.error = undefined;
     task.result = undefined;
     abortController = new AbortController();
-    await runTask(task, abortController.signal);
+    const taskIndex = tasks.value.indexOf(task);
+    await runTask(task, abortController.signal, pickModel(taskIndex));
   }
 
   function cancel() {
@@ -119,7 +134,6 @@ export function useAiGenerate(
         break;
 
       case "generate-example": {
-        // id format: example-{meaningIndex}-{defIndex}
         const mi = Number(parts[1]);
         const di = Number(parts[2]);
         if (
@@ -132,7 +146,6 @@ export function useAiGenerate(
       }
 
       case "generate-synonyms": {
-        // id format: synonyms-{meaningIndex}
         const mi = Number(parts[1]);
         if (Array.isArray(result.synonyms) && form.meanings[mi] !== undefined) {
           form.meanings[mi].synonyms = result.synonyms as string[];
@@ -141,7 +154,6 @@ export function useAiGenerate(
       }
 
       case "generate-antonyms": {
-        // id format: antonyms-{meaningIndex}
         const mi = Number(parts[1]);
         if (Array.isArray(result.antonyms) && form.meanings[mi] !== undefined) {
           form.meanings[mi].antonyms = result.antonyms as string[];

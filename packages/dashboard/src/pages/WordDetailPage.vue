@@ -35,6 +35,10 @@ const aiConfig = useAiConfig();
 const aiTasks = ref<ReturnType<typeof useAiTasks> | null>(null);
 const aiGenerate = ref<ReturnType<typeof useAiGenerate> | null>(null);
 
+function onSave() {
+  (wordFormRef.value as { handleSubmit?: () => void } | undefined)?.handleSubmit?.();
+}
+
 watch(wordFormRef, async (formComponent) => {
   if (!formComponent) return;
   await nextTick();
@@ -42,8 +46,13 @@ watch(wordFormRef, async (formComponent) => {
   if (!form) return;
   const taskState = useAiTasks(form);
   aiTasks.value = taskState;
-  aiGenerate.value = useAiGenerate(aiConfig, taskState.tasks, form);
+  aiGenerate.value = useAiGenerate(aiConfig, taskState.tasks, form, onSave);
 });
+
+// Unwrap inner refs so template receives plain values (Pinia/ref auto-unwrap only goes one level)
+const panelTasks = computed(() => aiTasks.value?.tasks.value ?? []);
+const panelIsRunning = computed(() => aiGenerate.value?.isRunning.value ?? false);
+const panelCompletedCount = computed(() => aiGenerate.value?.completedCount.value ?? 0);
 
 function onGenerateAll() {
   aiGenerate.value?.generateAll();
@@ -91,15 +100,17 @@ function onRetry(taskId: string) {
 
       <AiGeneratePanel
         v-if="showAiPanel && aiTasks && aiGenerate"
-        :tasks="aiTasks.tasks"
-        :is-running="aiGenerate.isRunning"
-        :completed-count="aiGenerate.completedCount"
-        :is-configured="!!aiConfig.isConfigured"
+        :tasks="panelTasks"
+        :is-running="panelIsRunning"
+        :completed-count="panelCompletedCount"
+        :is-configured="aiConfig.isConfigured"
+        :auto-import="aiConfig.autoImport"
         @generate-all="onGenerateAll"
         @apply-all="onApplyAll"
         @apply="onApply"
         @retry="onRetry"
         @open-config="showAiConfig = true"
+        @update:auto-import="aiConfig.autoImport = $event"
       />
 
       <AiConfigSheet

@@ -3,6 +3,8 @@ import { computed } from "vue";
 import { Settings, Sparkles } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import AiTaskItem from "./AiTaskItem.vue";
 import type { AiTask } from "@/composables/useAiTasks";
 
@@ -11,6 +13,7 @@ const props = defineProps<{
   isRunning: boolean;
   completedCount: number;
   isConfigured: boolean;
+  autoImport: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -19,10 +22,11 @@ const emit = defineEmits<{
   apply: [taskId: string];
   retry: [taskId: string];
   "open-config": [];
+  "update:autoImport": [value: boolean];
 }>();
 
 const hasSuccessful = computed(() => props.tasks.some((t) => t.status === "success"));
-// Use pending count as denominator so "2/3" means 2 of the 3 tasks being run, not 2 of all tasks
+// Denominator = tasks still in progress (not yet succeeded)
 const pendingCount = computed(
   () =>
     props.tasks.filter((t) => t.status === "idle" || t.status === "error" || t.status === "loading")
@@ -60,7 +64,7 @@ const pendingCount = computed(
 
     <!-- Task list -->
     <template v-else>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
         <Button
           type="button"
           size="sm"
@@ -71,7 +75,7 @@ const pendingCount = computed(
           Generate All
         </Button>
         <Button
-          v-if="hasSuccessful"
+          v-if="hasSuccessful && !autoImport"
           type="button"
           size="sm"
           variant="outline"
@@ -82,6 +86,18 @@ const pendingCount = computed(
         <span v-if="isRunning" class="text-xs text-muted-foreground ml-auto">
           {{ completedCount }}/{{ pendingCount }} completed
         </span>
+      </div>
+
+      <!-- Auto-import toggle -->
+      <div class="flex items-center gap-2">
+        <Switch
+          :id="'auto-import'"
+          :checked="autoImport"
+          @update:checked="emit('update:autoImport', $event)"
+        />
+        <Label for="auto-import" class="text-xs cursor-pointer">
+          Auto import — apply all &amp; save when complete
+        </Label>
       </div>
 
       <div class="divide-y">
