@@ -133,7 +133,7 @@ export function useAiGenerate(
           typeof result.example === "string" &&
           form.meanings[mi]?.definitions[di] !== undefined
         ) {
-          form.meanings[mi].definitions[di].example = result.example;
+          form.meanings[mi].definitions[di].example = { text: result.example, translations: [] };
         }
         break;
       }

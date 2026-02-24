@@ -8,14 +8,6 @@ const phoneticItemSchema = z.object({
 
 export const wordPhoneticItemSchema = phoneticItemSchema;
 
-const definitionSchema = z.object({
-  definition: z.string().min(1, "Definition is required"),
-  example: z.string().optional(),
-  definitionTranslate: z.string().optional(),
-});
-
-export const wordDefinitionSchema = definitionSchema;
-
 const translationItemSchema = z.object({
   partOfSpeech: z.string().min(1, "Part of speech is required"),
   lang_code: z.string().min(1),
@@ -26,10 +18,24 @@ const translationItemSchema = z.object({
 
 export const wordTranslationItemSchema = translationItemSchema;
 
+const exampleItemSchema = z.object({
+  text: z.string().min(1, "Example text is required"),
+  translations: z.array(translationItemSchema),
+});
+
+export const wordExampleItemSchema = exampleItemSchema;
+
+const definitionSchema = z.object({
+  text: z.string().min(1, "Definition is required"),
+  example: exampleItemSchema.optional(),
+  translations: z.array(translationItemSchema),
+});
+
+export const wordDefinitionSchema = definitionSchema;
+
 const meaningSchema = z.object({
   partOfSpeech: z.string().min(1, "Part of speech is required"),
   definitions: z.array(definitionSchema).min(1, "At least one definition is required"),
-  translations: z.array(translationItemSchema),
   synonyms: z.array(z.string()).optional(),
   antonyms: z.array(z.string()).optional(),
 });

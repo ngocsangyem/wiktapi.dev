@@ -34,7 +34,6 @@ function assembleWordRecord(wordRow: WordRow, meaningRows: MeaningRow[]): WordRe
       .map((m) => ({
         partOfSpeech: m.partOfSpeech,
         definitions: safeParseJson<Definition[]>(m.definitions, "definitions"),
-        translations: safeParseJson<TranslationItem[]>(m.translations, "translations"),
         synonyms: m.synonyms ? safeParseJson<string[]>(m.synonyms, "synonyms") : [],
         antonyms: m.antonyms ? safeParseJson<string[]>(m.antonyms, "antonyms") : [],
       })) as Meaning[],

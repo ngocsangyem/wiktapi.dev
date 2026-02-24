@@ -13,8 +13,13 @@ const BASE_WORD: WordData = {
   meanings: [
     {
       partOfSpeech: "noun",
-      definitions: [{ definition: "A representative form.", example: "This is an example." }],
-      translations: [],
+      definitions: [
+        {
+          text: "A representative form.",
+          example: { text: "This is an example.", translations: [] },
+          translations: [],
+        },
+      ],
       synonyms: ["instance", "case"],
       antonyms: ["exception"],
     },
@@ -68,10 +73,13 @@ describe("detectMissingData", () => {
         {
           partOfSpeech: "noun",
           definitions: [
-            { definition: "First definition" },
-            { definition: "Second definition", example: "Already has example." },
+            { text: "First definition", translations: [] },
+            {
+              text: "Second definition",
+              example: { text: "Already has example.", translations: [] },
+              translations: [],
+            },
           ],
-          translations: [],
           synonyms: ["a"],
           antonyms: ["b"],
         },
@@ -89,8 +97,13 @@ describe("detectMissingData", () => {
       meanings: [
         {
           partOfSpeech: "noun",
-          definitions: [{ definition: "A definition.", example: "Example." }],
-          translations: [],
+          definitions: [
+            {
+              text: "A definition.",
+              example: { text: "Example.", translations: [] },
+              translations: [],
+            },
+          ],
           synonyms: [],
           antonyms: undefined,
         },
@@ -107,15 +120,13 @@ describe("detectMissingData", () => {
       meanings: [
         {
           partOfSpeech: "noun",
-          definitions: [{ definition: "Def 1" }],
-          translations: [],
+          definitions: [{ text: "Def 1", translations: [] }],
           synonyms: [],
           antonyms: [],
         },
         {
           partOfSpeech: "verb",
-          definitions: [{ definition: "Def 2" }],
-          translations: [],
+          definitions: [{ text: "Def 2", translations: [] }],
           synonyms: [],
           antonyms: [],
         },

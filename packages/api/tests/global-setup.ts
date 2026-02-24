@@ -72,10 +72,9 @@ const SAMPLE_MEANING_ROWS = [
     word_id: "test-chat",
     partOfSpeech: "noun",
     definitions: JSON.stringify([
-      { definition: "an informal conversation" },
-      { definition: "a small songbird of the Old World" },
+      { text: "an informal conversation", translations: [] },
+      { text: "a small songbird of the Old World", translations: [] },
     ]),
-    translations: JSON.stringify([]),
     synonyms: JSON.stringify(["talk", "conversation"]),
     antonyms: null,
     sort_order: 0,
@@ -85,9 +84,12 @@ const SAMPLE_MEANING_ROWS = [
     word_id: "test-chat",
     partOfSpeech: "verb",
     definitions: JSON.stringify([
-      { definition: "to converse casually", example: "They chat online." },
+      {
+        text: "to converse casually",
+        example: { text: "They chat online.", translations: [] },
+        translations: [],
+      },
     ]),
-    translations: JSON.stringify([]),
     synonyms: null,
     antonyms: null,
     sort_order: 1,
@@ -96,8 +98,7 @@ const SAMPLE_MEANING_ROWS = [
     id: "meaning-3",
     word_id: "test-run",
     partOfSpeech: "noun",
-    definitions: JSON.stringify([{ definition: "an act of running" }]),
-    translations: JSON.stringify([]),
+    definitions: JSON.stringify([{ text: "an act of running", translations: [] }]),
     synonyms: JSON.stringify(["sprint", "dash"]),
     antonyms: null,
     sort_order: 0,
@@ -107,11 +108,14 @@ const SAMPLE_MEANING_ROWS = [
     word_id: "test-run",
     partOfSpeech: "verb",
     definitions: JSON.stringify([
-      { definition: "to move quickly on foot", example: "I run every day." },
-    ]),
-    translations: JSON.stringify([
-      { partOfSpeech: "verb", lang_code: "fr", code: "fr", lang: "French", word: "courir" },
-      { partOfSpeech: "verb", lang_code: "vi", code: "vi", lang: "Vietnamese", word: "chạy" },
+      {
+        text: "to move quickly on foot",
+        example: { text: "I run every day.", translations: [] },
+        translations: [
+          { partOfSpeech: "verb", lang_code: "fr", code: "fr", lang: "French", word: "courir" },
+          { partOfSpeech: "verb", lang_code: "vi", code: "vi", lang: "Vietnamese", word: "chạy" },
+        ],
+      },
     ]),
     synonyms: null,
     antonyms: null,
@@ -122,9 +126,8 @@ const SAMPLE_MEANING_ROWS = [
     word_id: "test-tech",
     partOfSpeech: "noun",
     definitions: JSON.stringify([
-      { definition: "the application of scientific knowledge for practical purposes" },
+      { text: "the application of scientific knowledge for practical purposes", translations: [] },
     ]),
-    translations: JSON.stringify([]),
     synonyms: JSON.stringify(["tech", "innovation"]),
     antonyms: null,
     sort_order: 0,

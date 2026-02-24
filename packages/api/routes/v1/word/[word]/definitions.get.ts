@@ -38,12 +38,19 @@ defineRouteMeta({
                         items: {
                           type: "object",
                           properties: {
-                            definition: { type: "string" },
-                            example: { type: "string", nullable: true },
+                            text: { type: "string" },
+                            example: {
+                              type: "object",
+                              nullable: true,
+                              properties: {
+                                text: { type: "string" },
+                                translations: { type: "array", items: { type: "object" } },
+                              },
+                            },
+                            translations: { type: "array", items: { type: "object" } },
                           },
                         },
                       },
-                      translate: { type: "string", nullable: true },
                       synonyms: { type: "array", items: { type: "string" } },
                       antonyms: { type: "array", items: { type: "string" } },
                     },

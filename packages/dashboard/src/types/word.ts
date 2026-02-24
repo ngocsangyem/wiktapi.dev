@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type {
   wordPhoneticItemSchema,
+  wordExampleItemSchema,
   wordDefinitionSchema,
   wordTranslationItemSchema,
   wordMeaningSchema,
@@ -9,6 +10,8 @@ import type {
 } from "@/schemas/word";
 
 export type WordPhoneticItem = z.infer<typeof wordPhoneticItemSchema>;
+
+export type WordExampleItem = z.infer<typeof wordExampleItemSchema>;
 
 export type WordDefinition = z.infer<typeof wordDefinitionSchema>;
 

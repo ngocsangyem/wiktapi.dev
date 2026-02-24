@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import type { WordMeaning, WordDefinition } from "@/types/word";
+import TranslationFieldset from "@/components/features/words/TranslationFieldset.vue";
+import type { WordMeaning, WordDefinition, WordTranslationItem } from "@/types/word";
 
 const props = defineProps<{ modelValue: WordMeaning; index: number }>();
 const emit = defineEmits<{
@@ -23,14 +24,14 @@ function updateField<K extends keyof WordMeaning>(field: K, value: WordMeaning[K
   emit("update:modelValue", { ...meaning.value, [field]: value });
 }
 
-function updateDefinition(i: number, field: keyof WordDefinition, value: string) {
+function updateDefinitionField(i: number, field: string, value: unknown) {
   const defs = [...meaning.value.definitions];
   defs[i] = { ...defs[i]!, [field]: value };
   updateField("definitions", defs);
 }
 
 function addDefinition() {
-  updateField("definitions", [...meaning.value.definitions, { definition: "" }]);
+  updateField("definitions", [...meaning.value.definitions, { text: "", translations: [] }]);
 }
 
 function removeDefinition(i: number) {
@@ -38,6 +39,50 @@ function removeDefinition(i: number) {
     "definitions",
     meaning.value.definitions.filter((_, idx) => idx !== i),
   );
+}
+
+function updateExampleText(defIndex: number, text: string) {
+  const defs = [...meaning.value.definitions];
+  const def = { ...defs[defIndex]! };
+  if (text) {
+    def.example = { text, translations: def.example?.translations ?? [] };
+  } else {
+    def.example = undefined;
+  }
+  defs[defIndex] = def;
+  updateField("definitions", defs);
+}
+
+function addDefinitionTranslation(defIndex: number) {
+  const defs = [...meaning.value.definitions];
+  const def = { ...defs[defIndex]! };
+  def.translations = [
+    ...def.translations,
+    { lang: "", lang_code: "", code: "", word: "", partOfSpeech: "" },
+  ];
+  defs[defIndex] = def;
+  updateField("definitions", defs);
+}
+
+function removeDefinitionTranslation(defIndex: number, transIndex: number) {
+  const defs = [...meaning.value.definitions];
+  const def = { ...defs[defIndex]! };
+  def.translations = def.translations.filter((_, idx) => idx !== transIndex);
+  defs[defIndex] = def;
+  updateField("definitions", defs);
+}
+
+function updateDefinitionTranslation(
+  defIndex: number,
+  transIndex: number,
+  value: WordTranslationItem,
+) {
+  const defs = [...meaning.value.definitions];
+  const def = { ...defs[defIndex]! };
+  def.translations = [...def.translations];
+  def.translations[transIndex] = value;
+  defs[defIndex] = def;
+  updateField("definitions", defs);
 }
 
 function updateList(field: "synonyms" | "antonyms", csv: string) {
@@ -110,15 +155,16 @@ function updateList(field: "synonyms" | "antonyms", csv: string) {
         <div
           v-for="(def, i) in meaning.definitions"
           :key="i"
-          class="rounded-md border p-3 space-y-2"
+          class="rounded-md border p-3 space-y-3"
         >
+          <!-- Definition text -->
           <div class="flex items-start gap-2">
             <Textarea
-              :model-value="def.definition"
+              :model-value="def.text"
               placeholder="Definition..."
               class="flex-1 min-h-[60px]"
               @input="
-                updateDefinition(i, 'definition', ($event.target as HTMLTextAreaElement).value)
+                updateDefinitionField(i, 'text', ($event.target as HTMLTextAreaElement).value)
               "
             />
             <Button
@@ -132,11 +178,42 @@ function updateList(field: "synonyms" | "antonyms", csv: string) {
               <X class="size-3" />
             </Button>
           </div>
+
+          <!-- Example sentence -->
           <Input
-            :model-value="def.example ?? ''"
+            :model-value="def.example?.text ?? ''"
             placeholder="Example sentence... (optional)"
-            @input="updateDefinition(i, 'example', ($event.target as HTMLInputElement).value)"
+            @input="updateExampleText(i, ($event.target as HTMLInputElement).value)"
           />
+
+          <!-- Per-definition translations -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <Label class="text-xs text-muted-foreground">
+                Definition translations
+                <span v-if="def.translations.length" class="ml-1"
+                  >({{ def.translations.length }})</span
+                >
+              </Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                class="h-6 text-xs px-2"
+                @click="addDefinitionTranslation(i)"
+              >
+                <Plus class="size-3 mr-1" /> Add
+              </Button>
+            </div>
+            <TranslationFieldset
+              v-for="(trans, ti) in def.translations"
+              :key="ti"
+              :model-value="trans"
+              :index="ti"
+              @update:model-value="updateDefinitionTranslation(i, ti, $event)"
+              @remove="removeDefinitionTranslation(i, ti)"
+            />
+          </div>
         </div>
       </div>
 

@@ -4,8 +4,8 @@ export const WORDS_INSERT_SQL = `
 `;
 
 export const MEANINGS_INSERT_SQL = `
-  INSERT INTO meanings (id, word_id, partOfSpeech, definitions, translations, synonyms, antonyms, sort_order)
-  VALUES (@id, @word_id, @partOfSpeech, @definitions, @translations, @synonyms, @antonyms, @sort_order)
+  INSERT INTO meanings (id, word_id, partOfSpeech, definitions, synonyms, antonyms, sort_order)
+  VALUES (@id, @word_id, @partOfSpeech, @definitions, @synonyms, @antonyms, @sort_order)
 `;
 
 export const WORDS_TABLE_DDL = `
@@ -27,8 +27,7 @@ export const MEANINGS_TABLE_DDL = `
     id           TEXT PRIMARY KEY,
     word_id      TEXT NOT NULL REFERENCES words(id) ON DELETE CASCADE,
     partOfSpeech TEXT NOT NULL,
-    definitions  TEXT NOT NULL,   -- JSON: Definition[]
-    translations TEXT NOT NULL,   -- JSON: TranslationItem[] (per-meaning, for future use)
+    definitions  TEXT NOT NULL,   -- JSON: Definition[] (each has text, example?, translations)
     synonyms     TEXT,            -- JSON: string[]
     antonyms     TEXT,            -- JSON: string[]
     sort_order   INTEGER NOT NULL DEFAULT 0

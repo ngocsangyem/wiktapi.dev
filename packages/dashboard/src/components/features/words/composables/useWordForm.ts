@@ -12,8 +12,7 @@ export type WordFormProps = {
 
 const DEFAULT_MEANING: WordMeaning = {
   partOfSpeech: "",
-  definitions: [{ definition: "" }],
-  translations: [],
+  definitions: [{ text: "", translations: [] }],
   synonyms: [],
   antonyms: [],
 };

@@ -72,12 +72,12 @@ export function detectMissingData(
 
     // Per-definition examples
     meaning.definitions.forEach((def, di) => {
-      if (!def.example) {
+      if (!def.example?.text) {
         tasks.push({
           id: `example-${mi}-${di}`,
           type: "generate-example",
           label: `Example for meaning ${mi + 1}, def ${di + 1}`,
-          context: { word, partOfSpeech, definition: def.definition },
+          context: { word, partOfSpeech, definition: def.text },
           status: "idle",
         });
       }

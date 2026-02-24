@@ -4,10 +4,15 @@ export interface PhoneticItem {
   audioUrl?: string | null;
 }
 
+export interface ExampleItem {
+  text: string;
+  translations: TranslationItem[];
+}
+
 export interface Definition {
-  definition: string;
-  example?: string;
-  definitionTranslate?: string;
+  text: string;
+  example?: ExampleItem;
+  translations: TranslationItem[];
 }
 
 export interface TranslationItem {
@@ -21,7 +26,6 @@ export interface TranslationItem {
 export interface Meaning {
   partOfSpeech: string;
   definitions: Definition[];
-  translations: TranslationItem[];
   synonyms?: string[];
   antonyms?: string[];
 }
@@ -74,7 +78,6 @@ export interface MeaningRow {
   word_id: string;
   partOfSpeech: string;
   definitions: string; // JSON: Definition[]
-  translations: string; // JSON: TranslationItem[]
   synonyms: string | null;
   antonyms: string | null;
   sort_order: number;

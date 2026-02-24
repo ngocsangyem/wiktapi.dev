@@ -27,7 +27,6 @@ function fetchWrittenWord(word: string): WordRecord {
       .map((m) => ({
         partOfSpeech: m.partOfSpeech,
         definitions: JSON.parse(m.definitions),
-        translations: JSON.parse(m.translations),
         synonyms: m.synonyms ? JSON.parse(m.synonyms) : [],
         antonyms: m.antonyms ? JSON.parse(m.antonyms) : [],
       })),
@@ -86,7 +85,6 @@ function runInsertWord(wordId: string, data: WordData, createdAt: string): void 
       word_id: wordId,
       partOfSpeech: meaning.partOfSpeech,
       definitions: JSON.stringify(meaning.definitions),
-      translations: JSON.stringify(meaning.translations ?? []),
       synonyms: meaning.synonyms?.length ? JSON.stringify(meaning.synonyms) : null,
       antonyms: meaning.antonyms?.length ? JSON.stringify(meaning.antonyms) : null,
       sort_order: index,

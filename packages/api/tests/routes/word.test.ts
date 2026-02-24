@@ -55,7 +55,18 @@ describe("GET /v1/word/{word}/definitions", () => {
     const event = createTestEvent({ word: "chat" });
     const result = definitionsHandler(event);
 
-    expect(result.meanings[0]?.definitions[0]?.definition).toBeTruthy();
+    expect(result.meanings[0]?.definitions[0]?.text).toBeTruthy();
+  });
+
+  it("includes per-definition translations for verb meanings of 'run'", async () => {
+    const event = createTestEvent({ word: "run" });
+    const result = definitionsHandler(event);
+
+    const verbMeaning = result.meanings.find(
+      (m: { partOfSpeech: string }) => m.partOfSpeech === "verb",
+    );
+    expect(Array.isArray(verbMeaning?.definitions[0]?.translations)).toBe(true);
+    expect(verbMeaning?.definitions[0]?.translations.length).toBeGreaterThan(0);
   });
 
   it("includes synonyms on meanings that have them", async () => {
