@@ -22,7 +22,7 @@ import { createReadStream, statSync } from "node:fs";
 import { readdir, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline";
-import type { Meaning, PhoneticItem, Tenses, TranslationItem } from "../utils/types.ts";
+import type { Definition, Meaning, PhoneticItem, Tenses, TranslationItem } from "../utils/types.ts";
 
 const DATA_DIR = resolve("./data");
 const JSONL_DIR = resolve(DATA_DIR, "jsonl");
@@ -103,16 +103,18 @@ function extractLinkageWords(items: unknown): string[] {
 
 function extractMeaning(parsed: Record<string, unknown>): Meaning {
   const senses = (parsed.senses as Record<string, unknown>[] | undefined) ?? [];
-  const definitions = senses
+  const definitions: Definition[] = senses
     .map((s) => {
       const glosses = s.glosses as string[] | undefined;
       const examples = s.examples as Record<string, unknown>[] | undefined;
+      const exampleText = examples?.[0]?.text as string | undefined;
       return {
-        definition: glosses?.[0] ?? "",
-        example: examples?.[0]?.text as string | undefined,
+        text: glosses?.[0] ?? "",
+        example: exampleText ? { text: exampleText, translations: [] } : undefined,
+        translations: [],
       };
     })
-    .filter((d) => d.definition);
+    .filter((d) => d.text);
 
   const synonyms = [
     ...extractLinkageWords(parsed.synonyms),
@@ -126,7 +128,6 @@ function extractMeaning(parsed: Record<string, unknown>): Meaning {
   return {
     partOfSpeech: (parsed.pos as string | null) ?? "unknown",
     definitions,
-    translations: [], // stored per-entry via extractTranslations
     synonyms: [...new Set(synonyms)],
     antonyms: [...new Set(antonyms)],
   };
@@ -153,22 +154,30 @@ function extractTranslations(parsed: Record<string, unknown>): TranslationItem[]
 function extractTenses(forms: Record<string, unknown>[], baseWord: string): Tenses | null {
   if (forms.length === 0) return null;
 
-  const getForm = (...tags: string[]): string => {
+  const getForm = (...tags: string[]): string | null => {
     const match = forms.find((f) => {
       const formTags = (f.tags as string[] | undefined) ?? [];
       return tags.every((t) => formTags.includes(t));
     });
-    return (match?.form as string | undefined) ?? "";
+    return (match?.form as string | undefined) ?? null;
   };
 
-  const past = getForm("past");
-  const present = getForm("present") || getForm("present", "participle");
+  const pastSimple = getForm("past");
+  const pastParticiple = getForm("past", "participle");
+  const presentParticiple = getForm("present", "participle") || getForm("present");
   const singular = getForm("singular") || getForm("third-person", "singular", "present");
   const plural = getForm("plural");
 
-  if (!past && !present && !singular && !plural) return null;
+  if (!pastSimple && !presentParticiple && !singular && !plural) return null;
 
-  return { base: baseWord, past, present, future: "", singular, plural };
+  return {
+    base_form: baseWord,
+    past_simple: pastSimple,
+    past_participle: pastParticiple,
+    present_simple: { singular, plural },
+    present_participle: presentParticiple,
+    future: null,
+  };
 }
 
 /** Words whose first character is not a Unicode letter are skipped (e.g. "--hehⁿ", "++good", "---"). */

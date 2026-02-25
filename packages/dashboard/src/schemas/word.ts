@@ -42,13 +42,18 @@ const meaningSchema = z.object({
 
 export const wordMeaningSchema = meaningSchema;
 
+const presentSimpleSchema = z.object({
+  singular: z.string().nullable(),
+  plural: z.string().nullable(),
+});
+
 const tensesSchema = z.object({
-  base: z.string().min(1),
-  past: z.string().min(1),
-  present: z.string().min(1),
-  future: z.string().optional(),
-  singular: z.string().min(1),
-  plural: z.string().min(1),
+  base_form: z.string().nullable(),
+  past_simple: z.string().nullable(),
+  past_participle: z.string().nullable(),
+  present_simple: presentSimpleSchema,
+  present_participle: z.string().nullable(),
+  future: z.string().nullable(),
 });
 
 export const wordTensesSchema = tensesSchema;

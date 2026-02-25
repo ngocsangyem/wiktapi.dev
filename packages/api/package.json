@@ -14,6 +14,7 @@
     "index:staging": "node scripts/build_indexes.ts --output data/wiktionary.db.new",
     "swap": "mv data/wiktionary.db.new data/wiktionary.db",
     "migrate": "tsx scripts/migrate_schema.ts",
+    "migrate:tenses": "npx tsx scripts/migrate-tenses-schema.ts",
     "migrate:translations": "tsx scripts/migrate-translations-to-definitions.ts",
     "cleanup": "node scripts/cleanup_words.ts",
     "cleanup:execute": "node scripts/cleanup_words.ts --execute"

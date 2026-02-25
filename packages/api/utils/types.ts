@@ -30,13 +30,18 @@ export interface Meaning {
   antonyms?: string[];
 }
 
+export interface PresentSimple {
+  singular: string | null;
+  plural: string | null;
+}
+
 export interface Tenses {
-  base: string;
-  past: string;
-  present: string;
-  future?: string;
-  singular: string;
-  plural: string;
+  base_form: string | null;
+  past_simple: string | null;
+  past_participle: string | null;
+  present_simple: PresentSimple;
+  present_participle: string | null;
+  future: string | null;
 }
 
 export interface ConfusableWord {

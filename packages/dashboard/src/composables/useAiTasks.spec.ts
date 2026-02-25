@@ -25,12 +25,12 @@ const BASE_WORD: WordData = {
     },
   ],
   tenses: {
-    base: "example",
-    past: "exampled",
-    present: "examples",
+    base_form: "example",
+    past_simple: "exampled",
+    past_participle: "exampled",
+    present_simple: { singular: "examples", plural: "example" },
+    present_participle: "exampling",
     future: "will example",
-    singular: "example",
-    plural: "examples",
   },
   translations: [],
 };
@@ -64,6 +64,18 @@ describe("detectMissingData", () => {
     const tasks = detectMissingData(form);
     expect(tasks.some((t) => t.type === "generate-phonetic-uk")).toBe(true);
     expect(tasks.some((t) => t.type === "generate-phonetic-us")).toBe(false);
+  });
+
+  it("detects missing past_participle in tenses", () => {
+    const form: WordData = {
+      ...BASE_WORD,
+      tenses: {
+        ...BASE_WORD.tenses!,
+        past_participle: null,
+      },
+    };
+    const tasks = detectMissingData(form);
+    expect(tasks.some((t) => t.type === "generate-tenses")).toBe(true);
   });
 
   it("detects missing example for each definition", () => {

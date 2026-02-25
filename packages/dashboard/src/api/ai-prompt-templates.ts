@@ -54,17 +54,18 @@ export function buildPrompt(task: AiTask): PromptMessages {
         : "";
       return {
         system: SYSTEM_PROMPT,
-        user: `Generate all tenses and grammatical forms for the word "${c.word}".${existingNote}
-Return exactly the WordTenses object:
-{"base": "...", "past": "...", "present": "...", "future": "...", "singular": "...", "plural": "..."}
+        user: `Generate all tenses and grammatical forms for the English word "${c.word}".${existingNote}
+Return exactly this JSON structure:
+{"base_form": "...", "past_simple": "...", "past_participle": "...", "present_simple": {"singular": "...", "plural": "..."}, "present_participle": "...", "future": "..."}
 Fields:
-- base: base/infinitive form (e.g. "run", "child")
-- past: simple past (e.g. "ran"; for nouns repeat base)
-- present: 3rd person singular present (e.g. "runs"; for nouns repeat singular)
+- base_form: base/infinitive form (e.g. "run")
+- past_simple: simple past (e.g. "ran")
+- past_participle: past participle (e.g. "run")
+- present_simple.singular: 3rd person singular present (e.g. "runs")
+- present_simple.plural: base plural present (e.g. "run")
+- present_participle: present participle / -ing form (e.g. "running")
 - future: future tense (e.g. "will run"; use null if not applicable)
-- singular: singular form (e.g. "run", "child")
-- plural: plural form (e.g. "runs", "children")
-Example for "run": {"base": "run", "past": "ran", "present": "runs", "future": "will run", "singular": "run", "plural": "runs"}`,
+Example for "run": {"base_form": "run", "past_simple": "ran", "past_participle": "run", "present_simple": {"singular": "runs", "plural": "run"}, "present_participle": "running", "future": "will run"}`,
       };
     }
 

@@ -108,14 +108,19 @@ export function detectMissingData(
 
   // Tenses — generate all forms when any required field is missing
   const tenses = form.tenses;
-  const requiredTenseFields = ["base", "past", "present", "singular", "plural"] as const;
-  const hasMissingTenses = !tenses || requiredTenseFields.some((f) => !tenses[f]);
+  const hasMissingTenses =
+    !tenses ||
+    !tenses.base_form ||
+    !tenses.past_simple ||
+    !tenses.past_participle ||
+    !tenses.present_simple?.singular ||
+    !tenses.present_simple?.plural ||
+    !tenses.present_participle;
   if (hasMissingTenses) {
     tasks.push({
       id: "tenses",
       type: "generate-tenses",
       label: "Tenses & forms",
-      // Include existing values so AI can fill only what's missing
       context: { word, existing: tenses ? JSON.stringify(tenses) : "" },
       status: "idle",
     });

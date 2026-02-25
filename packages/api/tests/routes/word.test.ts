@@ -154,9 +154,11 @@ describe("GET /v1/word/{word}/tenses", () => {
 
     expect(result.edition).toBe("en");
     expect(result.tenses).not.toBeNull();
-    expect(result.tenses?.base).toBe("run");
-    expect(result.tenses?.past).toBe("ran");
-    expect(result.tenses?.singular).toBe("runs");
+    expect(result.tenses?.base_form).toBe("run");
+    expect(result.tenses?.past_simple).toBe("ran");
+    expect(result.tenses?.past_participle).toBe("run");
+    expect(result.tenses?.present_simple.singular).toBe("runs");
+    expect(result.tenses?.present_participle).toBe("running");
   });
 
   it("returns null tenses for uninflected words", async () => {

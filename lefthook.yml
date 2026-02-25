@@ -11,4 +11,5 @@ pre-commit:
         - ".opencode/**"
         - ".ai-devkit/**"
         - "**/*.test.ts"
+        - "packages/api/scripts/**"
       run: vp lint --type-aware --type-check {staged_files}

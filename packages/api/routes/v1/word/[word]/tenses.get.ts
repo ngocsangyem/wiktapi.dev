@@ -7,7 +7,7 @@ defineRouteMeta({
     tags: ["Word"],
     summary: "Word tenses",
     description:
-      "Returns inflected tense forms for the word (base, past, present, future, singular, plural). Returns null if the word has no known tenses.",
+      "Returns inflected tense forms for the word (base_form, past_simple, past_participle, present_simple, present_participle, future). Returns null if the word has no known tenses.",
     parameters: [
       {
         in: "path",
@@ -31,12 +31,18 @@ defineRouteMeta({
                   type: "object",
                   nullable: true,
                   properties: {
-                    base: { type: "string" },
-                    past: { type: "string" },
-                    present: { type: "string" },
-                    future: { type: "string" },
-                    singular: { type: "string" },
-                    plural: { type: "string" },
+                    base_form: { type: "string", nullable: true },
+                    past_simple: { type: "string", nullable: true },
+                    past_participle: { type: "string", nullable: true },
+                    present_simple: {
+                      type: "object",
+                      properties: {
+                        singular: { type: "string", nullable: true },
+                        plural: { type: "string", nullable: true },
+                      },
+                    },
+                    present_participle: { type: "string", nullable: true },
+                    future: { type: "string", nullable: true },
                   },
                 },
               },

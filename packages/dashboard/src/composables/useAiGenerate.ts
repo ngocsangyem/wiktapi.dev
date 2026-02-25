@@ -155,15 +155,27 @@ export function useAiGenerate(
       }
 
       case "generate-tenses": {
-        // AI returns full WordTenses object; merge with existing to preserve any already-set fields
         const t = result as Record<string, unknown>;
+        const ps = (t.present_simple as Record<string, unknown>) ?? {};
+        const existingPs = form.tenses?.present_simple ?? { singular: null, plural: null };
         form.tenses = {
-          base: typeof t.base === "string" ? t.base : (form.tenses?.base ?? ""),
-          past: typeof t.past === "string" ? t.past : (form.tenses?.past ?? ""),
-          present: typeof t.present === "string" ? t.present : (form.tenses?.present ?? ""),
-          future: typeof t.future === "string" ? t.future : form.tenses?.future,
-          singular: typeof t.singular === "string" ? t.singular : (form.tenses?.singular ?? ""),
-          plural: typeof t.plural === "string" ? t.plural : (form.tenses?.plural ?? ""),
+          base_form:
+            typeof t.base_form === "string" ? t.base_form : (form.tenses?.base_form ?? null),
+          past_simple:
+            typeof t.past_simple === "string" ? t.past_simple : (form.tenses?.past_simple ?? null),
+          past_participle:
+            typeof t.past_participle === "string"
+              ? t.past_participle
+              : (form.tenses?.past_participle ?? null),
+          present_simple: {
+            singular: typeof ps.singular === "string" ? ps.singular : existingPs.singular,
+            plural: typeof ps.plural === "string" ? ps.plural : existingPs.plural,
+          },
+          present_participle:
+            typeof t.present_participle === "string"
+              ? t.present_participle
+              : (form.tenses?.present_participle ?? null),
+          future: typeof t.future === "string" ? t.future : (form.tenses?.future ?? null),
         };
         break;
       }
