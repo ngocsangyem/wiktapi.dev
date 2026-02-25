@@ -8,7 +8,7 @@ A multilingual REST API for structured dictionary data, built on [kaikki.org](ht
 
 The existing `en.wiktionary.org/api/rest_v1/` is English-only and returns HTML blobs. This API serves clean JSON for words across 100+ languages, with support for multiple Wiktionary editions (en, fr, de, …).
 
-**Stack:** Nitro v3 · SQLite (`better-sqlite3`) · TypeScript · VitePress docs
+**Stack:** Nitro v3 · SQLite (`better-sqlite3`) · TypeScript · Vue 3 · VitePress docs
 
 ---
 
@@ -47,8 +47,9 @@ For clients upgrading from v1:
 
 ```
 packages/
-├── api/    # Nitro server — api.wordictapi.dev
-└── docs/   # VitePress docs site — wordictapi.dev
+├── api/        # Nitro server — api.wordictapi.dev
+├── dashboard/  # Vue 3 admin dashboard — manage words, monitor AI generation
+└── docs/       # VitePress docs site — wordictapi.dev
 ```
 
 ---
@@ -67,6 +68,15 @@ vp run @wordictapi/api#build
 ```
 
 Interactive API explorer (Scalar) and raw OpenAPI spec are available at `/_scalar` and `/_openapi.json` in dev and production.
+
+### Dashboard
+
+```bash
+vp run @wordictapi/dashboard#dev    # http://localhost:5174
+vp run @wordictapi/dashboard#build
+```
+
+Admin dashboard for managing words and monitoring AI content generation. Requires `VITE_ADMIN_KEY` env var (must match `ADMIN_API_KEY` on the API server).
 
 ### Docs
 
@@ -93,6 +103,24 @@ vp run @wordictapi/api#import -- --edition en --fresh    # drop and recreate tab
 ```
 
 The database is written to `packages/api/data/wiktionary.db`. Override with the `DATA_PATH` env var.
+
+### Bulk AI content generation
+
+Generate missing fields (IPA, tenses, translations, examples, synonyms, antonyms) for all words:
+
+```bash
+vp run @wordictapi/api#bulk-generate \
+  --task-types generate-ipa,generate-tenses,generate-translation \
+  --target-langs vi:Vietnamese,fr:French \
+  --model google/gemini-2.0-flash-001 \
+  --rpm 30 \
+  --concurrency 3
+
+# Resume an interrupted run
+vp run @wordictapi/api#bulk-generate -- --job-id <uuid>
+```
+
+Requires `OPENROUTER_API_KEY` env var. The dashboard's **Bulk Generate** page monitors job progress in real time.
 
 ---
 
@@ -122,6 +150,17 @@ GET /v1/categories
 ### Schema-based filtering
 
 Words are now organized by **category** rather than Wiktionary editions and language codes. All queries return structured data with phonetics, meanings (definitions), translations, and tenses.
+
+### Admin routes
+
+All admin routes require an `X-Admin-Key` header matching the `ADMIN_API_KEY` env var.
+
+```
+GET  /v1/admin/bulk-generate/status          # monitor latest job progress
+GET  /v1/admin/ai-failures                   # paginated failure list (?jobId, ?taskType, ?word)
+POST /v1/admin/ai-failures/{id}/retry        # inline retry of a single failure
+POST /v1/admin/ai-failures/bulk-retry        # create a retry job for all failures
+```
 
 ---
 
