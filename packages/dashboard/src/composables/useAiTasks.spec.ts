@@ -183,4 +183,73 @@ describe("detectMissingData", () => {
     const tasks = detectMissingData(BASE_WORD);
     expect(tasks.some((t) => t.type === "generate-translation")).toBe(false);
   });
+
+  it("detects missing definition translation per target language", () => {
+    const langs = [{ lang_code: "vi", lang: "Vietnamese" }];
+    const tasks = detectMissingData(BASE_WORD, langs);
+    const defTrTasks = tasks.filter((t) => t.type === "generate-definition-translation");
+    expect(defTrTasks.length).toBeGreaterThan(0);
+    expect(defTrTasks[0].id).toBe("def-tr-0-0-vi");
+    expect(defTrTasks[0].context.mi).toBe("0");
+    expect(defTrTasks[0].context.di).toBe("0");
+    expect(defTrTasks[0].context.targetLangCode).toBe("vi");
+  });
+
+  it("skips definition translation when already present for that language", () => {
+    const langs = [{ lang_code: "vi", lang: "Vietnamese" }];
+    const form: WordData = {
+      ...BASE_WORD,
+      meanings: [
+        {
+          ...BASE_WORD.meanings[0],
+          definitions: [
+            {
+              ...BASE_WORD.meanings[0].definitions[0],
+              translations: [
+                {
+                  lang_code: "vi",
+                  code: "vi",
+                  lang: "Vietnamese",
+                  word: "ví dụ",
+                  partOfSpeech: "danh từ",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const tasks = detectMissingData(form, langs);
+    expect(tasks.some((t) => t.type === "generate-definition-translation")).toBe(false);
+  });
+
+  it("detects missing example translation per target language", () => {
+    const langs = [{ lang_code: "vi", lang: "Vietnamese" }];
+    const tasks = detectMissingData(BASE_WORD, langs);
+    const exTrTasks = tasks.filter((t) => t.type === "generate-example-translation");
+    expect(exTrTasks.length).toBeGreaterThan(0);
+    expect(exTrTasks[0].id).toBe("ex-tr-0-0-vi");
+    expect(exTrTasks[0].context.example).toBe("This is an example.");
+  });
+
+  it("skips example translation task when no example exists", () => {
+    const langs = [{ lang_code: "vi", lang: "Vietnamese" }];
+    const form: WordData = {
+      ...BASE_WORD,
+      meanings: [
+        {
+          ...BASE_WORD.meanings[0],
+          definitions: [
+            {
+              text: "A representative form.",
+              translations: [],
+              // no example
+            },
+          ],
+        },
+      ],
+    };
+    const tasks = detectMissingData(form, langs);
+    expect(tasks.some((t) => t.type === "generate-example-translation")).toBe(false);
+  });
 });

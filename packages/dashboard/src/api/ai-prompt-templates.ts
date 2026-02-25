@@ -76,5 +76,23 @@ Example for "run": {"base_form": "run", "past_simple": "ran", "past_participle":
         user: `Translate the English word "${c.word}"${posNote} into ${c.targetLang}. Return exactly: {"lang_code": "${c.targetLangCode}", "code": "${c.targetLangCode}", "lang": "${c.targetLang}", "word": "...", "partOfSpeech": "..."}\nFill "word" with the ${c.targetLang} translation and "partOfSpeech" with the ${c.targetLang} part of speech label.\nExample for "example" -> Vietnamese: {"lang_code": "vi", "code": "vi", "lang": "Vietnamese", "word": "ví dụ", "partOfSpeech": "danh từ"}`,
       };
     }
+
+    case "generate-definition-translation": {
+      return {
+        system: SYSTEM_PROMPT,
+        user: `Translate this English definition of "${c.word}" (${c.partOfSpeech}) into ${c.targetLang}: "${c.definition}"
+Return exactly: {"lang_code": "${c.targetLangCode}", "code": "${c.targetLangCode}", "lang": "${c.targetLang}", "word": "...", "partOfSpeech": "..."}
+Fill "word" with the ${c.targetLang} translation of the definition text. Fill "partOfSpeech" with the ${c.targetLang} part of speech label.`,
+      };
+    }
+
+    case "generate-example-translation": {
+      return {
+        system: SYSTEM_PROMPT,
+        user: `Translate this English example sentence into ${c.targetLang}: "${c.example}"
+Return exactly: {"lang_code": "${c.targetLangCode}", "code": "${c.targetLangCode}", "lang": "${c.targetLang}", "word": "...", "partOfSpeech": "..."}
+Fill "word" with the ${c.targetLang} translation of the sentence. Fill "partOfSpeech" with the ${c.targetLang} part of speech label.`,
+      };
+    }
   }
 }

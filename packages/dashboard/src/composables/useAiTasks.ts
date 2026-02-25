@@ -10,7 +10,9 @@ export type AiTaskType =
   | "generate-synonyms"
   | "generate-antonyms"
   | "generate-tenses"
-  | "generate-translation";
+  | "generate-translation"
+  | "generate-definition-translation"
+  | "generate-example-translation";
 
 export type AiTaskStatus = "idle" | "loading" | "success" | "error";
 
@@ -70,8 +72,9 @@ export function detectMissingData(
   form.meanings.forEach((meaning, mi) => {
     const partOfSpeech = meaning.partOfSpeech || "";
 
-    // Per-definition examples
+    // Per-definition tasks
     meaning.definitions.forEach((def, di) => {
+      // Example sentence
       if (!def.example?.text) {
         tasks.push({
           id: `example-${mi}-${di}`,
@@ -80,6 +83,54 @@ export function detectMissingData(
           context: { word, partOfSpeech, definition: def.text },
           status: "idle",
         });
+      }
+
+      // Definition translations — one per target language
+      for (const lang of targetLanguages) {
+        const hasDefTranslation = def.translations.some((t) => t.lang_code === lang.lang_code);
+        if (!hasDefTranslation) {
+          tasks.push({
+            id: `def-tr-${mi}-${di}-${lang.lang_code}`,
+            type: "generate-definition-translation",
+            label: `Definition ${mi + 1}.${di + 1} translation (${lang.lang})`,
+            context: {
+              word,
+              partOfSpeech,
+              definition: def.text,
+              targetLang: lang.lang,
+              targetLangCode: lang.lang_code,
+              mi: String(mi),
+              di: String(di),
+            },
+            status: "idle",
+          });
+        }
+      }
+
+      // Example translations — one per target language (only if example exists)
+      if (def.example?.text) {
+        for (const lang of targetLanguages) {
+          const hasExTranslation = def.example.translations.some(
+            (t) => t.lang_code === lang.lang_code,
+          );
+          if (!hasExTranslation) {
+            tasks.push({
+              id: `ex-tr-${mi}-${di}-${lang.lang_code}`,
+              type: "generate-example-translation",
+              label: `Example ${mi + 1}.${di + 1} translation (${lang.lang})`,
+              context: {
+                word,
+                partOfSpeech,
+                example: def.example.text,
+                targetLang: lang.lang,
+                targetLangCode: lang.lang_code,
+                mi: String(mi),
+                di: String(di),
+              },
+              status: "idle",
+            });
+          }
+        }
       }
     });
 

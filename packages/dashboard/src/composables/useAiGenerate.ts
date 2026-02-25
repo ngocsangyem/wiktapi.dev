@@ -209,6 +209,68 @@ export function useAiGenerate(
         }
         break;
       }
+
+      case "generate-definition-translation": {
+        const t = result as {
+          lang_code?: string;
+          code?: string;
+          lang?: string;
+          word?: string;
+          partOfSpeech?: string;
+        };
+        if (typeof t.lang_code === "string" && typeof t.word === "string") {
+          const mi = Number(task.context.mi);
+          const di = Number(task.context.di);
+          const def = form.meanings[mi]?.definitions[di];
+          if (def) {
+            const item = {
+              lang_code: t.lang_code,
+              code: t.code ?? t.lang_code,
+              lang: t.lang ?? t.lang_code,
+              word: t.word,
+              partOfSpeech: t.partOfSpeech ?? task.context.partOfSpeech,
+            };
+            const idx = def.translations.findIndex((tr) => tr.lang_code === t.lang_code);
+            if (idx >= 0) {
+              def.translations[idx] = item;
+            } else {
+              def.translations.push(item);
+            }
+          }
+        }
+        break;
+      }
+
+      case "generate-example-translation": {
+        const t = result as {
+          lang_code?: string;
+          code?: string;
+          lang?: string;
+          word?: string;
+          partOfSpeech?: string;
+        };
+        if (typeof t.lang_code === "string" && typeof t.word === "string") {
+          const mi = Number(task.context.mi);
+          const di = Number(task.context.di);
+          const example = form.meanings[mi]?.definitions[di]?.example;
+          if (example) {
+            const item = {
+              lang_code: t.lang_code,
+              code: t.code ?? t.lang_code,
+              lang: t.lang ?? t.lang_code,
+              word: t.word,
+              partOfSpeech: t.partOfSpeech ?? task.context.partOfSpeech,
+            };
+            const idx = example.translations.findIndex((tr) => tr.lang_code === t.lang_code);
+            if (idx >= 0) {
+              example.translations[idx] = item;
+            } else {
+              example.translations.push(item);
+            }
+          }
+        }
+        break;
+      }
     }
   }
 
