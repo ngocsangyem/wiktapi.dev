@@ -4,3 +4,8 @@ declare module "*.vue" {
   const component: Component;
   export default component;
 }
+
+// Vite env vars — extend ImportMeta so import.meta.env.VITE_* is typed
+interface ImportMeta {
+  readonly env: { readonly VITE_ADMIN_KEY?: string } & Record<string, string | undefined>;
+}

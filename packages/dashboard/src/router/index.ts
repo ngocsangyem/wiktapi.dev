@@ -20,5 +20,15 @@ export const router = createRouter({
       component: () => import("@/pages/WordDetailPage.vue"),
       props: true,
     },
+    {
+      path: "/bulk-generate",
+      name: "bulk-generate",
+      component: () => import("@/pages/BulkGeneratePage.vue"),
+    },
+    {
+      path: "/ai-failures",
+      name: "ai-failures",
+      component: () => import("@/pages/AiFailuresPage.vue"),
+    },
   ],
 });

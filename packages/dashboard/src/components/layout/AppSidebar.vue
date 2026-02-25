@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from "vue-router";
-import { LayoutList, PlusCircle, RotateCcw, BookOpen, Tag, Globe } from "lucide-vue-next";
+import {
+  LayoutList,
+  PlusCircle,
+  RotateCcw,
+  BookOpen,
+  Tag,
+  Globe,
+  Zap,
+  AlertTriangle,
+} from "lucide-vue-next";
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +45,8 @@ const { data: languagesData } = useLanguagesQuery();
 const navItems = [
   { to: "/words", label: "Words", icon: LayoutList },
   { to: "/words/new", label: "Add Word", icon: PlusCircle },
+  { to: "/bulk-generate", label: "Bulk Generate", icon: Zap },
+  { to: "/ai-failures", label: "AI Failures", icon: AlertTriangle },
 ];
 </script>
 

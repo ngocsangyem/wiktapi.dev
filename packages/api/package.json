@@ -12,12 +12,7 @@
     "import:staging": "node scripts/import_data.ts --output data/wiktionary.db.new --fresh --skip-indexes",
     "index": "node scripts/build_indexes.ts",
     "index:staging": "node scripts/build_indexes.ts --output data/wiktionary.db.new",
-    "swap": "mv data/wiktionary.db.new data/wiktionary.db",
-    "migrate": "tsx scripts/migrate_schema.ts",
-    "migrate:tenses": "npx tsx scripts/migrate-tenses-schema.ts",
-    "migrate:translations": "tsx scripts/migrate-translations-to-definitions.ts",
-    "cleanup": "node scripts/cleanup_words.ts",
-    "cleanup:execute": "node scripts/cleanup_words.ts --execute"
+    "swap": "mv data/wiktionary.db.new data/wiktionary.db"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",

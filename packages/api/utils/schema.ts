@@ -41,3 +41,38 @@ export const WORDS_INDEXES_DDL = `
 export const MEANINGS_INDEXES_DDL = `
   CREATE INDEX IF NOT EXISTS idx_meanings_word_id ON meanings (word_id);
 `;
+
+export const AI_GENERATION_JOBS_TABLE_DDL = `
+  CREATE TABLE IF NOT EXISTS ai_generation_jobs (
+    id              TEXT PRIMARY KEY,
+    status          TEXT NOT NULL DEFAULT 'idle',
+    task_types      TEXT NOT NULL,
+    total_words     INTEGER NOT NULL DEFAULT 0,
+    processed_count INTEGER NOT NULL DEFAULT 0,
+    failed_count    INTEGER NOT NULL DEFAULT 0,
+    last_processed_id TEXT,
+    started_at      TEXT,
+    updated_at      TEXT,
+    config          TEXT NOT NULL
+  );
+`;
+
+export const AI_FAILURES_TABLE_DDL = `
+  CREATE TABLE IF NOT EXISTS ai_failures (
+    id            TEXT PRIMARY KEY,
+    job_id        TEXT NOT NULL REFERENCES ai_generation_jobs(id) ON DELETE CASCADE,
+    word_id       TEXT NOT NULL,
+    word          TEXT NOT NULL,
+    task_type     TEXT NOT NULL,
+    error_message TEXT NOT NULL,
+    attempted_at  TEXT NOT NULL,
+    retry_count   INTEGER NOT NULL DEFAULT 0
+  );
+`;
+
+export const AI_FAILURES_INDEXES_DDL = `
+  CREATE INDEX IF NOT EXISTS idx_ai_failures_job_id    ON ai_failures(job_id);
+  CREATE INDEX IF NOT EXISTS idx_ai_failures_word_id   ON ai_failures(word_id);
+  CREATE INDEX IF NOT EXISTS idx_ai_failures_task_type ON ai_failures(task_type);
+  CREATE INDEX IF NOT EXISTS idx_ai_failures_retry_count ON ai_failures(retry_count);
+`;
