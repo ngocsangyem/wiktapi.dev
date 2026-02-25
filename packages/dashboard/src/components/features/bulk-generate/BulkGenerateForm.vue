@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -90,14 +91,24 @@ function taskLabel(task: string): string {
     <div class="space-y-3">
       <div class="flex items-center justify-between">
         <Label class="text-sm font-medium">Task Types</Label>
-        <div class="flex gap-2">
-          <button class="text-xs text-muted-foreground hover:text-foreground" @click="selectAll">
+        <div class="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="h-auto px-1 py-0 text-xs text-muted-foreground"
+            @click="selectAll"
+          >
             Select all
-          </button>
+          </Button>
           <span class="text-xs text-muted-foreground">/</span>
-          <button class="text-xs text-muted-foreground hover:text-foreground" @click="deselectAll">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="h-auto px-1 py-0 text-xs text-muted-foreground"
+            @click="deselectAll"
+          >
             Deselect all
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -105,20 +116,17 @@ function taskLabel(task: string): string {
         <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           {{ group.group }}
         </p>
-        <div class="flex flex-wrap gap-2">
-          <label
-            v-for="task in group.tasks"
-            :key="task"
-            class="flex items-center gap-1.5 cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              :checked="selectedTasks.has(task as AiTaskType)"
-              class="rounded border-border"
-              @change="toggleTask(task as AiTaskType)"
+        <div class="flex flex-wrap gap-3">
+          <div v-for="task in group.tasks" :key="task" class="flex items-center gap-1.5">
+            <Checkbox
+              :id="task"
+              :model-value="selectedTasks.has(task as AiTaskType)"
+              @update:model-value="toggleTask(task as AiTaskType)"
             />
-            <span class="text-sm capitalize">{{ taskLabel(task) }}</span>
-          </label>
+            <Label :for="task" class="text-sm capitalize cursor-pointer font-normal">
+              {{ taskLabel(task) }}
+            </Label>
+          </div>
         </div>
       </div>
     </div>

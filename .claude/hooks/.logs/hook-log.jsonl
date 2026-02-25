@@ -859,3 +859,11 @@
 {"ts":"2026-02-25T15:52:15.663Z","hook":"scout-block","tool":"Edit","dur":2,"status":"ok","exit":0,"error":""}
 {"ts":"2026-02-25T15:52:25.311Z","hook":"scout-block","tool":"Edit","dur":3,"status":"ok","exit":0,"error":""}
 {"ts":"2026-02-25T15:52:32.450Z","hook":"scout-block","tool":"Edit","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:54:49.751Z","hook":"scout-block","tool":"Glob","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:54:50.418Z","hook":"scout-block","tool":"Read","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:54:54.592Z","hook":"scout-block","tool":"Read","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:56:19.254Z","hook":"scout-block","tool":"Read","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:56:24.701Z","hook":"scout-block","tool":"Edit","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:56:30.126Z","hook":"scout-block","tool":"Edit","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:56:38.229Z","hook":"scout-block","tool":"Edit","dur":2,"status":"ok","exit":0,"error":""}
+{"ts":"2026-02-25T15:56:40.976Z","hook":"scout-block","tool":"Read","dur":2,"status":"ok","exit":0,"error":""}
