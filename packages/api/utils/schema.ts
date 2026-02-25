@@ -1,3 +1,13 @@
+// App-level data quality constraints (SQLite cannot enforce JSON content):
+//   words.phonetics      — only type "us" or "uk"; at most one entry per type
+//   meanings.definitions — max 2 items per row; ranked by quality (example > translations > text length)
+export const SCHEMA_VERSIONS_TABLE_DDL = `
+  CREATE TABLE IF NOT EXISTS schema_versions (
+    version    TEXT PRIMARY KEY,
+    applied_at TEXT NOT NULL
+  );
+`;
+
 export const WORDS_INSERT_SQL = `
   INSERT INTO words (id, word, edition, phonetic, phonetics, translations, tenses, createdAt)
   VALUES (@id, @word, @edition, @phonetic, @phonetics, @translations, @tenses, @createdAt)

@@ -1,5 +1,6 @@
 import { HTTPError } from "nitro/h3";
 import { db } from "./db.ts";
+import { cleanPhonetics, trimDefinitions } from "./data-cleaning.ts";
 import type {
   Definition,
   Meaning,
@@ -28,12 +29,12 @@ function assembleWordRecord(wordRow: WordRow, meaningRows: MeaningRow[]): WordRe
     word: wordRow.word,
     edition: wordRow.edition,
     phonetic: wordRow.phonetic,
-    phonetics: safeParseJson<PhoneticItem[]>(wordRow.phonetics, "phonetics"),
+    phonetics: cleanPhonetics(safeParseJson<PhoneticItem[]>(wordRow.phonetics, "phonetics")),
     meanings: meaningRows
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((m) => ({
         partOfSpeech: m.partOfSpeech,
-        definitions: safeParseJson<Definition[]>(m.definitions, "definitions"),
+        definitions: trimDefinitions(safeParseJson<Definition[]>(m.definitions, "definitions")),
         synonyms: m.synonyms ? safeParseJson<string[]>(m.synonyms, "synonyms") : [],
         antonyms: m.antonyms ? safeParseJson<string[]>(m.antonyms, "antonyms") : [],
       })) as Meaning[],

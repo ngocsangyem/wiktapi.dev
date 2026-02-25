@@ -18,6 +18,7 @@ import {
   MEANINGS_INDEXES_DDL,
   MEANINGS_INSERT_SQL,
 } from "../utils/schema.ts";
+import { cleanPhonetics, mergeMeaningsByPos, trimDefinitions } from "../utils/data-cleaning.ts";
 import { createReadStream, statSync } from "node:fs";
 import { readdir, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -86,13 +87,14 @@ function normalizeIpa(raw: string): string {
 }
 
 function extractPhonetics(sounds: Record<string, unknown>[]): PhoneticItem[] {
-  return sounds
+  const raw = sounds
     .filter((s) => typeof s.ipa === "string")
     .map((s) => ({
       text: normalizeIpa(s.ipa as string),
       type: (s.tags as string[] | undefined)?.some((t) => t.toLowerCase() === "us") ? "us" : "uk",
       audioUrl: (s.audio as string | undefined) ?? null,
-    }));
+    })) as PhoneticItem[];
+  return cleanPhonetics(raw);
 }
 
 /** Extracts word strings from a LinkageData[] array (wiktextract format). */
@@ -103,18 +105,20 @@ function extractLinkageWords(items: unknown): string[] {
 
 function extractMeaning(parsed: Record<string, unknown>): Meaning {
   const senses = (parsed.senses as Record<string, unknown>[] | undefined) ?? [];
-  const definitions: Definition[] = senses
-    .map((s) => {
-      const glosses = s.glosses as string[] | undefined;
-      const examples = s.examples as Record<string, unknown>[] | undefined;
-      const exampleText = examples?.[0]?.text as string | undefined;
-      return {
-        text: glosses?.[0] ?? "",
-        example: exampleText ? { text: exampleText, translations: [] } : undefined,
-        translations: [],
-      };
-    })
-    .filter((d) => d.text);
+  const definitions: Definition[] = trimDefinitions(
+    senses
+      .map((s) => {
+        const glosses = s.glosses as string[] | undefined;
+        const examples = s.examples as Record<string, unknown>[] | undefined;
+        const exampleText = examples?.[0]?.text as string | undefined;
+        return {
+          text: glosses?.[0] ?? "",
+          example: exampleText ? { text: exampleText, translations: [] } : undefined,
+          translations: [],
+        };
+      })
+      .filter((d) => d.text),
+  );
 
   const synonyms = [
     ...extractLinkageWords(parsed.synonyms),
@@ -302,20 +306,21 @@ const importJsonl = (
         wordCache.set(cacheKey, cached);
       }
 
-      entries.forEach((entry, index) => {
+      // Deduplicate meanings by POS: one row per partOfSpeech per word
+      const dedupedMeanings = mergeMeaningsByPos(entries.map((e) => e.meaning));
+      dedupedMeanings.forEach((meaning, index) => {
         insertMeaning.run({
           id: crypto.randomUUID(),
           word_id: cached!.id,
-          partOfSpeech: entry.meaning.partOfSpeech,
-          definitions: JSON.stringify(entry.meaning.definitions),
-          translations: entry.translations,
-          synonyms: entry.meaning.synonyms?.length ? JSON.stringify(entry.meaning.synonyms) : null,
-          antonyms: entry.meaning.antonyms?.length ? JSON.stringify(entry.meaning.antonyms) : null,
+          partOfSpeech: meaning.partOfSpeech,
+          definitions: JSON.stringify(meaning.definitions),
+          synonyms: meaning.synonyms?.length ? JSON.stringify(meaning.synonyms) : null,
+          antonyms: meaning.antonyms?.length ? JSON.stringify(meaning.antonyms) : null,
           sort_order: cached!.meaningCount + index,
         });
       });
 
-      cached.meaningCount += entries.length;
+      cached.meaningCount += dedupedMeanings.length;
       return freshInsert;
     }
 
